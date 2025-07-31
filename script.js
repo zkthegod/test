@@ -203,29 +203,27 @@ document.addEventListener('DOMContentLoaded', function() {
     // Name Effects Generator
     const effectText = document.getElementById('effectText');
     const gradColorsContainer = document.getElementById('gradColors');
-    const addGradColorBtn = document.getElementById('addGradColor');
+    const colorCount = document.getElementById('colorCount');
     const gradRotation = document.getElementById('gradRotation');
     const gradRotationValue = document.getElementById('gradRotationValue');
     const glowColor = document.getElementById('glowColor');
+    const glowSize = document.getElementById('glowSize');
+    const glowSizeValue = document.getElementById('glowSizeValue');
     const namewaveToggle = document.getElementById('namewaveToggle');
+    const fontWeight = document.getElementById('fontWeight');
     const effectPreview = document.getElementById('effectPreview');
     const codeOutput = document.getElementById('codeOutput');
     const copyCodeBtn = document.getElementById('copyCode');
     
-    // Default colors
-    const defaultColors = ['#000000', '#ffffff'];
+    // Initialize color inputs
+    function initializeColorInputs() {
+        // Add initial 2 color inputs
+        addColorInput('#000000');
+        addColorInput('#ffffff', true);
+        colorCount.value = '2';
+    }
     
-    // Add default color inputs
-    defaultColors.forEach((color, index) => {
-        addColorInput(color, index === defaultColors.length - 1);
-    });
-    
-    // Add new color input
-    addGradColorBtn.addEventListener('click', function() {
-        if (gradColorsContainer.children.length >= 10) return;
-        addColorInput('#cccccc', true);
-    });
-    
+    // Add color input
     function addColorInput(colorValue, isLast = false) {
         const colorId = Date.now();
         const colorInput = document.createElement('div');
@@ -240,28 +238,55 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add event listener to color input
         colorInput.querySelector('input').addEventListener('input', updateEffects);
         
-        // Add event listener to remove button
-        if (!isLast) {
-            colorInput.querySelector('.remove-color').addEventListener('click', function() {
-                if (gradColorsContainer.children.length <= 2) return;
-                gradColorsContainer.removeChild(colorInput);
-                updateEffects();
-            });
-        } else {
-            colorInput.querySelector('.remove-color').style.visibility = 'hidden';
-        }
+        // Configure remove button
+        const removeBtn = colorInput.querySelector('.remove-color');
+        removeBtn.style.visibility = gradColorsContainer.children.length > 2 ? 'visible' : 'hidden';
+        
+        removeBtn.addEventListener('click', function() {
+            if (gradColorsContainer.children.length <= 2) return;
+            gradColorsContainer.removeChild(colorInput);
+            colorCount.value = gradColorsContainer.children.length;
+            updateEffects();
+        });
     }
     
-    // Update rotation value display
+    // Update color inputs based on dropdown selection
+    colorCount.addEventListener('change', function() {
+        const newCount = parseInt(this.value);
+        const currentCount = gradColorsContainer.children.length;
+        
+        if (newCount > currentCount) {
+            // Add new color inputs
+            for (let i = currentCount; i < newCount; i++) {
+                addColorInput('#cccccc', i === newCount - 1);
+            }
+        } else if (newCount < currentCount) {
+            // Remove excess color inputs
+            while (gradColorsContainer.children.length > newCount) {
+                gradColorsContainer.removeChild(gradColorsContainer.lastChild);
+            }
+            // Ensure last remove button is hidden if we're at min count
+            if (gradColorsContainer.children.length === 2) {
+                gradColorsContainer.lastChild.querySelector('.remove-color').style.visibility = 'hidden';
+            }
+        }
+        
+        updateEffects();
+    });
+    
+    // Add event listeners for other controls
+    effectText.addEventListener('input', updateEffects);
     gradRotation.addEventListener('input', function() {
         gradRotationValue.textContent = `${this.value}°`;
         updateEffects();
     });
-    
-    // Update effects when any input changes
-    effectText.addEventListener('input', updateEffects);
     glowColor.addEventListener('input', updateEffects);
+    glowSize.addEventListener('input', function() {
+        glowSizeValue.textContent = this.value;
+        updateEffects();
+    });
     namewaveToggle.addEventListener('change', updateEffects);
+    fontWeight.addEventListener('change', updateEffects);
     
     // Copy code button
     copyCodeBtn.addEventListener('click', function() {
@@ -286,57 +311,69 @@ document.addEventListener('DOMContentLoaded', function() {
         const text = effectText.value || 'Sample Text';
         const rotation = gradRotation.value;
         const glow = glowColor.value;
+        const glowSizeVal = glowSize.value;
         const wave = namewaveToggle.checked;
+        const fontWeightVal = fontWeight.value;
         
         // Update preview
         effectPreview.textContent = text;
         effectPreview.style.fontFamily = 'Arial';
-        effectPreview.style.fontWeight = 'bold';
+        effectPreview.style.fontWeight = fontWeightVal;
         
         // Apply gradient
         if (colors.length > 1) {
-            effectPreview.style.background = `linear-gradient(${rotation}deg, ${colors.join(', ')})`;
+            const gradient = `linear-gradient(${rotation}deg, ${colors.join(', ')})`;
+            effectPreview.style.background = gradient;
             effectPreview.style.webkitBackgroundClip = 'text';
             effectPreview.style.backgroundClip = 'text';
             effectPreview.style.color = 'transparent';
+            
+            if (wave) {
+                effectPreview.style.backgroundSize = '200% 100%';
+                effectPreview.style.animation = 'wave 2s linear infinite';
+            } else {
+                effectPreview.style.backgroundSize = '100% 100%';
+                effectPreview.style.animation = 'none';
+            }
         } else {
             effectPreview.style.background = 'none';
             effectPreview.style.color = colors[0] || '#000000';
-        }
-        
-        // Apply glow
-        effectPreview.style.textShadow = `0 0 5px ${glow}`;
-        
-        // Apply wave
-        if (wave) {
-            effectPreview.style.animation = 'wave 2s infinite ease-in-out';
-        } else {
             effectPreview.style.animation = 'none';
         }
         
-        // Generate code
-        let code = '';
+        // Apply glow
+        effectPreview.style.textShadow = `0 0 ${glowSizeVal}px ${glow}`;
         
-        if (glow !== '#0000ff') {
-            code += `glow${glow}`;
+        // Generate code with parentheses
+        let codeParts = [];
+        
+        if (glow !== '#0000ff' || glowSizeVal !== '5') {
+            codeParts.push(`(glow${glow.replace('#', '')}#${glowSizeVal})`);
         }
         
         if (colors.length > 1) {
-            if (code) code += '#';
-            code += `grad#r${rotation}`;
+            let gradPart = `(grad#r${rotation}`;
             colors.forEach(color => {
-                code += `#${color.replace('#', '')}`;
+                gradPart += `#${color.replace('#', '')}`;
             });
+            gradPart += ')';
+            codeParts.push(gradPart);
         }
         
         if (wave) {
-            if (code) code += '#';
-            code += 'wave';
+            codeParts.push('(wave)');
         }
         
-        codeOutput.textContent = code || 'No effects applied';
+        if (fontWeightVal === 'lighter') {
+            codeParts.push('(thin)');
+        } else if (fontWeightVal === 'bold') {
+            codeParts.push('(bold)');
+        }
+        
+        codeOutput.textContent = codeParts.join('') || 'No effects applied';
     }
     
-    // Initial update
+    // Initialize
+    initializeColorInputs();
     updateEffects();
 });
