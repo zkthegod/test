@@ -44,6 +44,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const saveSettingsBtn = document.getElementById('saveSettings');
     const chatWidthInput = document.getElementById('chatWidth');
     const chatHeightInput = document.getElementById('chatHeight');
+    const scrollLeftBtn = document.getElementById('scrollLeft');
+    const scrollRightBtn = document.getElementById('scrollRight');
     
     // Load saved settings or set defaults
     const savedSettings = JSON.parse(localStorage.getItem('chatSettings')) || {
@@ -101,26 +103,57 @@ document.addEventListener('DOMContentLoaded', function() {
             <iframe src="https://xat.com/embed/chat.php#gn=${encodeURIComponent(chatName)}" 
                     width="${settings.width}" height="${settings.height}" 
                     frameborder="0" scrolling="no"></iframe>
-            <div class="chat-links">
-                <small>
-                    <a target="_BLANK" href="https://xat.com/web_gear/chat/embed.php?GroupName=${encodeURIComponent(chatName)}">
-                        Get ${chatName} chat group
-                    </a> | 
-                    <a target="_BLANK" href="https://xat.com/${encodeURIComponent(chatName)}">
-                        Go to ${chatName} website
-                    </a>
-                </small>
-            </div>
         `;
         
-        // Add new chat to the beginning to prevent overlap
-        chatContainer.insertBefore(chatWrapper, chatContainer.firstChild);
+        // Add new chat to the end
+        chatContainer.appendChild(chatWrapper);
         chatNameInput.value = '';
+        
+        // Scroll to the new chat
+        chatContainer.scrollTo({
+            left: chatContainer.scrollWidth,
+            behavior: 'smooth'
+        });
         
         // Add event listener to remove button
         chatWrapper.querySelector('.remove-chat').addEventListener('click', function() {
             document.getElementById(`chat-${this.getAttribute('data-chat-id')}`).remove();
         });
+    }
+    
+    // Chat scrolling
+    scrollLeftBtn.addEventListener('click', function() {
+        chatContainer.scrollBy({
+            left: -300,
+            behavior: 'smooth'
+        });
+    });
+    
+    scrollRightBtn.addEventListener('click', function() {
+        chatContainer.scrollBy({
+            left: 300,
+            behavior: 'smooth'
+        });
+    });
+    
+    // Update fade effects based on scroll position
+    chatContainer.addEventListener('scroll', updateChatFade);
+    
+    function updateChatFade() {
+        const scrollLeft = chatContainer.scrollLeft;
+        const maxScroll = chatContainer.scrollWidth - chatContainer.clientWidth;
+        
+        if (scrollLeft > 10) {
+            chatContainer.classList.add('fade-left');
+        } else {
+            chatContainer.classList.remove('fade-left');
+        }
+        
+        if (scrollLeft < maxScroll - 10) {
+            chatContainer.classList.add('fade-right');
+        } else {
+            chatContainer.classList.remove('fade-right');
+        }
     }
     
     // Status monitoring
@@ -166,4 +199,144 @@ document.addEventListener('DOMContentLoaded', function() {
             checkServiceStatus(service);
         });
     }, 5 * 60 * 1000);
+    
+    // Name Effects Generator
+    const effectText = document.getElementById('effectText');
+    const gradColorsContainer = document.getElementById('gradColors');
+    const addGradColorBtn = document.getElementById('addGradColor');
+    const gradRotation = document.getElementById('gradRotation');
+    const gradRotationValue = document.getElementById('gradRotationValue');
+    const glowColor = document.getElementById('glowColor');
+    const namewaveToggle = document.getElementById('namewaveToggle');
+    const effectPreview = document.getElementById('effectPreview');
+    const codeOutput = document.getElementById('codeOutput');
+    const copyCodeBtn = document.getElementById('copyCode');
+    
+    // Default colors
+    const defaultColors = ['#000000', '#ffffff'];
+    
+    // Add default color inputs
+    defaultColors.forEach((color, index) => {
+        addColorInput(color, index === defaultColors.length - 1);
+    });
+    
+    // Add new color input
+    addGradColorBtn.addEventListener('click', function() {
+        if (gradColorsContainer.children.length >= 10) return;
+        addColorInput('#cccccc', true);
+    });
+    
+    function addColorInput(colorValue, isLast = false) {
+        const colorId = Date.now();
+        const colorInput = document.createElement('div');
+        colorInput.className = 'color-input';
+        colorInput.innerHTML = `
+            <input type="color" value="${colorValue}" id="color-${colorId}">
+            <button class="remove-color" data-color-id="${colorId}"><i class="fas fa-times"></i></button>
+        `;
+        
+        gradColorsContainer.appendChild(colorInput);
+        
+        // Add event listener to color input
+        colorInput.querySelector('input').addEventListener('input', updateEffects);
+        
+        // Add event listener to remove button
+        if (!isLast) {
+            colorInput.querySelector('.remove-color').addEventListener('click', function() {
+                if (gradColorsContainer.children.length <= 2) return;
+                gradColorsContainer.removeChild(colorInput);
+                updateEffects();
+            });
+        } else {
+            colorInput.querySelector('.remove-color').style.visibility = 'hidden';
+        }
+    }
+    
+    // Update rotation value display
+    gradRotation.addEventListener('input', function() {
+        gradRotationValue.textContent = `${this.value}°`;
+        updateEffects();
+    });
+    
+    // Update effects when any input changes
+    effectText.addEventListener('input', updateEffects);
+    glowColor.addEventListener('input', updateEffects);
+    namewaveToggle.addEventListener('change', updateEffects);
+    
+    // Copy code button
+    copyCodeBtn.addEventListener('click', function() {
+        navigator.clipboard.writeText(codeOutput.textContent).then(() => {
+            const originalText = copyCodeBtn.innerHTML;
+            copyCodeBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+            setTimeout(() => {
+                copyCodeBtn.innerHTML = originalText;
+            }, 2000);
+        });
+    });
+    
+    // Update all effects
+    function updateEffects() {
+        // Get all gradient colors
+        const colors = [];
+        document.querySelectorAll('#gradColors input[type="color"]').forEach(input => {
+            colors.push(input.value);
+        });
+        
+        // Get other values
+        const text = effectText.value || 'Sample Text';
+        const rotation = gradRotation.value;
+        const glow = glowColor.value;
+        const wave = namewaveToggle.checked;
+        
+        // Update preview
+        effectPreview.textContent = text;
+        effectPreview.style.fontFamily = 'Arial';
+        effectPreview.style.fontWeight = 'bold';
+        
+        // Apply gradient
+        if (colors.length > 1) {
+            effectPreview.style.background = `linear-gradient(${rotation}deg, ${colors.join(', ')})`;
+            effectPreview.style.webkitBackgroundClip = 'text';
+            effectPreview.style.backgroundClip = 'text';
+            effectPreview.style.color = 'transparent';
+        } else {
+            effectPreview.style.background = 'none';
+            effectPreview.style.color = colors[0] || '#000000';
+        }
+        
+        // Apply glow
+        effectPreview.style.textShadow = `0 0 5px ${glow}`;
+        
+        // Apply wave
+        if (wave) {
+            effectPreview.style.animation = 'wave 2s infinite ease-in-out';
+        } else {
+            effectPreview.style.animation = 'none';
+        }
+        
+        // Generate code
+        let code = '';
+        
+        if (glow !== '#0000ff') {
+            code += `glow${glow}`;
+        }
+        
+        if (colors.length > 1) {
+            if (code) code += '#';
+            code += `grad#r${rotation}`;
+            colors.forEach(color => {
+                code += `#${color.replace('#', '')}`;
+            });
+        }
+        
+        if (wave) {
+            if (code) code += '#';
+            code += 'wave';
+        }
+        
+        codeOutput.textContent = code || 'No effects applied';
+    }
+    
+    // Initial update
+    updateEffects();
 });
