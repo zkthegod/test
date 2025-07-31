@@ -21,7 +21,7 @@
                 <ul>
                     <li><a href="#home" class="active">Home</a></li>
                     <li><a href="#chat-embedder">Chat Embedder</a></li>
-                    <li><a href="#status">Status</a></li>
+                    <li><a href="#name-effects">Name Effects</a></li>
                 </ul>
             </nav>
         </header>
@@ -29,7 +29,34 @@
         <main>
             <section id="home" class="page active">
                 <h2>Welcome to xat Tools</h2>
-                <p>A collection of utilities for xat.com users</p>
+                <p class="description">This website provides useful tools for xat.com users including chat embedding and name effect generators.</p>
+                
+                <div class="status-grid">
+                    <div class="status-card" id="xatStatus">
+                        <h3>xat.com</h3>
+                        <div class="status-indicator loading">
+                            <div class="dot"></div>
+                            <span>Checking...</span>
+                        </div>
+                        <div class="uptime">Uptime: <span class="value">-</span></div>
+                    </div>
+                    <div class="status-card" id="wikiStatus">
+                        <h3>wiki.xat.com</h3>
+                        <div class="status-indicator loading">
+                            <div class="dot"></div>
+                            <span>Checking...</span>
+                        </div>
+                        <div class="uptime">Uptime: <span class="value">-</span></div>
+                    </div>
+                    <div class="status-card" id="forumStatus">
+                        <h3>forum.xat.com</h3>
+                        <div class="status-indicator loading">
+                            <div class="dot"></div>
+                            <span>Checking...</span>
+                        </div>
+                        <div class="uptime">Uptime: <span class="value">-</span></div>
+                    </div>
+                </div>
             </section>
 
             <section id="chat-embedder" class="page">
@@ -57,37 +84,66 @@
                     <button id="saveSettings" class="primary-btn">Save Settings</button>
                 </div>
                 
-                <div class="chat-container" id="chatContainer">
-                    <!-- Embedded chats will appear here -->
+                <div class="chat-viewport">
+                    <button class="scroll-btn left" id="scrollLeft"><i class="fas fa-chevron-left"></i></button>
+                    <div class="chat-container" id="chatContainer">
+                        <!-- Embedded chats will appear here -->
+                    </div>
+                    <button class="scroll-btn right" id="scrollRight"><i class="fas fa-chevron-right"></i></button>
                 </div>
             </section>
 
-            <section id="status" class="page">
-                <h2>Status Monitor</h2>
-                <div class="status-grid">
-                    <div class="status-card" id="xatStatus">
-                        <h3>xat.com</h3>
-                        <div class="status-indicator loading">
-                            <div class="dot"></div>
-                            <span>Checking...</span>
-                        </div>
-                        <div class="uptime">Uptime: <span class="value">-</span></div>
+            <section id="name-effects" class="page">
+                <h2>Name Effects Generator</h2>
+                
+                <div class="effect-controls">
+                    <div class="input-group">
+                        <label for="effectText">Text:</label>
+                        <input type="text" id="effectText" placeholder="Enter your name" value="Sample Text">
                     </div>
-                    <div class="status-card" id="wikiStatus">
-                        <h3>wiki.xat.com</h3>
-                        <div class="status-indicator loading">
-                            <div class="dot"></div>
-                            <span>Checking...</span>
+                    
+                    <div class="effect-options">
+                        <div class="option-group">
+                            <h3>Namegrad</h3>
+                            <div class="colors-container" id="gradColors">
+                                <!-- Color inputs will be added here -->
+                            </div>
+                            <button id="addGradColor" class="icon-btn small"><i class="fas fa-plus"></i> Add Color</button>
+                            
+                            <div class="option">
+                                <label for="gradRotation">Rotation:</label>
+                                <input type="range" id="gradRotation" min="0" max="360" value="90">
+                                <span id="gradRotationValue">90°</span>
+                            </div>
                         </div>
-                        <div class="uptime">Uptime: <span class="value">-</span></div>
+                        
+                        <div class="option-group">
+                            <h3>Nameglow</h3>
+                            <div class="color-picker">
+                                <label for="glowColor">Color:</label>
+                                <input type="color" id="glowColor" value="#0000ff">
+                            </div>
+                        </div>
+                        
+                        <div class="option-group">
+                            <h3>Namewave</h3>
+                            <label class="switch">
+                                <input type="checkbox" id="namewaveToggle">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
                     </div>
-                    <div class="status-card" id="forumStatus">
-                        <h3>forum.xat.com</h3>
-                        <div class="status-indicator loading">
-                            <div class="dot"></div>
-                            <span>Checking...</span>
+                    
+                    <div class="preview-container">
+                        <h3>Preview</h3>
+                        <div class="effect-preview" id="effectPreview">
+                            Sample Text
                         </div>
-                        <div class="uptime">Uptime: <span class="value">-</span></div>
+                        <div class="code-output">
+                            <h3>Code:</h3>
+                            <div class="code-box" id="codeOutput"></div>
+                            <button id="copyCode" class="primary-btn"><i class="fas fa-copy"></i> Copy Code</button>
+                        </div>
                     </div>
                 </div>
             </section>
