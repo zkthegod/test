@@ -263,23 +263,19 @@ nav a:hover, nav a.active {
 }
 
 .scroll-btn {
-    background-color: var(--card-bg);
-    border: var(--border);
-    color: var(--primary);
-    width: 40px;
-    height: 80px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    border-radius: 6px;
+    width: 50px;
+    height: 100px;
+    font-size: 1.5rem;
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    opacity: 0.8;
     transition: var(--transition);
-    z-index: 2;
 }
 
 .scroll-btn:hover {
-    background-color: var(--primary);
-    color: white;
+    opacity: 1;
+    transform: scale(1.05);
 }
 
 .chat-container {
@@ -491,13 +487,19 @@ nav a:hover, nav a.active {
 }
 
 .effect-preview {
-    font-size: 2rem;
-    font-weight: bold;
-    text-align: center;
-    padding: 30px;
-    margin: 20px 0;
-    border: var(--border);
-    border-radius: 8px;
+    position: relative;
+    z-index: 1;
+}
+
+.effect-preview::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+    border-radius: 6px;
     background-color: var(--bg);
 }
 
@@ -523,9 +525,8 @@ nav a:hover, nav a.active {
 }
 
 @keyframes wave {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-5px); }
-    100% { transform: translateY(0px); }
+    0% { background-position-x: 0%; }
+    100% { background-position-x: 100%; }
 }
 
 @media (max-width: 768px) {
