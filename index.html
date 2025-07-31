@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YourName | xat Tools</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="theme-toggle">
+                <i class="fas fa-moon"></i>
+                <label class="switch">
+                    <input type="checkbox" id="themeToggle">
+                    <span class="slider round"></span>
+                </label>
+                <i class="fas fa-sun"></i>
+            </div>
+            <div class="profile-header">
+                <img src="https://via.placeholder.com/150" alt="Profile Picture" class="profile-pic">
+                <h1>YourName</h1>
+                <div class="social-links">
+                    <a href="#" class="youtube"><i class="fab fa-youtube"></i></a>
+                    <a href="#" class="discord"><i class="fab fa-discord"></i></a>
+                    <a href="#" class="badlion"><i class="fas fa-lion"></i></a>
+                </div>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#home" class="active">Home</a></li>
+                    <li><a href="#chat-embedder">Chat Embedder</a></li>
+                    <li><a href="#status">Status</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main>
+            <section id="home" class="page active">
+                <h2>Welcome to My xat Tools</h2>
+                <p>This website provides useful tools for xat.com users, including chat embedding and status monitoring.</p>
+                
+                <div class="card-grid">
+                    <div class="card">
+                        <h3><i class="fas fa-user"></i> About Me</h3>
+                        <p>Youtuber, Server Owner, Badlion Client Partner</p>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-tools"></i> Tools</h3>
+                        <p>Check out the various xat tools I've created</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="chat-embedder" class="page">
+                <h2>Chat Embedder</h2>
+                <p>Embed multiple xat chats on the same page</p>
+                
+                <div class="embed-controls">
+                    <div class="input-group">
+                        <input type="text" id="chatName" placeholder="Enter chat name (e.g., Help)">
+                        <button id="embedChat">Embed Chat</button>
+                    </div>
+                    <div class="settings-toggle">
+                        <button id="settingsBtn"><i class="fas fa-cog"></i> Settings</button>
+                    </div>
+                </div>
+                
+                <div class="settings-panel" id="settingsPanel">
+                    <div class="setting">
+                        <label for="chatWidth">Width:</label>
+                        <input type="number" id="chatWidth" value="650" min="300" max="1200">
+                    </div>
+                    <div class="setting">
+                        <label for="chatHeight">Height:</label>
+                        <input type="number" id="chatHeight" value="486" min="300" max="1200">
+                    </div>
+                </div>
+                
+                <div class="chat-container" id="chatContainer">
+                    <!-- Embedded chats will appear here -->
+                </div>
+            </section>
+
+            <section id="status" class="page">
+                <h2>Status Monitor</h2>
+                <p>Real-time status of xat services</p>
+                
+                <div class="status-grid">
+                    <div class="status-card" id="xatStatus">
+                        <h3>xat.com</h3>
+                        <div class="status-indicator loading">
+                            <div class="dot"></div>
+                            <span>Checking...</span>
+                        </div>
+                        <div class="uptime">Uptime: <span class="value">-</span></div>
+                    </div>
+                    <div class="status-card" id="wikiStatus">
+                        <h3>wiki.xat.com</h3>
+                        <div class="status-indicator loading">
+                            <div class="dot"></div>
+                            <span>Checking...</span>
+                        </div>
+                        <div class="uptime">Uptime: <span class="value">-</span></div>
+                    </div>
+                    <div class="status-card" id="forumStatus">
+                        <h3>forum.xat.com</h3>
+                        <div class="status-indicator loading">
+                            <div class="dot"></div>
+                            <span>Checking...</span>
+                        </div>
+                        <div class="uptime">Uptime: <span class="value">-</span></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2023 YourName. All rights reserved.</p>
+            <p>Partnered with Badlion Client</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
