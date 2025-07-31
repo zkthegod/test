@@ -75,11 +75,11 @@
                 <div class="settings-panel" id="settingsPanel">
                     <div class="setting">
                         <label for="chatWidth">Width:</label>
-                        <input type="number" id="chatWidth" min="300" max="1200">
+                        <input type="number" id="chatWidth" min="300" max="1200" value="650">
                     </div>
                     <div class="setting">
                         <label for="chatHeight">Height:</label>
-                        <input type="number" id="chatHeight" min="300" max="1200">
+                        <input type="number" id="chatHeight" min="300" max="1200" value="486">
                     </div>
                     <button id="saveSettings" class="primary-btn">Save Settings</button>
                 </div>
@@ -103,56 +103,44 @@
                     </div>
                     
                     <div class="effect-options">
-<div class="option-group">
-    <h3>Namegrad</h3>
-    <div class="option">
-        <label for="colorCount">Colors:</label>
-        <select id="colorCount">
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-            <option value="6">6</option>
-            <option value="7">7</option>
-            <option value="8">8</option>
-            <option value="9">9</option>
-            <option value="10">10</option>
-        </select>
-    </div>
-    <div class="colors-container" id="gradColors">
-        <!-- Color inputs will be added here -->
-    </div>
-    <div class="option">
-        <label for="gradRotation">Rotation:</label>
-        <input type="range" id="gradRotation" min="0" max="360" value="90">
-        <span id="gradRotationValue">90°</span>
-    </div>
-</div>
-
-<div class="option-group">
-    <h3>Nameglow</h3>
-    <div class="color-picker">
-        <label for="glowColor">Color:</label>
-        <input type="color" id="glowColor" value="#0000ff">
-    </div>
-    <div class="option">
-        <label for="glowSize">Size:</label>
-        <input type="range" id="glowSize" min="1" max="10" value="5">
-        <span id="glowSizeValue">5</span>
-    </div>
-</div>
-
-<div class="option-group">
-    <h3>Font Weight</h3>
-    <div class="option">
-        <label for="fontWeight">Weight:</label>
-        <select id="fontWeight">
-            <option value="normal">Normal</option>
-            <option value="bold" selected>Bold</option>
-            <option value="lighter">Thin</option>
-        </select>
-    </div>
-</div>
+                        <div class="option-group">
+                            <h3>Namegrad</h3>
+                            <div class="option">
+                                <label for="colorCount">Colors:</label>
+                                <select id="colorCount">
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                    <option value="7">7</option>
+                                    <option value="8">8</option>
+                                    <option value="9">9</option>
+                                    <option value="10">10</option>
+                                </select>
+                            </div>
+                            <div class="colors-container" id="gradColors">
+                                <!-- Color inputs will be added here -->
+                            </div>
+                            <div class="option">
+                                <label for="gradRotation">Rotation:</label>
+                                <input type="range" id="gradRotation" min="0" max="360" value="90">
+                                <span id="gradRotationValue">90°</span>
+                            </div>
+                        </div>
+                        
+                        <div class="option-group">
+                            <h3>Nameglow</h3>
+                            <div class="color-picker">
+                                <label for="glowColor">Color:</label>
+                                <input type="color" id="glowColor" value="#0000ff">
+                            </div>
+                            <div class="option">
+                                <label for="glowSize">Size:</label>
+                                <input type="range" id="glowSize" min="1" max="10" value="5">
+                                <span id="glowSizeValue">5</span>
+                            </div>
+                        </div>
                         
                         <div class="option-group">
                             <h3>Namewave</h3>
@@ -160,6 +148,18 @@
                                 <input type="checkbox" id="namewaveToggle">
                                 <span class="slider"></span>
                             </label>
+                        </div>
+                        
+                        <div class="option-group">
+                            <h3>Font Weight</h3>
+                            <div class="option">
+                                <label for="fontWeight">Weight:</label>
+                                <select id="fontWeight">
+                                    <option value="normal">Normal</option>
+                                    <option value="bold" selected>Bold</option>
+                                    <option value="lighter">Thin</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                     
