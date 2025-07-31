@@ -27,11 +27,9 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             const targetId = this.getAttribute('href');
             
-            // Update active nav link
             navLinks.forEach(navLink => navLink.classList.remove('active'));
             this.classList.add('active');
             
-            // Show target page
             pages.forEach(page => page.classList.remove('active'));
             document.querySelector(targetId).classList.add('active');
         });
@@ -43,11 +41,37 @@ document.addEventListener('DOMContentLoaded', function() {
     const chatContainer = document.getElementById('chatContainer');
     const settingsBtn = document.getElementById('settingsBtn');
     const settingsPanel = document.getElementById('settingsPanel');
+    const saveSettingsBtn = document.getElementById('saveSettings');
     const chatWidthInput = document.getElementById('chatWidth');
     const chatHeightInput = document.getElementById('chatHeight');
     
+    // Load saved settings or set defaults
+    const savedSettings = JSON.parse(localStorage.getItem('chatSettings')) || {
+        width: 650,
+        height: 486
+    };
+    
+    chatWidthInput.value = savedSettings.width;
+    chatHeightInput.value = savedSettings.height;
+    
     settingsBtn.addEventListener('click', function() {
         settingsPanel.classList.toggle('active');
+    });
+    
+    saveSettingsBtn.addEventListener('click', function() {
+        const newSettings = {
+            width: parseInt(chatWidthInput.value) || 650,
+            height: parseInt(chatHeightInput.value) || 486
+        };
+        
+        localStorage.setItem('chatSettings', JSON.stringify(newSettings));
+        settingsPanel.classList.remove('active');
+        
+        // Update all existing chats
+        document.querySelectorAll('.embedded-chat iframe').forEach(iframe => {
+            iframe.width = newSettings.width;
+            iframe.height = newSettings.height;
+        });
     });
     
     embedChatBtn.addEventListener('click', embedChat);
@@ -61,10 +85,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const chatName = chatNameInput.value.trim();
         if (!chatName) return;
         
-        const width = chatWidthInput.value;
-        const height = chatHeightInput.value;
+        const settings = JSON.parse(localStorage.getItem('chatSettings')) || {
+            width: 650,
+            height: 486
+        };
         
-        const chatId = Date.now(); // Simple unique ID for each chat
+        const chatId = Date.now();
         
         const chatWrapper = document.createElement('div');
         chatWrapper.className = 'embedded-chat';
@@ -73,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function() {
         chatWrapper.innerHTML = `
             <button class="remove-chat" data-chat-id="${chatId}">×</button>
             <iframe src="https://xat.com/embed/chat.php#gn=${encodeURIComponent(chatName)}" 
-                    width="${width}" height="${height}" 
+                    width="${settings.width}" height="${settings.height}" 
                     frameborder="0" scrolling="no"></iframe>
             <div class="chat-links">
                 <small>
@@ -87,7 +113,8 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         `;
         
-        chatContainer.appendChild(chatWrapper);
+        // Add new chat to the beginning to prevent overlap
+        chatContainer.insertBefore(chatWrapper, chatContainer.firstChild);
         chatNameInput.value = '';
         
         // Add event listener to remove button
@@ -110,17 +137,15 @@ document.addEventListener('DOMContentLoaded', function() {
         indicator.classList.remove('online', 'offline');
         indicator.classList.add('loading');
         
-        // In a real implementation, you would make an actual API call here
-        // This is a simulation with random results
+        // Simulate API call
         setTimeout(() => {
-            const isOnline = Math.random() > 0.2; // 80% chance of being online
+            const isOnline = Math.random() > 0.2;
             
             indicator.classList.remove('loading');
             indicator.classList.add(isOnline ? 'online' : 'offline');
             indicator.querySelector('span').textContent = isOnline ? 'Online' : 'Offline';
             
             if (isOnline) {
-                // Simulate uptime
                 const days = Math.floor(Math.random() * 30);
                 const hours = Math.floor(Math.random() * 24);
                 uptimeElement.textContent = `${days}d ${hours}h`;
