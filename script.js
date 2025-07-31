@@ -217,6 +217,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize color inputs
     function initializeColorInputs() {
+        // Clear existing inputs
+        gradColorsContainer.innerHTML = '';
+        
         // Add initial 2 color inputs
         addColorInput('#000000');
         addColorInput('#ffffff', true);
