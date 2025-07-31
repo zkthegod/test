@@ -11,22 +11,12 @@
     <div class="container">
         <header>
             <div class="theme-toggle">
-                <i class="fas fa-moon"></i>
                 <label class="switch">
                     <input type="checkbox" id="themeToggle">
-                    <span class="slider round"></span>
+                    <span class="slider"></span>
                 </label>
-                <i class="fas fa-sun"></i>
             </div>
-            <div class="profile-header">
-                <img src="https://via.placeholder.com/150" alt="Profile Picture" class="profile-pic">
-                <h1>YourName</h1>
-                <div class="social-links">
-                    <a href="#" class="youtube"><i class="fab fa-youtube"></i></a>
-                    <a href="#" class="discord"><i class="fab fa-discord"></i></a>
-                    <a href="#" class="badlion"><i class="fas fa-lion"></i></a>
-                </div>
-            </div>
+            <h1>xat Tools</h1>
             <nav>
                 <ul>
                     <li><a href="#home" class="active">Home</a></li>
@@ -38,44 +28,33 @@
 
         <main>
             <section id="home" class="page active">
-                <h2>Welcome to My xat Tools</h2>
-                <p>This website provides useful tools for xat.com users, including chat embedding and status monitoring.</p>
-                
-                <div class="card-grid">
-                    <div class="card">
-                        <h3><i class="fas fa-user"></i> About Me</h3>
-                        <p>Youtuber, Server Owner, Badlion Client Partner</p>
-                    </div>
-                    <div class="card">
-                        <h3><i class="fas fa-tools"></i> Tools</h3>
-                        <p>Check out the various xat tools I've created</p>
-                    </div>
-                </div>
+                <h2>Welcome to xat Tools</h2>
+                <p>A collection of utilities for xat.com users</p>
             </section>
 
             <section id="chat-embedder" class="page">
-                <h2>Chat Embedder</h2>
-                <p>Embed multiple xat chats on the same page</p>
+                <div class="section-header">
+                    <h2>Chat Embedder</h2>
+                    <button id="settingsBtn" class="icon-btn"><i class="fas fa-cog"></i></button>
+                </div>
                 
                 <div class="embed-controls">
                     <div class="input-group">
                         <input type="text" id="chatName" placeholder="Enter chat name (e.g., Help)">
-                        <button id="embedChat">Embed Chat</button>
-                    </div>
-                    <div class="settings-toggle">
-                        <button id="settingsBtn"><i class="fas fa-cog"></i> Settings</button>
+                        <button id="embedChat" class="primary-btn">Embed Chat</button>
                     </div>
                 </div>
                 
                 <div class="settings-panel" id="settingsPanel">
                     <div class="setting">
                         <label for="chatWidth">Width:</label>
-                        <input type="number" id="chatWidth" value="650" min="300" max="1200">
+                        <input type="number" id="chatWidth" min="300" max="1200">
                     </div>
                     <div class="setting">
                         <label for="chatHeight">Height:</label>
-                        <input type="number" id="chatHeight" value="486" min="300" max="1200">
+                        <input type="number" id="chatHeight" min="300" max="1200">
                     </div>
+                    <button id="saveSettings" class="primary-btn">Save Settings</button>
                 </div>
                 
                 <div class="chat-container" id="chatContainer">
@@ -85,8 +64,6 @@
 
             <section id="status" class="page">
                 <h2>Status Monitor</h2>
-                <p>Real-time status of xat services</p>
-                
                 <div class="status-grid">
                     <div class="status-card" id="xatStatus">
                         <h3>xat.com</h3>
@@ -117,8 +94,7 @@
         </main>
 
         <footer>
-            <p>&copy; 2023 YourName. All rights reserved.</p>
-            <p>Partnered with Badlion Client</p>
+            <p>&copy; 2023 xat Tools</p>
         </footer>
     </div>
 
