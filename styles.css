@@ -38,6 +38,7 @@ body {
     color: var(--text);
     transition: var(--transition);
     line-height: 1.6;
+    overflow-x: hidden;
 }
 
 .container {
@@ -572,9 +573,14 @@ nav a:hover, nav a.active {
     min-width: 80px;
 }
 
+/* Updated Color Controls */
+.color-controls {
+    margin-top: 15px;
+}
+
 .colors-container {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 10px;
     margin-bottom: 15px;
 }
@@ -582,16 +588,20 @@ nav a:hover, nav a.active {
 .color-input {
     display: flex;
     align-items: center;
-    gap: 5px;
+    margin-bottom: 10px;
+    background: var(--card-bg);
+    padding: 8px;
+    border-radius: var(--radius);
+    border: var(--border);
 }
 
 .color-input input[type="color"] {
-    width: 30px;
-    height: 30px;
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
     border: var(--border);
     border-radius: 4px;
     cursor: pointer;
-    flex-shrink: 0;
 }
 
 .color-input input[type="text"] {
@@ -599,8 +609,9 @@ nav a:hover, nav a.active {
     padding: 8px;
     border: var(--border);
     border-radius: 4px;
-    background-color: var(--bg);
+    background: var(--bg);
     color: var(--text);
+    font-family: monospace;
 }
 
 .color-input button {
@@ -608,6 +619,7 @@ nav a:hover, nav a.active {
     border: none;
     color: #ff4757;
     cursor: pointer;
+    margin-left: 10px;
     font-size: 1rem;
     width: 24px;
     height: 24px;
@@ -621,40 +633,91 @@ nav a:hover, nav a.active {
     background-color: rgba(255, 71, 87, 0.1);
 }
 
+/* Updated Preview Styling */
 .preview-container {
     background-color: var(--card-bg);
     padding: 20px;
     border-radius: var(--radius);
     border: var(--border);
     box-shadow: var(--card-shadow);
+    overflow-x: auto;
+    max-width: 100%;
 }
 
 .effect-preview {
-    font-size: 2.5rem;
-    text-align: center;
-    padding: 30px;
-    margin: 20px 0;
-    border: var(--border);
-    border-radius: var(--radius);
-    background-color: var(--bg);
     position: relative;
-    z-index: 1;
-    min-height: 120px;
+    display: inline-block;
+    padding: 20px;
+    overflow: visible;
+    white-space: nowrap;
+    max-width: 100%;
+    min-height: 100px;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.effect-preview::after {
-    content: '';
+/* Namegrad/text color - inner effect */
+.effect-preview-inner {
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    position: relative;
+    z-index: 2;
+    font-size: 2.5rem;
+}
+
+/* Nameglow - outer effect */
+.effect-preview-outer {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    z-index: -1;
+    z-index: 1;
+    text-shadow: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+}
+
+/* Font Weight Options */
+.font-weight-options {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.font-weight-btn {
+    padding: 8px 15px;
+    border: var(--border);
     border-radius: var(--radius);
-    background-color: var(--bg);
+    background: var(--bg);
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.font-weight-btn.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary-dark);
+}
+
+/* Text Styles */
+.bold-text {
+    font-weight: bold;
+}
+
+.normal-text {
+    font-weight: normal;
+}
+
+.thin-text {
+    font-weight: lighter;
 }
 
 .code-output {
@@ -731,8 +794,22 @@ footer {
         height: 80px;
     }
     
-    .effect-preview {
+    .effect-preview-inner,
+    .effect-preview-outer {
         font-size: 2rem;
-        padding: 20px;
+    }
+    
+    .color-input {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .color-input input[type="color"] {
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+    
+    .font-weight-options {
+        flex-direction: column;
     }
 }
