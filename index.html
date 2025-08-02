@@ -29,11 +29,11 @@
         <main>
             <section id="home" class="page active">
                 <h2>Welcome to xat Tools</h2>
-                <p class="description">This website provides useful tools for xat.com users including chat embedding and name effect generators.</p>
+                <p class="description">Premium tools for xat.com users including chat embedding and advanced name effect generators.</p>
                 
                 <div class="status-grid">
                     <div class="status-card" id="xatStatus">
-                        <h3>xat.com</h3>
+                        <h3><i class="fas fa-comments"></i> xat.com</h3>
                         <div class="status-indicator loading">
                             <div class="dot"></div>
                             <span>Checking...</span>
@@ -41,7 +41,7 @@
                         <div class="uptime">Uptime: <span class="value">-</span></div>
                     </div>
                     <div class="status-card" id="wikiStatus">
-                        <h3>wiki.xat.com</h3>
+                        <h3><i class="fas fa-book"></i> wiki.xat.com</h3>
                         <div class="status-indicator loading">
                             <div class="dot"></div>
                             <span>Checking...</span>
@@ -49,7 +49,7 @@
                         <div class="uptime">Uptime: <span class="value">-</span></div>
                     </div>
                     <div class="status-card" id="forumStatus">
-                        <h3>forum.xat.com</h3>
+                        <h3><i class="fas fa-users"></i> forum.xat.com</h3>
                         <div class="status-indicator loading">
                             <div class="dot"></div>
                             <span>Checking...</span>
@@ -62,13 +62,13 @@
             <section id="chat-embedder" class="page">
                 <div class="section-header">
                     <h2>Chat Embedder</h2>
-                    <button id="settingsBtn" class="icon-btn"><i class="fas fa-cog"></i></button>
+                    <button id="settingsBtn" class="icon-btn"><i class="fas fa-cog"></i> Settings</button>
                 </div>
                 
                 <div class="embed-controls">
                     <div class="input-group">
                         <input type="text" id="chatName" placeholder="Enter chat name (e.g., Help)">
-                        <button id="embedChat" class="primary-btn">Embed Chat</button>
+                        <button id="embedChat" class="primary-btn"><i class="fas fa-plus"></i> Embed</button>
                     </div>
                 </div>
                 
@@ -81,7 +81,7 @@
                         <label for="chatHeight">Height:</label>
                         <input type="number" id="chatHeight" min="300" max="1200" value="486">
                     </div>
-                    <button id="saveSettings" class="primary-btn">Save Settings</button>
+                    <button id="saveSettings" class="primary-btn"><i class="fas fa-save"></i> Save Settings</button>
                 </div>
                 
                 <div class="chat-viewport">
@@ -94,44 +94,50 @@
             </section>
 
             <section id="name-effects" class="page">
-                <h2>Name Effects Generator</h2>
+                <div class="section-header">
+                    <h2>Name Effects Generator</h2>
+                    <div class="tooltip">
+                        <i class="fas fa-info-circle"></i>
+                        <span class="tooltiptext">Create xat name effects with live preview</span>
+                    </div>
+                </div>
                 
                 <div class="effect-controls">
                     <div class="input-group">
                         <label for="effectText">Text:</label>
-                        <input type="text" id="effectText" placeholder="Enter your name" value="Sample Text">
+                        <input type="text" id="effectText" value="Sample Text" maxlength="20">
+                        <span class="char-count"><span id="charCount">12</span>/20</span>
                     </div>
                     
-                    <div class="effect-options">
-                        <div class="option-group">
-                            <h3>Namegrad</h3>
-                            <div class="option">
-                                <label for="colorCount">Colors:</label>
-                                <select id="colorCount">
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                    <option value="4">4</option>
-                                    <option value="5">5</option>
-                                    <option value="6">6</option>
-                                    <option value="7">7</option>
-                                    <option value="8">8</option>
-                                    <option value="9">9</option>
-                                    <option value="10">10</option>
-                                </select>
-                            </div>
-                            <div class="colors-container" id="gradColors">
-                                <!-- Color inputs will be added here -->
-                            </div>
-                            <div class="option">
-                                <label for="gradRotation">Rotation:</label>
-                                <input type="range" id="gradRotation" min="0" max="360" value="90">
-                                <span id="gradRotationValue">90°</span>
+                    <div class="effect-grid">
+                        <!-- Gradient Panel -->
+                        <div class="effect-panel gradient-panel">
+                            <h3><i class="fas fa-fill-drip"></i> Namegrad</h3>
+                            <div class="color-controls">
+                                <div class="option">
+                                    <label for="colorCount">Colors:</label>
+                                    <select id="colorCount">
+                                        <option value="2">2 Colors</option>
+                                        <option value="3">3 Colors</option>
+                                        <option value="4">4 Colors</option>
+                                        <option value="5">5 Colors</option>
+                                    </select>
+                                </div>
+                                <div class="colors-container" id="gradColors">
+                                    <!-- Color inputs will be added here -->
+                                </div>
+                                <div class="option">
+                                    <label for="gradRotation">Rotation:</label>
+                                    <input type="range" id="gradRotation" min="0" max="360" value="90">
+                                    <span id="gradRotationValue">90°</span>
+                                </div>
                             </div>
                         </div>
                         
-                        <div class="option-group">
-                            <h3>Nameglow</h3>
-                            <div class="color-picker">
+                        <!-- Glow Panel -->
+                        <div class="effect-panel glow-panel">
+                            <h3><i class="fas fa-sun"></i> Nameglow</h3>
+                            <div class="option">
                                 <label for="glowColor">Color:</label>
                                 <input type="color" id="glowColor" value="#0000ff">
                             </div>
@@ -142,18 +148,18 @@
                             </div>
                         </div>
                         
-                        <div class="option-group">
-                            <h3>Namewave</h3>
-                            <label class="switch">
-                                <input type="checkbox" id="namewaveToggle">
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                        
-                        <div class="option-group">
-                            <h3>Font Weight</h3>
+                        <!-- Effects Panel -->
+                        <div class="effect-panel effects-panel">
+                            <h3><i class="fas fa-magic"></i> Effects</h3>
+                            <div class="option-group">
+                                <label class="switch">
+                                    <input type="checkbox" id="namewaveToggle">
+                                    <span class="slider"></span>
+                                    <span class="label">Namewave</span>
+                                </label>
+                            </div>
                             <div class="option">
-                                <label for="fontWeight">Weight:</label>
+                                <label for="fontWeight">Font:</label>
                                 <select id="fontWeight">
                                     <option value="normal">Normal</option>
                                     <option value="bold" selected>Bold</option>
@@ -164,12 +170,12 @@
                     </div>
                     
                     <div class="preview-container">
-                        <h3>Preview</h3>
+                        <h3><i class="fas fa-eye"></i> Preview</h3>
                         <div class="effect-preview" id="effectPreview">
                             Sample Text
                         </div>
                         <div class="code-output">
-                            <h3>Code:</h3>
+                            <h3><i class="fas fa-code"></i> xat Code</h3>
                             <div class="code-box" id="codeOutput"></div>
                             <button id="copyCode" class="primary-btn"><i class="fas fa-copy"></i> Copy Code</button>
                         </div>
@@ -179,7 +185,7 @@
         </main>
 
         <footer>
-            <p>&copy; 2023 xat Tools</p>
+            <p>&copy; 2023 xat Tools | Premium xat Utilities</p>
         </footer>
     </div>
 
