@@ -187,7 +187,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const effectText = document.getElementById('effectText');
     const charCount = document.getElementById('charCount');
     const gradColorsContainer = document.getElementById('gradColors');
-    const colorCount = document.getElementById('colorCount');
+    const addColorBtn = document.getElementById('addColor');
     const gradRotation = document.getElementById('gradRotation');
     const gradRotationValue = document.getElementById('gradRotationValue');
     const glowColor = document.getElementById('glowColor');
@@ -201,9 +201,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize with 2 colors
     function initColorInputs() {
         gradColorsContainer.innerHTML = '';
-        for (let i = 0; i < 2; i++) {
-            addColorInput(i === 0 ? '#ff0000' : '#0000ff');
-        }
+        addColorInput('#ff0000');
+        addColorInput('#0000ff');
     }
     
     function addColorInput(color) {
@@ -236,27 +235,15 @@ document.addEventListener('DOMContentLoaded', function() {
         removeBtn.addEventListener('click', () => {
             if (gradColorsContainer.children.length > 1) {
                 colorInput.remove();
-                colorCount.value = gradColorsContainer.children.length;
                 updateEffects();
             }
         });
     }
     
-    colorCount.addEventListener('change', () => {
-        const count = parseInt(colorCount.value);
-        const current = gradColorsContainer.children.length;
-        
-        if (count > current) {
-            for (let i = current; i < count; i++) {
-                addColorInput('#00ff00');
-            }
-        } else if (count < current) {
-            while (gradColorsContainer.children.length > count) {
-                gradColorsContainer.lastChild.remove();
-            }
+    addColorBtn.addEventListener('click', () => {
+        if (gradColorsContainer.children.length < 4) {
+            addColorInput('#00ff00');
         }
-        
-        updateEffects();
     });
     
     effectText.addEventListener('input', () => {
@@ -277,6 +264,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     glowSize.addEventListener('input', () => {
         glowSizeValue.textContent = glowSize.value;
+        effectPreview.style.setProperty('--glow-size', `${glowSize.value}px`);
+    });
+    
+    glowColor.addEventListener('input', () => {
+        effectPreview.style.setProperty('--glow-color', glowColor.value);
     });
     
     copyCodeBtn.addEventListener('click', () => {
@@ -301,26 +293,31 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Apply gradient
         if (colors.length > 1) {
-            effectPreview.style.background = `linear-gradient(${angle}deg, ${colors.join(', ')})`;
+            const gradient = `linear-gradient(${angle}deg, ${colors.join(', ')})`;
+            effectPreview.style.background = gradient;
+            effectPreview.style.backgroundClip = 'text';
+            
             if (wave) {
                 effectPreview.style.backgroundSize = '200% 200%';
-                effectPreview.style.animation = 'wave 3s linear infinite';
+                effectPreview.style.animation = 'gradientFlow 4s ease infinite';
             } else {
                 effectPreview.style.animation = 'none';
+                effectPreview.style.backgroundSize = '100% 100%';
             }
-        } else {
+        } else if (colors.length === 1) {
             effectPreview.style.background = colors[0];
             effectPreview.style.animation = 'none';
         }
         
         // Apply glow
-        effectPreview.style.textShadow = glowSizeVal > 0 ? `0 0 ${glowSizeVal}px ${glow}` : 'none';
+        effectPreview.style.setProperty('--glow-size', `${glowSizeVal}px`);
+        effectPreview.style.setProperty('--glow-color', glow);
         
         // Generate code
         let code = [];
         
         if (glowSizeVal > 0) {
-            code.push(`(glow${glow.replace('#', '')}#${glowSizeVal})`);
+            code.push(`(glow#${glow.replace('#', '')}#${glowSizeVal})`);
         }
         
         if (colors.length > 1) {
