@@ -33,7 +33,6 @@ document.addEventListener('DOMContentLoaded', function() {
             pages.forEach(page => page.classList.remove('active'));
             document.querySelector(targetId).classList.add('active');
             
-            // Scroll to top
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
     });
@@ -72,13 +71,11 @@ document.addEventListener('DOMContentLoaded', function() {
         localStorage.setItem('chatSettings', JSON.stringify(newSettings));
         settingsPanel.classList.remove('active');
         
-        // Update all existing chats
         document.querySelectorAll('.embedded-chat iframe').forEach(iframe => {
             iframe.width = newSettings.width;
             iframe.height = newSettings.height;
         });
         
-        // Show confirmation
         const originalText = saveSettingsBtn.innerHTML;
         saveSettingsBtn.innerHTML = '<i class="fas fa-check"></i> Saved!';
         setTimeout(() => {
@@ -106,7 +103,6 @@ document.addEventListener('DOMContentLoaded', function() {
         };
         
         const chatId = Date.now();
-        
         const chatWrapper = document.createElement('div');
         chatWrapper.className = 'embedded-chat';
         chatWrapper.id = `chat-${chatId}`;
@@ -118,11 +114,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     frameborder="0" scrolling="no"></iframe>
         `;
         
-        // Add new chat to the end
         chatContainer.appendChild(chatWrapper);
         chatNameInput.value = '';
         
-        // Scroll to the new chat
         setTimeout(() => {
             chatContainer.scrollTo({
                 left: chatContainer.scrollWidth,
@@ -130,13 +124,11 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }, 100);
         
-        // Add event listener to remove button
         chatWrapper.querySelector('.remove-chat').addEventListener('click', function() {
             document.getElementById(`chat-${this.getAttribute('data-chat-id')}`).remove();
         });
     }
     
-    // Chat scrolling
     scrollLeftBtn.addEventListener('click', function() {
         chatContainer.scrollBy({
             left: -300,
@@ -151,31 +143,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Update fade effects based on scroll position
-    chatContainer.addEventListener('scroll', updateChatFade);
-    
-    function updateChatFade() {
-        const scrollLeft = chatContainer.scrollLeft;
-        const maxScroll = chatContainer.scrollWidth - chatContainer.clientWidth;
-        
-        if (scrollLeft > 10) {
-            chatContainer.classList.add('fade-left');
-        } else {
-            chatContainer.classList.remove('fade-left');
-        }
-        
-        if (scrollLeft < maxScroll - 10) {
-            chatContainer.classList.add('fade-right');
-        } else {
-            chatContainer.classList.remove('fade-right');
-        }
-    }
-    
     // Status monitoring
     const services = [
         { name: 'xat', url: 'https://xat.com', element: document.getElementById('xatStatus') },
-        { name: 'wiki', url: 'https://wiki.xat.com', element: document.getElementById('wikiStatus') },
-        { name: 'forum', url: 'https://forum.xat.com', element: document.getElementById('forumStatus') }
+        { name: 'wiki', url: 'https://wiki.xat.com', element: document.getElementById('wikiStatus') }
     ];
     
     function checkServiceStatus(service) {
@@ -185,7 +156,6 @@ document.addEventListener('DOMContentLoaded', function() {
         indicator.classList.remove('online', 'offline');
         indicator.classList.add('loading');
         
-        // Simulate API call
         setTimeout(() => {
             const isOnline = Math.random() > 0.2;
             
@@ -203,12 +173,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 1500);
     }
     
-    // Initial check
     services.forEach(service => {
         checkServiceStatus(service);
     });
     
-    // Check every 5 minutes
     setInterval(() => {
         services.forEach(service => {
             checkServiceStatus(service);
@@ -226,197 +194,150 @@ document.addEventListener('DOMContentLoaded', function() {
     const glowSize = document.getElementById('glowSize');
     const glowSizeValue = document.getElementById('glowSizeValue');
     const namewaveToggle = document.getElementById('namewaveToggle');
-    const fontWeight = document.getElementById('fontWeight');
     const effectPreview = document.getElementById('effectPreview');
     const codeOutput = document.getElementById('codeOutput');
     const copyCodeBtn = document.getElementById('copyCode');
     
-    // Initialize color inputs
-    function initializeColorInputs() {
-        // Clear existing inputs
+    // Initialize with 2 colors
+    function initColorInputs() {
         gradColorsContainer.innerHTML = '';
-        
-        // Add initial 2 color inputs
-        addColorInput('#000000');
-        addColorInput('#ffffff');
-        colorCount.value = '2';
+        for (let i = 0; i < 2; i++) {
+            addColorInput(i === 0 ? '#ff0000' : '#0000ff');
+        }
     }
     
-    // Add color input
-    function addColorInput(colorValue, isLast = false) {
+    function addColorInput(color) {
         const colorId = Date.now();
         const colorInput = document.createElement('div');
         colorInput.className = 'color-input';
         colorInput.innerHTML = `
-            <input type="color" value="${colorValue}" id="color-${colorId}">
-            <input type="text" value="${colorValue}" class="color-hex" maxlength="7">
-            <button class="remove-color" data-color-id="${colorId}"><i class="fas fa-times"></i></button>
+            <input type="color" value="${color}" class="color-picker">
+            <input type="text" value="${color}" class="color-hex" maxlength="7">
+            <button class="remove-color"><i class="fas fa-times"></i></button>
         `;
-        
         gradColorsContainer.appendChild(colorInput);
         
-        // Add event listeners
-        const colorPicker = colorInput.querySelector('input[type="color"]');
-        const colorHex = colorInput.querySelector('.color-hex');
+        const picker = colorInput.querySelector('.color-picker');
+        const hex = colorInput.querySelector('.color-hex');
         const removeBtn = colorInput.querySelector('.remove-color');
         
-        colorPicker.addEventListener('input', function() {
-            colorHex.value = this.value;
+        picker.addEventListener('input', () => {
+            hex.value = picker.value;
             updateEffects();
         });
         
-        colorHex.addEventListener('input', function() {
-            if (this.value.match(/^#[0-9A-Fa-f]{6}$/) || this.value.match(/^#[0-9A-Fa-f]{3}$/)) {
-                colorPicker.value = this.value;
+        hex.addEventListener('input', () => {
+            if (/^#[0-9A-Fa-f]{6}$/i.test(hex.value) || /^#[0-9A-Fa-f]{3}$/i.test(hex.value)) {
+                picker.value = hex.value;
                 updateEffects();
             }
         });
         
-        // Configure remove button
-        removeBtn.style.visibility = gradColorsContainer.children.length > 2 ? 'visible' : 'hidden';
-        
-        removeBtn.addEventListener('click', function() {
-            if (gradColorsContainer.children.length <= 2) return;
-            gradColorsContainer.removeChild(colorInput);
-            colorCount.value = gradColorsContainer.children.length;
-            updateEffects();
+        removeBtn.addEventListener('click', () => {
+            if (gradColorsContainer.children.length > 1) {
+                colorInput.remove();
+                colorCount.value = gradColorsContainer.children.length;
+                updateEffects();
+            }
         });
     }
     
-    // Update character count
-    effectText.addEventListener('input', function() {
-        charCount.textContent = this.value.length;
-        updateEffects();
-    });
-    
-    // Update color inputs based on dropdown selection
-    colorCount.addEventListener('change', function() {
-        const newCount = parseInt(this.value);
-        const currentCount = gradColorsContainer.children.length;
+    colorCount.addEventListener('change', () => {
+        const count = parseInt(colorCount.value);
+        const current = gradColorsContainer.children.length;
         
-        if (newCount > currentCount) {
-            // Add new color inputs
-            for (let i = currentCount; i < newCount; i++) {
-                addColorInput('#cccccc');
+        if (count > current) {
+            for (let i = current; i < count; i++) {
+                addColorInput('#00ff00');
             }
-        } else if (newCount < currentCount) {
-            // Remove excess color inputs
-            while (gradColorsContainer.children.length > newCount) {
-                gradColorsContainer.removeChild(gradColorsContainer.lastChild);
+        } else if (count < current) {
+            while (gradColorsContainer.children.length > count) {
+                gradColorsContainer.lastChild.remove();
             }
         }
         
-        // Update remove buttons visibility
-        document.querySelectorAll('.remove-color').forEach(btn => {
-            btn.style.visibility = gradColorsContainer.children.length > 2 ? 'visible' : 'hidden';
-        });
-        
         updateEffects();
     });
     
-    // Add event listeners for other controls
-    gradRotation.addEventListener('input', function() {
-        gradRotationValue.textContent = `${this.value}°`;
+    effectText.addEventListener('input', () => {
+        const text = effectText.value;
+        charCount.textContent = text.length;
+        effectPreview.textContent = text || 'xat';
+        effectPreview.setAttribute('data-text', text || 'xat');
         updateEffects();
     });
     
-    glowColor.addEventListener('input', updateEffects);
-    
-    glowSize.addEventListener('input', function() {
-        glowSizeValue.textContent = this.value;
-        updateEffects();
+    [gradRotation, glowSize, glowColor, namewaveToggle].forEach(control => {
+        control.addEventListener('input', updateEffects);
     });
     
-    namewaveToggle.addEventListener('change', updateEffects);
-    
-    fontWeight.addEventListener('change', updateEffects);
-    
-    // Copy code button
-    copyCodeBtn.addEventListener('click', function() {
-        navigator.clipboard.writeText(codeOutput.textContent).then(() => {
-            const originalText = copyCodeBtn.innerHTML;
-            copyCodeBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
-            setTimeout(() => {
-                copyCodeBtn.innerHTML = originalText;
-            }, 2000);
-        });
+    gradRotation.addEventListener('input', () => {
+        gradRotationValue.textContent = `${gradRotation.value}°`;
     });
     
-    // Update all effects
+    glowSize.addEventListener('input', () => {
+        glowSizeValue.textContent = glowSize.value;
+    });
+    
+    copyCodeBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(codeOutput.textContent);
+        copyCodeBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+        setTimeout(() => {
+            copyCodeBtn.innerHTML = '<i class="fas fa-copy"></i> Copy';
+        }, 2000);
+    });
+    
     function updateEffects() {
-        // Get all gradient colors
         const colors = [];
-        document.querySelectorAll('#gradColors input[type="color"]').forEach(input => {
-            colors.push(input.value);
+        document.querySelectorAll('.color-picker').forEach(picker => {
+            colors.push(picker.value);
         });
         
-        // Get other values
-        const text = effectText.value || 'Sample Text';
-        const rotation = gradRotation.value;
+        const text = effectText.value || 'xat';
+        const angle = gradRotation.value;
         const glow = glowColor.value;
         const glowSizeVal = glowSize.value;
         const wave = namewaveToggle.checked;
-        const fontWeightVal = fontWeight.value;
-        
-        // Update preview
-        effectPreview.textContent = text;
-        effectPreview.style.fontFamily = 'Arial';
-        effectPreview.style.fontWeight = fontWeightVal;
         
         // Apply gradient
         if (colors.length > 1) {
-            const gradient = `linear-gradient(${rotation}deg, ${colors.join(', ')})`;
-            effectPreview.style.background = gradient;
-            effectPreview.style.webkitBackgroundClip = 'text';
-            effectPreview.style.backgroundClip = 'text';
-            effectPreview.style.color = 'transparent';
-            
+            effectPreview.style.background = `linear-gradient(${angle}deg, ${colors.join(', ')})`;
             if (wave) {
-                effectPreview.style.backgroundSize = '200% 100%';
-                effectPreview.style.animation = 'wave 2s linear infinite';
+                effectPreview.style.backgroundSize = '200% 200%';
+                effectPreview.style.animation = 'wave 3s linear infinite';
             } else {
-                effectPreview.style.backgroundSize = '100% 100%';
                 effectPreview.style.animation = 'none';
             }
         } else {
-            effectPreview.style.background = 'none';
-            effectPreview.style.color = colors[0] || '#000000';
+            effectPreview.style.background = colors[0];
             effectPreview.style.animation = 'none';
         }
         
         // Apply glow
-        effectPreview.style.textShadow = `0 0 ${glowSizeVal}px ${glow}`;
+        effectPreview.style.textShadow = glowSizeVal > 0 ? `0 0 ${glowSizeVal}px ${glow}` : 'none';
         
-        // Generate code with parentheses
-        let codeParts = [];
+        // Generate code
+        let code = [];
         
-        if (glow !== '#0000ff' || glowSizeVal !== '5') {
-            codeParts.push(`(glow${glow.replace('#', '')}#${glowSizeVal})`);
+        if (glowSizeVal > 0) {
+            code.push(`(glow${glow.replace('#', '')}#${glowSizeVal})`);
         }
         
         if (colors.length > 1) {
-            let gradPart = `(grad#r${rotation}`;
-            colors.forEach(color => {
-                gradPart += `#${color.replace('#', '')}`;
-            });
-            gradPart += ')';
-            codeParts.push(gradPart);
+            let gradCode = `(grad#r${angle}`;
+            colors.forEach(c => gradCode += `#${c.replace('#', '')}`);
+            gradCode += ')';
+            code.push(gradCode);
         }
         
         if (wave) {
-            codeParts.push('(wave)');
+            code.push('(wave)');
         }
         
-        if (fontWeightVal === 'lighter') {
-            codeParts.push('(thin)');
-        } else if (fontWeightVal === 'bold') {
-            codeParts.push('(bold)');
-        }
-        
-        codeOutput.textContent = codeParts.join('') || 'No effects applied';
+        codeOutput.textContent = code.join('') || '(none)';
     }
     
     // Initialize
-    initializeColorInputs();
+    initColorInputs();
     updateEffects();
 });
