@@ -199,12 +199,14 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Color presets
     const colorPresets = [
-        ['#ff0000', '#0000ff'],
-        ['#ff00ff', '#00ffff'],
-        ['#ffff00', '#ff00ff'],
-        ['#00ff00', '#0000ff'],
-        ['#ff0000', '#ffff00', '#00ff00'],
-        ['#ff0000', '#ff9900', '#ffff00', '#00ff00']
+        ['#ff0000', '#0000ff'], // Red to Blue
+        ['#ff00ff', '#00ffff'], // Pink to Cyan
+        ['#ffff00', '#ff00ff'], // Yellow to Pink
+        ['#00ff00', '#0000ff'], // Green to Blue
+        ['#ff0000', '#ffff00', '#00ff00'], // Red to Yellow to Green
+        ['#ff0000', '#ff9900', '#ffff00', '#00ff00'], // Red to Orange to Yellow to Green
+        ['#ff0000', '#0000ff', '#00ff00', '#ffff00'], // Red, Blue, Green, Yellow
+        ['#ff00ff', '#00ffff', '#ffff00', '#ff0000']  // Pink, Cyan, Yellow, Red
     ];
     
     // Initialize with 2 colors
@@ -215,6 +217,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function addColorInput(color) {
+        if (gradColorsContainer.children.length >= 6) return;
+        
         const colorInput = document.createElement('div');
         colorInput.className = 'color-input';
         colorInput.innerHTML = `
@@ -249,7 +253,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     addColorBtn.addEventListener('click', () => {
-        if (gradColorsContainer.children.length < 4) {
+        if (gradColorsContainer.children.length < 6) {
             addColorInput('#00ff00');
         }
     });
@@ -292,7 +296,7 @@ document.addEventListener('DOMContentLoaded', function() {
         gradRotationValue.textContent = `${gradRotation.value}°`;
         
         // Random glow color
-        glowColor.value = `#${Math.floor(Math.random()*16777215).toString(16)}`;
+        glowColor.value = `#${Math.floor(Math.random()*16777215).toString(16).padStart(6, '0')}`;
         effectPreview.style.setProperty('--glow-color', glowColor.value);
         
         // Random namewave
