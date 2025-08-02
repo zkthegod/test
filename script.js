@@ -32,6 +32,9 @@ document.addEventListener('DOMContentLoaded', function() {
             
             pages.forEach(page => page.classList.remove('active'));
             document.querySelector(targetId).classList.add('active');
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         });
     });
     
@@ -74,6 +77,13 @@ document.addEventListener('DOMContentLoaded', function() {
             iframe.width = newSettings.width;
             iframe.height = newSettings.height;
         });
+        
+        // Show confirmation
+        const originalText = saveSettingsBtn.innerHTML;
+        saveSettingsBtn.innerHTML = '<i class="fas fa-check"></i> Saved!';
+        setTimeout(() => {
+            saveSettingsBtn.innerHTML = originalText;
+        }, 2000);
     });
     
     embedChatBtn.addEventListener('click', embedChat);
@@ -85,7 +95,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function embedChat() {
         const chatName = chatNameInput.value.trim();
-        if (!chatName) return;
+        if (!chatName) {
+            chatNameInput.focus();
+            return;
+        }
         
         const settings = JSON.parse(localStorage.getItem('chatSettings')) || {
             width: 650,
@@ -110,10 +123,12 @@ document.addEventListener('DOMContentLoaded', function() {
         chatNameInput.value = '';
         
         // Scroll to the new chat
-        chatContainer.scrollTo({
-            left: chatContainer.scrollWidth,
-            behavior: 'smooth'
-        });
+        setTimeout(() => {
+            chatContainer.scrollTo({
+                left: chatContainer.scrollWidth,
+                behavior: 'smooth'
+            });
+        }, 100);
         
         // Add event listener to remove button
         chatWrapper.querySelector('.remove-chat').addEventListener('click', function() {
@@ -202,6 +217,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Name Effects Generator
     const effectText = document.getElementById('effectText');
+    const charCount = document.getElementById('charCount');
     const gradColorsContainer = document.getElementById('gradColors');
     const colorCount = document.getElementById('colorCount');
     const gradRotation = document.getElementById('gradRotation');
@@ -222,7 +238,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Add initial 2 color inputs
         addColorInput('#000000');
-        addColorInput('#ffffff', true);
+        addColorInput('#ffffff');
         colorCount.value = '2';
     }
     
@@ -233,16 +249,30 @@ document.addEventListener('DOMContentLoaded', function() {
         colorInput.className = 'color-input';
         colorInput.innerHTML = `
             <input type="color" value="${colorValue}" id="color-${colorId}">
+            <input type="text" value="${colorValue}" class="color-hex" maxlength="7">
             <button class="remove-color" data-color-id="${colorId}"><i class="fas fa-times"></i></button>
         `;
         
         gradColorsContainer.appendChild(colorInput);
         
-        // Add event listener to color input
-        colorInput.querySelector('input').addEventListener('input', updateEffects);
+        // Add event listeners
+        const colorPicker = colorInput.querySelector('input[type="color"]');
+        const colorHex = colorInput.querySelector('.color-hex');
+        const removeBtn = colorInput.querySelector('.remove-color');
+        
+        colorPicker.addEventListener('input', function() {
+            colorHex.value = this.value;
+            updateEffects();
+        });
+        
+        colorHex.addEventListener('input', function() {
+            if (this.value.match(/^#[0-9A-Fa-f]{6}$/) || this.value.match(/^#[0-9A-Fa-f]{3}$/)) {
+                colorPicker.value = this.value;
+                updateEffects();
+            }
+        });
         
         // Configure remove button
-        const removeBtn = colorInput.querySelector('.remove-color');
         removeBtn.style.visibility = gradColorsContainer.children.length > 2 ? 'visible' : 'hidden';
         
         removeBtn.addEventListener('click', function() {
@@ -253,6 +283,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
+    // Update character count
+    effectText.addEventListener('input', function() {
+        charCount.textContent = this.value.length;
+        updateEffects();
+    });
+    
     // Update color inputs based on dropdown selection
     colorCount.addEventListener('change', function() {
         const newCount = parseInt(this.value);
@@ -261,34 +297,38 @@ document.addEventListener('DOMContentLoaded', function() {
         if (newCount > currentCount) {
             // Add new color inputs
             for (let i = currentCount; i < newCount; i++) {
-                addColorInput('#cccccc', i === newCount - 1);
+                addColorInput('#cccccc');
             }
         } else if (newCount < currentCount) {
             // Remove excess color inputs
             while (gradColorsContainer.children.length > newCount) {
                 gradColorsContainer.removeChild(gradColorsContainer.lastChild);
             }
-            // Ensure last remove button is hidden if we're at min count
-            if (gradColorsContainer.children.length === 2) {
-                gradColorsContainer.lastChild.querySelector('.remove-color').style.visibility = 'hidden';
-            }
         }
+        
+        // Update remove buttons visibility
+        document.querySelectorAll('.remove-color').forEach(btn => {
+            btn.style.visibility = gradColorsContainer.children.length > 2 ? 'visible' : 'hidden';
+        });
         
         updateEffects();
     });
     
     // Add event listeners for other controls
-    effectText.addEventListener('input', updateEffects);
     gradRotation.addEventListener('input', function() {
         gradRotationValue.textContent = `${this.value}°`;
         updateEffects();
     });
+    
     glowColor.addEventListener('input', updateEffects);
+    
     glowSize.addEventListener('input', function() {
         glowSizeValue.textContent = this.value;
         updateEffects();
     });
+    
     namewaveToggle.addEventListener('change', updateEffects);
+    
     fontWeight.addEventListener('change', updateEffects);
     
     // Copy code button
