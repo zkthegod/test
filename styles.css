@@ -7,6 +7,8 @@
     --border: 1px solid rgba(0,0,0,0.1);
     --radius: 12px;
     --shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    --glow-color: #0000ff;
+    --glow-size: 5px;
 }
 
 [data-theme="dark"] {
@@ -571,36 +573,13 @@ nav a:hover, nav a.active {
     position: relative;
     display: inline-block;
     color: white;
-    text-shadow: none;
     white-space: nowrap;
     max-width: 100%;
     letter-spacing: 1px;
-    -webkit-text-stroke: 1px rgba(0,0,0,0.2);
-    text-stroke: 1px rgba(0,0,0,0.2);
-    padding: 0 10px;
     background-clip: text;
     -webkit-background-clip: text;
     color: transparent;
-}
-
-.effect-preview::before {
-    content: attr(data-text);
-    position: absolute;
-    z-index: -1;
-    -webkit-text-stroke: 0;
-    text-stroke: 0;
-}
-
-.effect-preview::after {
-    content: attr(data-text);
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: -2;
-    filter: blur(var(--glow-size));
-    opacity: 0.8;
-    color: var(--glow-color);
-    background: transparent;
+    text-shadow: 0 0 var(--glow-size) var(--glow-color);
 }
 
 .code-section {
@@ -626,8 +605,7 @@ nav a:hover, nav a.active {
 
 @keyframes gradientFlow {
     0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
 }
 
 @keyframes pulse {
