@@ -191,12 +191,21 @@ document.addEventListener('DOMContentLoaded', function() {
     const gradRotation = document.getElementById('gradRotation');
     const gradRotationValue = document.getElementById('gradRotationValue');
     const glowColor = document.getElementById('glowColor');
-    const glowSize = document.getElementById('glowSize');
-    const glowSizeValue = document.getElementById('glowSizeValue');
     const namewaveToggle = document.getElementById('namewaveToggle');
     const effectPreview = document.getElementById('effectPreview');
     const codeOutput = document.getElementById('codeOutput');
     const copyCodeBtn = document.getElementById('copyCode');
+    const randomPresetBtn = document.getElementById('randomPreset');
+    
+    // Color presets
+    const colorPresets = [
+        ['#ff0000', '#0000ff'],
+        ['#ff00ff', '#00ffff'],
+        ['#ffff00', '#ff00ff'],
+        ['#00ff00', '#0000ff'],
+        ['#ff0000', '#ffff00', '#00ff00'],
+        ['#ff0000', '#ff9900', '#ffff00', '#00ff00']
+    ];
     
     // Initialize with 2 colors
     function initColorInputs() {
@@ -206,7 +215,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function addColorInput(color) {
-        const colorId = Date.now();
         const colorInput = document.createElement('div');
         colorInput.className = 'color-input';
         colorInput.innerHTML = `
@@ -254,17 +262,12 @@ document.addEventListener('DOMContentLoaded', function() {
         updateEffects();
     });
     
-    [gradRotation, glowSize, glowColor, namewaveToggle].forEach(control => {
+    [gradRotation, glowColor, namewaveToggle].forEach(control => {
         control.addEventListener('input', updateEffects);
     });
     
     gradRotation.addEventListener('input', () => {
         gradRotationValue.textContent = `${gradRotation.value}°`;
-    });
-    
-    glowSize.addEventListener('input', () => {
-        glowSizeValue.textContent = glowSize.value;
-        effectPreview.style.setProperty('--glow-size', `${glowSize.value}px`);
     });
     
     glowColor.addEventListener('input', () => {
@@ -279,6 +282,25 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 2000);
     });
     
+    randomPresetBtn.addEventListener('click', () => {
+        const randomPreset = colorPresets[Math.floor(Math.random() * colorPresets.length)];
+        gradColorsContainer.innerHTML = '';
+        randomPreset.forEach(color => addColorInput(color));
+        
+        // Random angle
+        gradRotation.value = Math.floor(Math.random() * 360);
+        gradRotationValue.textContent = `${gradRotation.value}°`;
+        
+        // Random glow color
+        glowColor.value = `#${Math.floor(Math.random()*16777215).toString(16)}`;
+        effectPreview.style.setProperty('--glow-color', glowColor.value);
+        
+        // Random namewave
+        namewaveToggle.checked = Math.random() > 0.5;
+        
+        updateEffects();
+    });
+    
     function updateEffects() {
         const colors = [];
         document.querySelectorAll('.color-picker').forEach(picker => {
@@ -288,7 +310,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const text = effectText.value || 'xat';
         const angle = gradRotation.value;
         const glow = glowColor.value;
-        const glowSizeVal = glowSize.value;
         const wave = namewaveToggle.checked;
         
         // Apply gradient
@@ -298,8 +319,8 @@ document.addEventListener('DOMContentLoaded', function() {
             effectPreview.style.backgroundClip = 'text';
             
             if (wave) {
-                effectPreview.style.backgroundSize = '200% 200%';
-                effectPreview.style.animation = 'gradientFlow 4s ease infinite';
+                effectPreview.style.backgroundSize = '200% 100%';
+                effectPreview.style.animation = 'gradientFlow 3s linear infinite';
             } else {
                 effectPreview.style.animation = 'none';
                 effectPreview.style.backgroundSize = '100% 100%';
@@ -310,28 +331,24 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Apply glow
-        effectPreview.style.setProperty('--glow-size', `${glowSizeVal}px`);
         effectPreview.style.setProperty('--glow-color', glow);
         
         // Generate code
-        let code = [];
-        
-        if (glowSizeVal > 0) {
-            code.push(`(glow#${glow.replace('#', '')}#${glowSizeVal})`);
-        }
+        let code = '(glow';
         
         if (colors.length > 1) {
-            let gradCode = `(grad#r${angle}`;
-            colors.forEach(c => gradCode += `#${c.replace('#', '')}`);
-            gradCode += ')';
-            code.push(gradCode);
+            code += `#${glow.replace('#', '')}#grad#r${angle}`;
+            colors.forEach(c => code += `#${c.replace('#', '')}`);
+            code += ')';
+        } else {
+            code += `#${glow.replace('#', '')})`;
         }
         
         if (wave) {
-            code.push('(wave)');
+            code = code.replace(')', 'wave)');
         }
         
-        codeOutput.textContent = code.join('') || '(none)';
+        codeOutput.textContent = code;
     }
     
     // Initialize
