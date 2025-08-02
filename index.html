@@ -106,10 +106,26 @@
                     <div class="input-group">
                         <label for="effectText">Text:</label>
                         <input type="text" id="effectText" value="Sample Text" maxlength="20">
-                        <span class="char-count"><span id="charCount">12</span>/20</span>
+                        <span class="char-count"><span id="charCount">10</span>/20</span>
                     </div>
                     
                     <div class="effect-grid">
+                        <!-- Font Style Panel -->
+                        <div class="effect-panel">
+                            <h3><i class="fas fa-text-height"></i> Font Style</h3>
+                            <div class="font-weight-options">
+                                <button class="font-weight-btn active" data-weight="bold">
+                                    <i class="fas fa-bold"></i> Bold
+                                </button>
+                                <button class="font-weight-btn" data-weight="normal">
+                                    Normal
+                                </button>
+                                <button class="font-weight-btn" data-weight="lighter">
+                                    <i class="fas fa-slash"></i> Thin
+                                </button>
+                            </div>
+                        </div>
+                        
                         <!-- Gradient Panel -->
                         <div class="effect-panel gradient-panel">
                             <h3><i class="fas fa-fill-drip"></i> Namegrad</h3>
@@ -120,7 +136,6 @@
                                         <option value="2">2 Colors</option>
                                         <option value="3">3 Colors</option>
                                         <option value="4">4 Colors</option>
-                                        <option value="5">5 Colors</option>
                                     </select>
                                 </div>
                                 <div class="colors-container" id="gradColors">
@@ -158,21 +173,14 @@
                                     <span class="label">Namewave</span>
                                 </label>
                             </div>
-                            <div class="option">
-                                <label for="fontWeight">Font:</label>
-                                <select id="fontWeight">
-                                    <option value="normal">Normal</option>
-                                    <option value="bold" selected>Bold</option>
-                                    <option value="lighter">Thin</option>
-                                </select>
-                            </div>
                         </div>
                     </div>
                     
                     <div class="preview-container">
                         <h3><i class="fas fa-eye"></i> Preview</h3>
-                        <div class="effect-preview" id="effectPreview">
-                            Sample Text
+                        <div class="effect-preview">
+                            <span class="effect-preview-outer" id="effectPreviewOuter">Sample Text</span>
+                            <span class="effect-preview-inner bold-text" id="effectPreviewInner">Sample Text</span>
                         </div>
                         <div class="code-output">
                             <h3><i class="fas fa-code"></i> xat Code</h3>
