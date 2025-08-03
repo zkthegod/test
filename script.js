@@ -305,53 +305,53 @@ document.addEventListener('DOMContentLoaded', function() {
         updateEffects();
     });
     
-    function updateEffects() {
-        const colors = [];
-        document.querySelectorAll('.color-picker').forEach(picker => {
-            colors.push(picker.value);
-        });
+function updateEffects() {
+    const colors = [];
+    document.querySelectorAll('.color-picker').forEach(picker => {
+        colors.push(picker.value);
+    });
+    
+    const text = effectText.value || 'xat';
+    const angle = gradRotation.value;
+    const glow = glowColor.value;
+    const wave = namewaveToggle.checked;
+    
+    // Apply gradient
+    if (colors.length > 1) {
+        const gradient = `linear-gradient(${angle}deg, ${colors.join(', ')})`;
+        effectPreview.style.background = gradient;
+        effectPreview.style.backgroundClip = 'text';
+        effectPreview.style.webkitBackgroundClip = 'text';
+        effectPreview.style.webkitTextFillColor = 'transparent';
         
-        const text = effectText.value || 'xat';
-        const angle = gradRotation.value;
-        const glow = glowColor.value;
-        const wave = namewaveToggle.checked;
-        
-        // Apply gradient
-        if (colors.length > 1) {
-            const gradient = `linear-gradient(${angle}deg, ${colors.join(', ')})`;
-            effectPreview.style.background = gradient;
-            effectPreview.style.backgroundClip = 'text';
-            effectPreview.style.webkitBackgroundClip = 'text';
-            effectPreview.style.webkitTextFillColor = 'transparent';
-            
-            if (wave) {
-                effectPreview.style.backgroundSize = '200% 200%';
-                effectPreview.style.animation = 'gradientFlow 3s linear infinite';
-            } else {
-                effectPreview.style.animation = 'none';
-                effectPreview.style.backgroundSize = '100% 100%';
-            }
-        } else if (colors.length === 1) {
-            effectPreview.style.background = colors[0];
-            effectPreview.style.animation = 'none';
-        }
-        
-        // Apply glow (single effect)
-        effectPreview.style.setProperty('--glow-color', glow);
-        
-        // Generate code (never includes "wave")
-        let code = '(glow';
-        
-        if (colors.length > 1) {
-            code += `#${glow.replace('#', '')}#grad#r${angle}`;
-            colors.forEach(c => code += `#${c.replace('#', '')}`);
-            code += ')';
+        if (wave) {
+            effectPreview.style.backgroundSize = '200% 100%';
+            effectPreview.style.animation = 'gradientFlow 3s linear infinite';
         } else {
-            code += `#${glow.replace('#', '')})`;
+            effectPreview.style.animation = 'none';
+            effectPreview.style.backgroundSize = '100% 100%';
         }
-        
-        codeOutput.textContent = code;
+    } else if (colors.length === 1) {
+        effectPreview.style.background = colors[0];
+        effectPreview.style.animation = 'none';
     }
+    
+    // Apply glow (single effect)
+    effectPreview.style.setProperty('--glow-color', glow);
+    
+    // Generate code (never includes "wave")
+    let code = '(glow';
+    
+    if (colors.length > 1) {
+        code += `#${glow.replace('#', '')}#grad#r${angle}`;
+        colors.forEach(c => code += `#${c.replace('#', '')}`);
+        code += ')';
+    } else {
+        code += `#${glow.replace('#', '')})`;
+    }
+    
+    codeOutput.textContent = code;
+}
     
     // Initialize
     initColorInputs();
