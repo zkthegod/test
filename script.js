@@ -196,6 +196,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const codeOutput = document.getElementById('codeOutput');
     const copyCodeBtn = document.getElementById('copyCode');
     const randomPresetBtn = document.getElementById('randomPreset');
+    const boldToggle = document.getElementById('boldToggle');
     
     // Color presets
     const colorPresets = [
@@ -286,6 +287,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 2000);
     });
     
+    boldToggle.addEventListener('click', function() {
+        effectPreview.classList.toggle('bold');
+        this.classList.toggle('active');
+    });
+    
     randomPresetBtn.addEventListener('click', () => {
         const randomPreset = colorPresets[Math.floor(Math.random() * colorPresets.length)];
         gradColorsContainer.innerHTML = '';
@@ -316,48 +322,42 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Apply gradient
         if (colors.length > 1) {
-            // Create condensed gradient
-            const gradientStops = [];
-            const stopIncrement = 100 / (colors.length - 1);
+            // Create smooth gradient by extending color range
+            const extendedColors = [...colors, ...colors.slice().reverse()];
+            const gradient = `linear-gradient(${angle}deg, ${extendedColors.join(', ')})`;
             
-            colors.forEach((color, index) => {
-                gradientStops.push(`${color} ${index * stopIncrement}%`);
-            });
-            
-            const gradient = `linear-gradient(${angle}deg, ${gradientStops.join(', ')})`;
             effectPreview.style.background = gradient;
             effectPreview.style.backgroundClip = 'text';
             effectPreview.style.webkitBackgroundClip = 'text';
             effectPreview.style.webkitTextFillColor = 'transparent';
             
             // Reset animation
-            effectPreview.classList.remove(
-                'wave-normal', 'wave-slow', 'wave-very-slow', 'wave-fast', 'wave-very-fast'
-            );
+            effectPreview.style.animation = 'none';
+            effectPreview.style.backgroundSize = '100% 100%';
             
             if (speed) {
                 effectPreview.style.backgroundSize = '200% 100%';
                 
+                // Force reflow to restart animation
+                void effectPreview.offsetWidth;
+                
                 switch(speed) {
                     case 'o1':
-                        effectPreview.classList.add('wave-normal');
+                        effectPreview.style.animation = 'wave-flow 3s linear infinite';
                         break;
                     case 'f1':
-                        effectPreview.classList.add('wave-slow');
+                        effectPreview.style.animation = 'wave-flow 6s linear infinite';
                         break;
                     case 'f2':
-                        effectPreview.classList.add('wave-very-slow');
+                        effectPreview.style.animation = 'wave-flow 9s linear infinite';
                         break;
                     case 'o2':
-                        effectPreview.classList.add('wave-fast');
+                        effectPreview.style.animation = 'wave-flow 1.5s linear infinite';
                         break;
                     case 'o3':
-                        effectPreview.classList.add('wave-very-fast');
+                        effectPreview.style.animation = 'wave-flow 0.75s linear infinite';
                         break;
                 }
-            } else {
-                effectPreview.style.backgroundSize = '100% 100%';
-                effectPreview.style.animation = 'none';
             }
         } else if (colors.length === 1) {
             effectPreview.style.background = colors[0];
