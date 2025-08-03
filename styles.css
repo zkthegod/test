@@ -8,6 +8,7 @@
     --radius: 12px;
     --shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
     --glow-color: #0000ff;
+    --preview-bg: #333333;
 }
 
 [data-theme="dark"] {
@@ -18,6 +19,7 @@
     --card-bg: #2d3436;
     --border: 1px solid rgba(255,255,255,0.1);
     --shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    --preview-bg: #444444;
 }
 
 * {
@@ -547,7 +549,7 @@ nav a:hover, nav a.active {
 }
 
 .preview-container {
-    background: #111;
+    background: var(--preview-bg);
     padding: 40px;
     border-radius: var(--radius);
     border: var(--border);
@@ -570,12 +572,13 @@ nav a:hover, nav a.active {
     padding: 0 10px;
     letter-spacing: -1px;
     text-shadow: none;
-    filter: drop-shadow(0 0 4px var(--glow-color));
+    filter: drop-shadow(0 0 8px var(--glow-color));
 }
 
 @keyframes gradientFlow {
     0% { background-position: 0% 50%; }
-    100% { background-position: 100% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
 .code-section {
@@ -597,11 +600,6 @@ nav a:hover, nav a.active {
     font-family: monospace;
     word-break: break-all;
     min-height: 60px;
-}
-
-@keyframes gradientFlow {
-    0% { background-position: 0% 50%; }
-    100% { background-position: 100% 50%; }
 }
 
 @keyframes pulse {
