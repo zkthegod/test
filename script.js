@@ -262,7 +262,7 @@ document.addEventListener('DOMContentLoaded', function() {
     effectText.addEventListener('input', () => {
         const text = effectText.value;
         charCount.textContent = text.length;
-        effectPreview.textContent = text || 'Rexor';
+        effectPreview.textContent = text || 'xat';
         updateEffects();
     });
     
@@ -316,40 +316,37 @@ function updateEffects() {
         colors.push(picker.value);
     });
     
-    const text = effectText.value || 'xat';
-    const angle = gradRotation.value;
-    const glow = glowColor.value;
-    const speed = waveSpeed.value;
-    
-    // Apply gradient
+    // Create seamless gradient by adding the first color to the end
     if (colors.length > 1) {
-        // Create seamless gradient by adding the first color to the end
-        const gradientColors = [...colors, colors[0]];
-        const gradient = `linear-gradient(${angle}deg, ${gradientColors.join(', ')})`;
+        const seamlessColors = [...colors, colors[0]]; // Add first color to end
         
-        // Apply styles
-        effectPreview.style.backgroundImage = gradient;
-        effectPreview.style.backgroundSize = '200% 100%';
+        const gradient = `linear-gradient(
+            ${gradRotation.value}deg, 
+            ${seamlessColors.join(', ')}
+        )`;
         
-        // Reset animation
+        effectPreview.style.background = gradient;
+        effectPreview.style.backgroundSize = '100% 100%';
+        effectPreview.style.backgroundRepeat = 'repeat-x';
+        
+        // Reset and reapply animation
         effectPreview.style.animation = 'none';
         effectPreview.classList.remove(
             'wave-normal', 'wave-slow', 'wave-very-slow',
             'wave-fast', 'wave-very-fast'
         );
         
-        // Force reflow to restart animation
-        void effectPreview.offsetWidth;
+        void effectPreview.offsetWidth; // Trigger reflow
         
         // Reapply animation if speed selected
-        if (speed) {
+        if (waveSpeed.value) {
             const speedClass = {
                 'o1': 'wave-normal',
                 'f1': 'wave-slow',
                 'f2': 'wave-very-slow',
                 'o2': 'wave-fast',
                 'o3': 'wave-very-fast'
-            }[speed];
+            }[waveSpeed.value];
             effectPreview.classList.add(speedClass);
         }
     } else if (colors.length === 1) {
