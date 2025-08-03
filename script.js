@@ -316,37 +316,42 @@ function updateEffects() {
         colors.push(picker.value);
     });
     
-    // Create seamless gradient by adding the first color to the end
+    const text = effectText.value || 'xat';
+    effectPreview.textContent = text; // Ensure text exists
+    
+    const angle = gradRotation.value;
+    const glow = glowColor.value;
+    const speed = waveSpeed.value;
+    
+    // Apply gradient if we have colors
     if (colors.length > 1) {
-        const seamlessColors = [...colors, colors[0]]; // Add first color to end
+        // Create seamless looping gradient
+        const gradientColors = [...colors, colors[0]]; // Add first color to end
+        const gradient = `linear-gradient(${angle}deg, ${gradientColors.join(', ')})`;
         
-        const gradient = `linear-gradient(
-            ${gradRotation.value}deg, 
-            ${seamlessColors.join(', ')}
-        )`;
+        // Apply gradient
+        effectPreview.style.backgroundImage = gradient;
+        effectPreview.style.backgroundSize = '200% 100%';
         
-        effectPreview.style.background = gradient;
-        effectPreview.style.backgroundSize = '100% 100%';
-        effectPreview.style.backgroundRepeat = 'repeat-x';
-        
-        // Reset and reapply animation
+        // Reset animation
         effectPreview.style.animation = 'none';
         effectPreview.classList.remove(
             'wave-normal', 'wave-slow', 'wave-very-slow',
             'wave-fast', 'wave-very-fast'
         );
         
-        void effectPreview.offsetWidth; // Trigger reflow
+        // Force reflow
+        void effectPreview.offsetWidth;
         
-        // Reapply animation if speed selected
-        if (waveSpeed.value) {
+        // Reapply animation if needed
+        if (speed) {
             const speedClass = {
                 'o1': 'wave-normal',
                 'f1': 'wave-slow',
                 'f2': 'wave-very-slow',
                 'o2': 'wave-fast',
                 'o3': 'wave-very-fast'
-            }[waveSpeed.value];
+            }[speed];
             effectPreview.classList.add(speedClass);
         }
     } else if (colors.length === 1) {
