@@ -316,44 +316,37 @@ function updateEffects() {
         colors.push(picker.value);
     });
     
-    const text = effectText.value || 'xat';
-    const angle = gradRotation.value;
-    const glow = glowColor.value;
-    const speed = waveSpeed.value;
-    
-    // Apply gradient
+    // Create seamless gradient by adding the first color to the end
     if (colors.length > 1) {
-        // Create perfectly looping gradient by duplicating the colors
-        const loopingColors = [...colors, ...colors];
-        const gradient = `linear-gradient(${angle}deg, ${loopingColors.join(', ')})`;
+        const seamlessColors = [...colors, colors[0]]; // Add first color to end
         
-        // Apply styles
+        const gradient = `linear-gradient(
+            ${gradRotation.value}deg, 
+            ${seamlessColors.join(', ')}
+        )`;
+        
         effectPreview.style.background = gradient;
-        effectPreview.style.backgroundClip = 'text';
-        effectPreview.style.webkitBackgroundClip = 'text';
-        effectPreview.style.webkitTextFillColor = 'transparent';
-        effectPreview.style.backgroundSize = '200% 100%';
+        effectPreview.style.backgroundSize = '100% 100%';
         effectPreview.style.backgroundRepeat = 'repeat-x';
         
         // Reset and reapply animation
         effectPreview.style.animation = 'none';
         effectPreview.classList.remove(
-            'wave-normal', 'wave-slow', 'wave-very-slow', 
+            'wave-normal', 'wave-slow', 'wave-very-slow',
             'wave-fast', 'wave-very-fast'
         );
         
-        // Force reflow
-        void effectPreview.offsetWidth;
+        void effectPreview.offsetWidth; // Trigger reflow
         
-        // Reapply animation class if needed
-        if (speed) {
+        // Reapply animation if speed selected
+        if (waveSpeed.value) {
             const speedClass = {
                 'o1': 'wave-normal',
                 'f1': 'wave-slow',
                 'f2': 'wave-very-slow',
                 'o2': 'wave-fast',
                 'o3': 'wave-very-fast'
-            }[speed];
+            }[waveSpeed.value];
             effectPreview.classList.add(speedClass);
         }
     } else if (colors.length === 1) {
