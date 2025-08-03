@@ -318,27 +318,22 @@ function updateEffects() {
     const glow = glowColor.value;
     const speed = waveSpeed.value;
     
-    // Update glow color display
-    document.querySelector('.color-picker-wrapper .color-value').textContent = glow;
-    
     // Apply gradient
     if (colors.length > 1) {
+        // Create gradient with user's colors
         const gradient = `linear-gradient(${angle}deg, ${colors.join(', ')})`;
-        
         effectPreview.style.background = gradient;
         effectPreview.style.backgroundClip = 'text';
         effectPreview.style.webkitBackgroundClip = 'text';
         effectPreview.style.webkitTextFillColor = 'transparent';
         
-        // Remove all wave classes
+        // Reset animation classes
         effectPreview.classList.remove(
             'wave-normal', 'wave-slow', 'wave-very-slow', 'wave-fast', 'wave-very-fast'
         );
         
         if (speed) {
-            effectPreview.style.backgroundSize = '200% 100%';
-            
-            // Add appropriate wave class
+            // Apply the selected animation
             switch(speed) {
                 case 'o1':
                     effectPreview.classList.add('wave-normal');
@@ -357,13 +352,16 @@ function updateEffects() {
                     break;
             }
         } else {
-            effectPreview.style.backgroundSize = '100% 100%';
+            // No animation - static gradient
             effectPreview.style.animation = 'none';
+            effectPreview.style.backgroundSize = '100% 100%';
         }
     } else if (colors.length === 1) {
+        // Single color
         effectPreview.style.background = colors[0];
         effectPreview.style.animation = 'none';
     }
+
     
     // Apply glow
     effectPreview.style.setProperty('--glow-color', glow);
