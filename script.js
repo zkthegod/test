@@ -307,79 +307,80 @@ document.addEventListener('DOMContentLoaded', function() {
         updateEffects();
     });
     
-    function updateEffects() {
-        const colors = [];
-        document.querySelectorAll('.color-picker').forEach(picker => {
-            colors.push(picker.value);
-        });
+function updateEffects() {
+    const colors = [];
+    document.querySelectorAll('.color-picker').forEach(picker => {
+        colors.push(picker.value);
+    });
+    
+    const text = effectText.value || 'xat';
+    const angle = gradRotation.value;
+    const glow = glowColor.value;
+    const speed = waveSpeed.value;
+    
+    // Update glow color display
+    document.querySelector('.color-picker-wrapper .color-value').textContent = glow;
+    
+    // Apply gradient
+    if (colors.length > 1) {
+        const gradient = `linear-gradient(${angle}deg, ${colors.join(', ')})`;
         
-        const text = effectText.value || 'xat';
-        const angle = gradRotation.value;
-        const glow = glowColor.value;
-        const speed = waveSpeed.value;
+        effectPreview.style.background = gradient;
+        effectPreview.style.backgroundClip = 'text';
+        effectPreview.style.webkitBackgroundClip = 'text';
+        effectPreview.style.webkitTextFillColor = 'transparent';
         
-        // Apply gradient
-        if (colors.length > 1) {
-            // Create smooth gradient by extending color range
-            const extendedColors = [...colors, ...colors.slice().reverse()];
-            const gradient = `linear-gradient(${angle}deg, ${extendedColors.join(', ')})`;
+        // Remove all wave classes
+        effectPreview.classList.remove(
+            'wave-normal', 'wave-slow', 'wave-very-slow', 'wave-fast', 'wave-very-fast'
+        );
+        
+        if (speed) {
+            effectPreview.style.backgroundSize = '200% 100%';
             
-            effectPreview.style.background = gradient;
-            effectPreview.style.backgroundClip = 'text';
-            effectPreview.style.webkitBackgroundClip = 'text';
-            effectPreview.style.webkitTextFillColor = 'transparent';
-            
-            // Remove all wave classes
-            effectPreview.classList.remove(
-                'wave-normal', 'wave-slow', 'wave-very-slow', 'wave-fast', 'wave-very-fast'
-            );
-            
-            if (speed) {
-                effectPreview.style.backgroundSize = '200% 100%';
-                
-                // Add appropriate wave class
-                switch(speed) {
-                    case 'o1':
-                        effectPreview.classList.add('wave-normal');
-                        break;
-                    case 'f1':
-                        effectPreview.classList.add('wave-slow');
-                        break;
-                    case 'f2':
-                        effectPreview.classList.add('wave-very-slow');
-                        break;
-                    case 'o2':
-                        effectPreview.classList.add('wave-fast');
-                        break;
-                    case 'o3':
-                        effectPreview.classList.add('wave-very-fast');
-                        break;
-                }
-            } else {
-                effectPreview.style.animation = 'none';
-                effectPreview.style.backgroundSize = '100% 100%';
+            // Add appropriate wave class
+            switch(speed) {
+                case 'o1':
+                    effectPreview.classList.add('wave-normal');
+                    break;
+                case 'f1':
+                    effectPreview.classList.add('wave-slow');
+                    break;
+                case 'f2':
+                    effectPreview.classList.add('wave-very-slow');
+                    break;
+                case 'o2':
+                    effectPreview.classList.add('wave-fast');
+                    break;
+                case 'o3':
+                    effectPreview.classList.add('wave-very-fast');
+                    break;
             }
-        } else if (colors.length === 1) {
-            effectPreview.style.background = colors[0];
+        } else {
+            effectPreview.style.backgroundSize = '100% 100%';
             effectPreview.style.animation = 'none';
         }
-        
-        // Apply glow
-        effectPreview.style.setProperty('--glow-color', glow);
-        
-        // Generate code
-        let code = '(glow';
-        code += `#${glow.replace('#', '')}`;
-        
-        if (colors.length > 1) {
-            code += `#grad#r${angle}`;
-            if (speed) code += `#${speed}`;
-            colors.forEach(c => code += `#${c.replace('#', '')}`);
-        }
-        
-        code += ')';
-        codeOutput.textContent = code;
+    } else if (colors.length === 1) {
+        effectPreview.style.background = colors[0];
+        effectPreview.style.animation = 'none';
     }
+    
+    // Apply glow
+    effectPreview.style.setProperty('--glow-color', glow);
+    
+    // Generate code
+    let code = '(glow';
+    code += `#${glow.replace('#', '')}`;
+    
+    if (colors.length > 1) {
+        code += `#grad#r${angle}`;
+        if (speed) code += `#${speed}`;
+        colors.forEach(c => code += `#${c.replace('#', '')}`);
+    }
+    
+    code += ')';
+    codeOutput.textContent = code;
+}
     
     // Initialize
     initColorInputs();
