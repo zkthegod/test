@@ -318,15 +318,18 @@ function updateEffects() {
     
     // Apply gradient
     if (colors.length > 1) {
-        const gradient = `linear-gradient(${angle}deg, ${colors.join(', ')})`;
+        // Create a smooth gradient by duplicating and reversing the colors
+        const smoothColors = [...colors, ...colors.reverse()];
+        const gradient = `linear-gradient(${angle}deg, ${smoothColors.join(', ')})`;
+        
         effectPreview.style.background = gradient;
         effectPreview.style.backgroundClip = 'text';
         effectPreview.style.webkitBackgroundClip = 'text';
         effectPreview.style.webkitTextFillColor = 'transparent';
         
         if (wave) {
-            effectPreview.style.backgroundSize = '200% 100%';
-            effectPreview.style.animation = 'gradientFlow 3s linear infinite';
+            effectPreview.style.backgroundSize = `${colors.length * 100}% 100%`;
+            effectPreview.style.animation = `gradientFlow ${colors.length}s linear infinite`;
         } else {
             effectPreview.style.animation = 'none';
             effectPreview.style.backgroundSize = '100% 100%';
@@ -336,10 +339,10 @@ function updateEffects() {
         effectPreview.style.animation = 'none';
     }
     
-    // Apply glow (single effect)
+    // Apply glow (single effect) - increased size
     effectPreview.style.setProperty('--glow-color', glow);
     
-    // Generate code (never includes "wave")
+    // Generate code
     let code = '(glow';
     
     if (colors.length > 1) {
