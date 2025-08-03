@@ -317,20 +317,19 @@ function updateEffects() {
     });
     
     const text = effectText.value || 'xat';
-    let angle = parseInt(gradRotation.value);
+    const angle = gradRotation.value;
     const glow = glowColor.value;
     const speed = waveSpeed.value;
     
     // Apply gradient
     if (colors.length > 1) {
-        // Create seamless gradient by adding the first two colors to the end
-        const gradientColors = [...colors, colors[0], colors[1]];
+        // Create seamless gradient by adding the first color to the end
+        const gradientColors = [...colors, colors[0]];
         const gradient = `linear-gradient(${angle}deg, ${gradientColors.join(', ')})`;
         
         // Apply styles
         effectPreview.style.backgroundImage = gradient;
-        effectPreview.style.backgroundSize = '300% 100%';
-        effectPreview.style.backgroundRepeat = 'repeat-x';
+        effectPreview.style.backgroundSize = '200% 100%';
         
         // Reset animation
         effectPreview.style.animation = 'none';
@@ -339,10 +338,10 @@ function updateEffects() {
             'wave-fast', 'wave-very-fast'
         );
         
-        // Force reflow
+        // Force reflow to restart animation
         void effectPreview.offsetWidth;
         
-        // Reapply animation
+        // Reapply animation if speed selected
         if (speed) {
             const speedClass = {
                 'o1': 'wave-normal',
