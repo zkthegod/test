@@ -321,6 +321,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const gradient = `linear-gradient(${angle}deg, ${colors.join(', ')})`;
             effectPreview.style.background = gradient;
             effectPreview.style.backgroundClip = 'text';
+            effectPreview.style.webkitBackgroundClip = 'text';
+            effectPreview.style.webkitTextFillColor = 'transparent';
             
             if (wave) {
                 effectPreview.style.backgroundSize = '200% 100%';
