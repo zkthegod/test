@@ -321,53 +321,59 @@ function updateEffects() {
     const glow = glowColor.value;
     const speed = waveSpeed.value;
 
-    // Clamp angle to avoid weird rotations (optional)
-    if (angle > 190) angle = 190;
-    if (angle < -190) angle = -190;
+    // Clamp angle between -190 and 190
+    angle = Math.max(-190, Math.min(190, angle));
 
-    // Apply gradient
+    // Apply text content
+    effectPreview.textContent = text;
+
+    // Reset background and animation first
+    effectPreview.style.animation = 'none';
+    effectPreview.classList.remove(
+        'wave-normal', 'wave-slow', 'wave-very-slow',
+        'wave-fast', 'wave-very-fast'
+    );
+
     if (colors.length > 1) {
-        // Duplicate colors to create seamless looping
-        const doubledColors = [...colors, ...colors];
+        // Duplicate colors for seamless gradient
+        const seamlessColors = [...colors, ...colors];
 
-        const gradient = `linear-gradient(${angle}deg, ${doubledColors.join(', ')})`;
+        // Create gradient string
+        const gradient = `linear-gradient(${angle}deg, ${seamlessColors.join(', ')})`;
 
-        // Apply styles
+        // Apply gradient styles
         effectPreview.style.backgroundImage = gradient;
-        effectPreview.style.backgroundSize = '200% 100%';
         effectPreview.style.backgroundRepeat = 'repeat-x';
 
-        // Reset animation
-        effectPreview.style.animation = 'none';
-        effectPreview.classList.remove(
-            'wave-normal', 'wave-slow', 'wave-very-slow',
-            'wave-fast', 'wave-very-fast'
-        );
+        // Dynamically set background size
+        // Each color stop = 100%, so 6 colors = 600%
+        const bgSizeX = seamlessColors.length * 100;
+        effectPreview.style.backgroundSize = `${bgSizeX}% 100%`;
 
-        // Force reflow
+        // Force reflow to restart animation
         void effectPreview.offsetWidth;
 
-        // Reapply animation class
-        if (speed) {
-            const speedClass = {
-                'o1': 'wave-normal',
-                'f1': 'wave-slow',
-                'f2': 'wave-very-slow',
-                'o2': 'wave-fast',
-                'o3': 'wave-very-fast'
-            }[speed];
-            if (speedClass) effectPreview.classList.add(speedClass);
-        }
+        // Apply wave animation class
+        const speedClass = {
+            'o1': 'wave-normal',
+            'f1': 'wave-slow',
+            'f2': 'wave-very-slow',
+            'o2': 'wave-fast',
+            'o3': 'wave-very-fast'
+        }[speed];
+        if (speedClass) effectPreview.classList.add(speedClass);
+
     } else if (colors.length === 1) {
-        // Static color, no gradient or animation
+        // Only one color, no gradient animation
         effectPreview.style.background = colors[0];
-        effectPreview.style.animation = 'none';
+        effectPreview.style.backgroundImage = 'none';
+        effectPreview.style.backgroundSize = 'auto';
     }
 
     // Apply glow color
     effectPreview.style.setProperty('--glow-color', glow);
 
-    // Generate output code
+    // Generate xat code
     let code = '(glow';
     code += `#${glow.replace('#', '')}`;
 
@@ -384,6 +390,7 @@ function updateEffects() {
     code += ')';
     codeOutput.textContent = code;
 }
+
 
 
     
