@@ -3,33 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>xat Tools</title>
+    <title>rexor.lol</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <div class="theme-toggle">
-                <label class="switch">
-                    <input type="checkbox" id="themeToggle">
-                    <span class="slider"></span>
-                </label>
+            <div class="header-content">
+                <div class="logo">
+                    <h1>rexor.lol</h1>
+                    <span class="subtitle">xat Tools</span>
+                </div>
+                <div class="theme-toggle-container">
+                    <span class="theme-label"><i class="fas fa-sun"></i></span>
+                    <label class="switch">
+                        <input type="checkbox" id="themeToggle">
+                        <span class="slider"></span>
+                    </label>
+                    <span class="theme-label"><i class="fas fa-moon"></i></span>
+                </div>
             </div>
-            <h1>xat Tools</h1>
+            
             <nav>
                 <ul>
-                    <li><a href="#home" class="active">Home</a></li>
-                    <li><a href="#chat-embedder">Chat Embedder</a></li>
-                    <li><a href="#name-effects">Name Effects</a></li>
+                    <li><a href="#home" class="active"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="#chat-embedder"><i class="fas fa-comment-dots"></i> Chat Embedder</a></li>
+                    <li><a href="#name-effects"><i class="fas fa-magic"></i> Name Effects</a></li>
                 </ul>
             </nav>
         </header>
 
         <main>
             <section id="home" class="page active">
-                <h2>Welcome to xat Tools</h2>
-                <p class="description">Premium tools for xat.com users</p>
+                <div class="section-header">
+                    <h2>Welcome to xat Tools</h2>
+                    <p class="description">Premium tools for xat.com users</p>
+                </div>
                 
                 <div class="status-grid">
                     <div class="status-card" id="xatStatus">
@@ -86,7 +97,10 @@
             <section id="name-effects" class="page">
                 <div class="section-header">
                     <h2>Name Effects Generator</h2>
-                    <button id="randomPreset" class="primary-btn"><i class="fas fa-random"></i> Random</button>
+                    <div class="header-actions">
+                        <button id="randomPreset" class="primary-btn"><i class="fas fa-random"></i> Random</button>
+                        <button id="boldToggle" class="primary-btn"><i class="fas fa-bold"></i> Bold</button>
+                    </div>
                 </div>
                 
                 <div class="effect-controls">
@@ -154,7 +168,7 @@
         </main>
 
         <footer>
-            <p>&copy; 2023 xat Tools</p>
+            <p>&copy; 2023 rexor.lol | xat Tools</p>
         </footer>
     </div>
 
