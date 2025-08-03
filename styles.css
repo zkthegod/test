@@ -574,31 +574,33 @@ nav a:hover, nav a.active {
     text-shadow: none;
     filter: drop-shadow(0 0 15px var(--glow-color));
     background-blend-mode: screen;
+    background-size: 200% 100%;
 }
 
-@keyframes gradientFlow {
+/* Wave speed animations */
+@keyframes wave-flow {
     0% { background-position: 0% 50%; }
-    100% { background-position: 200% 50%; }
+    100% { background-position: 100% 50%; }
 }
 
 .wave-normal {
-    animation: gradientFlow 3s linear infinite;
+    animation: wave-flow 3s linear infinite;
 }
 
 .wave-slow {
-    animation: gradientFlow 6s linear infinite;
+    animation: wave-flow 6s linear infinite;
 }
 
 .wave-very-slow {
-    animation: gradientFlow 9s linear infinite;
+    animation: wave-flow 9s linear infinite;
 }
 
 .wave-fast {
-    animation: gradientFlow 1.5s linear infinite;
+    animation: wave-flow 1.5s linear infinite;
 }
 
 .wave-very-fast {
-    animation: gradientFlow 0.75s linear infinite;
+    animation: wave-flow 0.75s linear infinite;
 }
 
 .code-section {
