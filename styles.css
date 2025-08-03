@@ -574,10 +574,9 @@ nav a:hover, nav a.active {
     text-shadow: none;
     filter: drop-shadow(0 0 15px var(--glow-color));
     background-blend-mode: screen;
-    background-size: 200% 100%;
+    background-size: 200% 100%; /* This makes the gradient larger than the element */
 }
 
-/* Wave speed animations */
 @keyframes wave-flow {
     0% { background-position: 0% 50%; }
     100% { background-position: 100% 50%; }
@@ -585,22 +584,27 @@ nav a:hover, nav a.active {
 
 .wave-normal {
     animation: wave-flow 3s linear infinite;
+    background-size: 200% 100%;
 }
 
 .wave-slow {
     animation: wave-flow 6s linear infinite;
+    background-size: 200% 100%;
 }
 
 .wave-very-slow {
     animation: wave-flow 9s linear infinite;
+    background-size: 200% 100%;
 }
 
 .wave-fast {
     animation: wave-flow 1.5s linear infinite;
+    background-size: 200% 100%;
 }
 
 .wave-very-fast {
     animation: wave-flow 0.75s linear infinite;
+    background-size: 200% 100%;
 }
 
 .code-section {
