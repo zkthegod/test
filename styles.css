@@ -631,27 +631,37 @@ nav a:hover, nav a.active {
 /* Updated wave animations with slower speeds */
 .wave-normal {
     animation: wave-flow 8s linear infinite !important;
+    background-size: 200% 100% !important;
 }
 
 .wave-slow {
     animation: wave-flow 12s linear infinite !important;
+    background-size: 200% 100% !important;
 }
 
 .wave-very-slow {
     animation: wave-flow 20s linear infinite !important;
+    background-size: 200% 100% !important;
 }
 
 .wave-fast {
     animation: wave-flow 4s linear infinite !important;
+    background-size: 200% 100% !important;
 }
 
 .wave-very-fast {
     animation: wave-flow 2s linear infinite !important;
+    background-size: 200% 100% !important;
 }
 
 @keyframes wave-flow {
-    0% { background-position: 0% 50%; }
-    100% { background-position: 100% 50%; }
+    0% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Add bold class for the effect preview */
+.effect-preview.bold {
+    font-weight: 700 !important;
 }
 
 .code-section {
