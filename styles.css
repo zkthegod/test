@@ -618,35 +618,35 @@ nav a:hover, nav a.active {
     padding: 0 10px;
     letter-spacing: -1px;
     text-shadow: none;
-    filter: drop-shadow(0 0 15px var(--glow-color));
+    /* Updated glow effect - thicker but more contained */
+    filter: drop-shadow(0 0 8px var(--glow-color)) 
+            drop-shadow(0 0 5px var(--glow-color))
+            drop-shadow(0 0 3px var(--glow-color));
     background-blend-mode: screen;
-    background-size: 200% 100%;
+    background-size: 400% 100%; /* Larger background for smoother flow */
     background-position: 0% 50%;
     transition: var(--transition);
 }
 
-.effect-preview.bold {
-    font-weight: 700;
-}
-
+/* Updated wave animations with slower speeds */
 .wave-normal {
-    animation: wave-flow 3s linear infinite !important;
+    animation: wave-flow 8s linear infinite !important;
 }
 
 .wave-slow {
-    animation: wave-flow 6s linear infinite !important;
+    animation: wave-flow 12s linear infinite !important;
 }
 
 .wave-very-slow {
-    animation: wave-flow 9s linear infinite !important;
+    animation: wave-flow 20s linear infinite !important;
 }
 
 .wave-fast {
-    animation: wave-flow 1.5s linear infinite !important;
+    animation: wave-flow 4s linear infinite !important;
 }
 
 .wave-very-fast {
-    animation: wave-flow 0.75s linear infinite !important;
+    animation: wave-flow 2s linear infinite !important;
 }
 
 @keyframes wave-flow {
