@@ -313,7 +313,9 @@ document.addEventListener('DOMContentLoaded', function() {
 function updateEffects() {
     const colors = [];
     document.querySelectorAll('.color-picker').forEach(picker => {
-        if (picker.value) colors.push(picker.value);
+        if (picker.value) {
+            colors.push(picker.value);
+        }
     });
 
     const text = effectText.value || 'xat';
@@ -321,59 +323,63 @@ function updateEffects() {
     const glow = glowColor.value;
     const speed = waveSpeed.value;
 
-    // Clamp angle between -190 and 190
-    angle = Math.max(-190, Math.min(190, angle));
+    // Clamp angle between -190 and 190 (optional, can be removed)
+    if (angle > 190) angle = 190;
+    if (angle < -190) angle = -190;
 
-    // Apply text content
-    effectPreview.textContent = text;
-
-    // Reset background and animation first
-    effectPreview.style.animation = 'none';
-    effectPreview.classList.remove(
-        'wave-normal', 'wave-slow', 'wave-very-slow',
-        'wave-fast', 'wave-very-fast'
-    );
-
+    // Apply gradient effect
     if (colors.length > 1) {
-        // Duplicate colors for seamless gradient
-        const seamlessColors = [...colors, ...colors];
+        const totalColors = colors.length;
+        const gradientStops = [];
 
-        // Create gradient string
-        const gradient = `linear-gradient(${angle}deg, ${seamlessColors.join(', ')})`;
+        colors.forEach((color, i) => {
+            const percent = Math.round((i / totalColors) * 100);
+            gradientStops.push(`${color} ${percent}%`);
+        });
 
-        // Apply gradient styles
+        // Repeat the first color at 100% to close the loop
+        gradientStops.push(`${colors[0]} 100%`);
+
+        const gradient = `repeating-linear-gradient(${angle}deg, ${gradientStops.join(', ')})`;
+
+        // Apply styles
         effectPreview.style.backgroundImage = gradient;
+        effectPreview.style.backgroundSize = '200% 100%';
         effectPreview.style.backgroundRepeat = 'repeat-x';
 
-        // Dynamically set background size
-        // Each color stop = 100%, so 6 colors = 600%
-        const bgSizeX = seamlessColors.length * 100;
-        effectPreview.style.backgroundSize = `${bgSizeX}% 100%`;
+        // Reset animation
+        effectPreview.style.animation = 'none';
+        effectPreview.classList.remove(
+            'wave-normal', 'wave-slow', 'wave-very-slow',
+            'wave-fast', 'wave-very-fast'
+        );
 
         // Force reflow to restart animation
         void effectPreview.offsetWidth;
 
-        // Apply wave animation class
-        const speedClass = {
-            'o1': 'wave-normal',
-            'f1': 'wave-slow',
-            'f2': 'wave-very-slow',
-            'o2': 'wave-fast',
-            'o3': 'wave-very-fast'
-        }[speed];
-        if (speedClass) effectPreview.classList.add(speedClass);
-
+        // Reapply animation
+        if (speed) {
+            const speedClass = {
+                'o1': 'wave-normal',
+                'f1': 'wave-slow',
+                'f2': 'wave-very-slow',
+                'o2': 'wave-fast',
+                'o3': 'wave-very-fast'
+            }[speed];
+            if (speedClass) {
+                effectPreview.classList.add(speedClass);
+            }
+        }
     } else if (colors.length === 1) {
-        // Only one color, no gradient animation
+        // Just one color, no animation
         effectPreview.style.background = colors[0];
-        effectPreview.style.backgroundImage = 'none';
-        effectPreview.style.backgroundSize = 'auto';
+        effectPreview.style.animation = 'none';
     }
 
-    // Apply glow color
+    // Apply glow
     effectPreview.style.setProperty('--glow-color', glow);
 
-    // Generate xat code
+    // Generate code output
     let code = '(glow';
     code += `#${glow.replace('#', '')}`;
 
@@ -390,8 +396,6 @@ function updateEffects() {
     code += ')';
     codeOutput.textContent = code;
 }
-
-
 
     
     // Initialize
