@@ -199,14 +199,14 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Color presets
     const colorPresets = [
-        ['#ff0000', '#0000ff'], // Red to Blue
-        ['#ff00ff', '#00ffff'], // Pink to Cyan
-        ['#ffff00', '#ff00ff'], // Yellow to Pink
-        ['#00ff00', '#0000ff'], // Green to Blue
-        ['#ff0000', '#ffff00', '#00ff00'], // Red to Yellow to Green
-        ['#ff0000', '#ff9900', '#ffff00', '#00ff00'], // Red to Orange to Yellow to Green
-        ['#ff0000', '#0000ff', '#00ff00', '#ffff00'], // Red, Blue, Green, Yellow
-        ['#ff00ff', '#00ffff', '#ffff00', '#ff0000']  // Pink, Cyan, Yellow, Red
+        ['#ff0000', '#0000ff'],
+        ['#ff00ff', '#00ffff'],
+        ['#ffff00', '#ff00ff'],
+        ['#00ff00', '#0000ff'],
+        ['#ff0000', '#ffff00', '#00ff00'],
+        ['#ff0000', '#ff9900', '#ffff00', '#00ff00'],
+        ['#ff0000', '#0000ff', '#00ff00', '#ffff00'],
+        ['#ff00ff', '#00ffff', '#ffff00', '#ff0000']
     ];
     
     // Initialize with 2 colors
@@ -262,7 +262,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const text = effectText.value;
         charCount.textContent = text.length;
         effectPreview.textContent = text || 'xat';
-        effectPreview.setAttribute('data-text', text || 'xat');
         updateEffects();
     });
     
@@ -292,93 +291,95 @@ document.addEventListener('DOMContentLoaded', function() {
         gradColorsContainer.innerHTML = '';
         randomPreset.forEach(color => addColorInput(color));
         
-        // Random angle
         gradRotation.value = Math.floor(Math.random() * 360);
         gradRotationValue.textContent = `${gradRotation.value}°`;
         
-        // Random glow color
         glowColor.value = `#${Math.floor(Math.random()*16777215).toString(16).padStart(6, '0')}`;
         document.querySelector('.color-picker-wrapper .color-value').textContent = glowColor.value;
         
-        // Random wave speed
         const speeds = ['', 'o1', 'f1', 'f2', 'o2', 'o3'];
         waveSpeed.value = speeds[Math.floor(Math.random() * speeds.length)];
         
         updateEffects();
     });
     
-function updateEffects() {
-    const colors = [];
-    document.querySelectorAll('.color-picker').forEach(picker => {
-        colors.push(picker.value);
-    });
-    
-    const text = effectText.value || 'xat';
-    const angle = gradRotation.value;
-    const glow = glowColor.value;
-    const speed = waveSpeed.value;
-    
-    // Apply gradient
-    if (colors.length > 1) {
-        // Create gradient with user's colors
-        const gradient = `linear-gradient(${angle}deg, ${colors.join(', ')})`;
-        effectPreview.style.background = gradient;
-        effectPreview.style.backgroundClip = 'text';
-        effectPreview.style.webkitBackgroundClip = 'text';
-        effectPreview.style.webkitTextFillColor = 'transparent';
+    function updateEffects() {
+        const colors = [];
+        document.querySelectorAll('.color-picker').forEach(picker => {
+            colors.push(picker.value);
+        });
         
-        // Reset animation classes
-        effectPreview.classList.remove(
-            'wave-normal', 'wave-slow', 'wave-very-slow', 'wave-fast', 'wave-very-fast'
-        );
+        const text = effectText.value || 'xat';
+        const angle = gradRotation.value;
+        const glow = glowColor.value;
+        const speed = waveSpeed.value;
         
-        if (speed) {
-            // Apply the selected animation
-            switch(speed) {
-                case 'o1':
-                    effectPreview.classList.add('wave-normal');
-                    break;
-                case 'f1':
-                    effectPreview.classList.add('wave-slow');
-                    break;
-                case 'f2':
-                    effectPreview.classList.add('wave-very-slow');
-                    break;
-                case 'o2':
-                    effectPreview.classList.add('wave-fast');
-                    break;
-                case 'o3':
-                    effectPreview.classList.add('wave-very-fast');
-                    break;
+        // Apply gradient
+        if (colors.length > 1) {
+            // Create condensed gradient
+            const gradientStops = [];
+            const stopIncrement = 100 / (colors.length - 1);
+            
+            colors.forEach((color, index) => {
+                gradientStops.push(`${color} ${index * stopIncrement}%`);
+            });
+            
+            const gradient = `linear-gradient(${angle}deg, ${gradientStops.join(', ')})`;
+            effectPreview.style.background = gradient;
+            effectPreview.style.backgroundClip = 'text';
+            effectPreview.style.webkitBackgroundClip = 'text';
+            effectPreview.style.webkitTextFillColor = 'transparent';
+            
+            // Reset animation
+            effectPreview.classList.remove(
+                'wave-normal', 'wave-slow', 'wave-very-slow', 'wave-fast', 'wave-very-fast'
+            );
+            
+            if (speed) {
+                effectPreview.style.backgroundSize = '200% 100%';
+                
+                switch(speed) {
+                    case 'o1':
+                        effectPreview.classList.add('wave-normal');
+                        break;
+                    case 'f1':
+                        effectPreview.classList.add('wave-slow');
+                        break;
+                    case 'f2':
+                        effectPreview.classList.add('wave-very-slow');
+                        break;
+                    case 'o2':
+                        effectPreview.classList.add('wave-fast');
+                        break;
+                    case 'o3':
+                        effectPreview.classList.add('wave-very-fast');
+                        break;
+                }
+            } else {
+                effectPreview.style.backgroundSize = '100% 100%';
+                effectPreview.style.animation = 'none';
             }
-        } else {
-            // No animation - static gradient
+        } else if (colors.length === 1) {
+            effectPreview.style.background = colors[0];
             effectPreview.style.animation = 'none';
-            effectPreview.style.backgroundSize = '100% 100%';
         }
-    } else if (colors.length === 1) {
-        // Single color
-        effectPreview.style.background = colors[0];
-        effectPreview.style.animation = 'none';
+        
+        // Apply glow
+        effectPreview.style.setProperty('--glow-color', glow);
+        
+        // Generate code
+        let code = '(glow';
+        code += `#${glow.replace('#', '')}`;
+        
+        if (colors.length > 1) {
+            code += `#grad#r${angle}`;
+            if (speed) code += `#${speed}`;
+            colors.forEach(c => code += `#${c.replace('#', '')}`);
+        }
+        
+        code += ')';
+        codeOutput.textContent = code;
     }
-
-    
-    // Apply glow
-    effectPreview.style.setProperty('--glow-color', glow);
-    
-    // Generate code
-    let code = '(glow';
-    code += `#${glow.replace('#', '')}`;
-    
-    if (colors.length > 1) {
-        code += `#grad#r${angle}`;
-        if (speed) code += `#${speed}`;
-        colors.forEach(c => code += `#${c.replace('#', '')}`);
-    }
-    
-    code += ')';
-    codeOutput.textContent = code;
-}
     
     // Initialize
     initColorInputs();
