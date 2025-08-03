@@ -336,10 +336,10 @@ document.addEventListener('DOMContentLoaded', function() {
             effectPreview.style.animation = 'none';
         }
         
-        // Apply glow
+        // Apply glow (single effect)
         effectPreview.style.setProperty('--glow-color', glow);
         
-        // Generate code
+        // Generate code (never includes "wave")
         let code = '(glow';
         
         if (colors.length > 1) {
@@ -348,10 +348,6 @@ document.addEventListener('DOMContentLoaded', function() {
             code += ')';
         } else {
             code += `#${glow.replace('#', '')})`;
-        }
-        
-        if (wave) {
-            code = code.replace(')', 'wave)');
         }
         
         codeOutput.textContent = code;
