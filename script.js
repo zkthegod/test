@@ -191,7 +191,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const gradRotation = document.getElementById('gradRotation');
     const gradRotationValue = document.getElementById('gradRotationValue');
     const glowColor = document.getElementById('glowColor');
-    const namewaveToggle = document.getElementById('namewaveToggle');
+    const waveSpeed = document.getElementById('waveSpeed');
     const effectPreview = document.getElementById('effectPreview');
     const codeOutput = document.getElementById('codeOutput');
     const copyCodeBtn = document.getElementById('copyCode');
@@ -266,7 +266,7 @@ document.addEventListener('DOMContentLoaded', function() {
         updateEffects();
     });
     
-    [gradRotation, glowColor, namewaveToggle].forEach(control => {
+    [gradRotation, glowColor, waveSpeed].forEach(control => {
         control.addEventListener('input', updateEffects);
     });
     
@@ -275,7 +275,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     glowColor.addEventListener('input', () => {
-        effectPreview.style.setProperty('--glow-color', glowColor.value);
+        document.querySelector('.color-picker-wrapper .color-value').textContent = glowColor.value;
+        updateEffects();
     });
     
     copyCodeBtn.addEventListener('click', () => {
@@ -297,64 +298,88 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Random glow color
         glowColor.value = `#${Math.floor(Math.random()*16777215).toString(16).padStart(6, '0')}`;
-        effectPreview.style.setProperty('--glow-color', glowColor.value);
+        document.querySelector('.color-picker-wrapper .color-value').textContent = glowColor.value;
         
-        // Random namewave
-        namewaveToggle.checked = Math.random() > 0.5;
+        // Random wave speed
+        const speeds = ['', 'o1', 'f1', 'f2', 'o2', 'o3'];
+        waveSpeed.value = speeds[Math.floor(Math.random() * speeds.length)];
         
         updateEffects();
     });
     
-function updateEffects() {
-    const colors = [];
-    document.querySelectorAll('.color-picker').forEach(picker => {
-        colors.push(picker.value);
-    });
-    
-    const text = effectText.value || 'xat';
-    const angle = gradRotation.value;
-    const glow = glowColor.value;
-    const wave = namewaveToggle.checked;
-    
-    // Apply gradient
-    if (colors.length > 1) {
-        // Create a smooth gradient by duplicating and reversing the colors
-        const smoothColors = [...colors, ...colors.reverse()];
-        const gradient = `linear-gradient(${angle}deg, ${smoothColors.join(', ')})`;
+    function updateEffects() {
+        const colors = [];
+        document.querySelectorAll('.color-picker').forEach(picker => {
+            colors.push(picker.value);
+        });
         
-        effectPreview.style.background = gradient;
-        effectPreview.style.backgroundClip = 'text';
-        effectPreview.style.webkitBackgroundClip = 'text';
-        effectPreview.style.webkitTextFillColor = 'transparent';
+        const text = effectText.value || 'xat';
+        const angle = gradRotation.value;
+        const glow = glowColor.value;
+        const speed = waveSpeed.value;
         
-        if (wave) {
-            effectPreview.style.backgroundSize = `${colors.length * 100}% 100%`;
-            effectPreview.style.animation = `gradientFlow ${colors.length}s linear infinite`;
-        } else {
+        // Apply gradient
+        if (colors.length > 1) {
+            // Create smooth gradient by extending color range
+            const extendedColors = [...colors, ...colors.slice().reverse()];
+            const gradient = `linear-gradient(${angle}deg, ${extendedColors.join(', ')})`;
+            
+            effectPreview.style.background = gradient;
+            effectPreview.style.backgroundClip = 'text';
+            effectPreview.style.webkitBackgroundClip = 'text';
+            effectPreview.style.webkitTextFillColor = 'transparent';
+            
+            // Remove all wave classes
+            effectPreview.classList.remove(
+                'wave-normal', 'wave-slow', 'wave-very-slow', 'wave-fast', 'wave-very-fast'
+            );
+            
+            if (speed) {
+                effectPreview.style.backgroundSize = '200% 100%';
+                
+                // Add appropriate wave class
+                switch(speed) {
+                    case 'o1':
+                        effectPreview.classList.add('wave-normal');
+                        break;
+                    case 'f1':
+                        effectPreview.classList.add('wave-slow');
+                        break;
+                    case 'f2':
+                        effectPreview.classList.add('wave-very-slow');
+                        break;
+                    case 'o2':
+                        effectPreview.classList.add('wave-fast');
+                        break;
+                    case 'o3':
+                        effectPreview.classList.add('wave-very-fast');
+                        break;
+                }
+            } else {
+                effectPreview.style.animation = 'none';
+                effectPreview.style.backgroundSize = '100% 100%';
+            }
+        } else if (colors.length === 1) {
+            effectPreview.style.background = colors[0];
             effectPreview.style.animation = 'none';
-            effectPreview.style.backgroundSize = '100% 100%';
         }
-    } else if (colors.length === 1) {
-        effectPreview.style.background = colors[0];
-        effectPreview.style.animation = 'none';
-    }
-    
-    // Apply glow (single effect) - increased size
-    effectPreview.style.setProperty('--glow-color', glow);
-    
-    // Generate code
-    let code = '(glow';
-    
-    if (colors.length > 1) {
-        code += `#${glow.replace('#', '')}#grad#r${angle}`;
-        colors.forEach(c => code += `#${c.replace('#', '')}`);
+        
+        // Apply glow
+        effectPreview.style.setProperty('--glow-color', glow);
+        
+        // Generate code
+        let code = '(glow';
+        code += `#${glow.replace('#', '')}`;
+        
+        if (colors.length > 1) {
+            code += `#grad#r${angle}`;
+            if (speed) code += `#${speed}`;
+            colors.forEach(c => code += `#${c.replace('#', '')}`);
+        }
+        
         code += ')';
-    } else {
-        code += `#${glow.replace('#', '')})`;
+        codeOutput.textContent = code;
     }
-    
-    codeOutput.textContent = code;
-}
     
     // Initialize
     initColorInputs();
