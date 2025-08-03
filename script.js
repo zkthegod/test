@@ -323,41 +323,38 @@ function updateEffects() {
     
     // Apply gradient
     if (colors.length > 1) {
-        // Create extended gradient by repeating colors 3 times for smoother flow
-        const extendedColors = [...colors, ...colors, ...colors];
-        const gradient = `linear-gradient(${angle}deg, ${extendedColors.join(', ')})`;
+        // Create perfectly looping gradient by duplicating the colors
+        const loopingColors = [...colors, ...colors];
+        const gradient = `linear-gradient(${angle}deg, ${loopingColors.join(', ')})`;
         
+        // Apply styles
         effectPreview.style.background = gradient;
         effectPreview.style.backgroundClip = 'text';
         effectPreview.style.webkitBackgroundClip = 'text';
         effectPreview.style.webkitTextFillColor = 'transparent';
         effectPreview.style.backgroundSize = '200% 100%';
+        effectPreview.style.backgroundRepeat = 'repeat-x';
         
-        // Reset animation state
+        // Reset and reapply animation
         effectPreview.style.animation = 'none';
-        effectPreview.classList.remove('wave-normal', 'wave-slow', 'wave-very-slow', 'wave-fast', 'wave-very-fast');
+        effectPreview.classList.remove(
+            'wave-normal', 'wave-slow', 'wave-very-slow', 
+            'wave-fast', 'wave-very-fast'
+        );
         
-        // Force reflow before applying new animation
+        // Force reflow
         void effectPreview.offsetWidth;
         
+        // Reapply animation class if needed
         if (speed) {
-            switch(speed) {
-                case 'o1':
-                    effectPreview.classList.add('wave-normal');
-                    break;
-                case 'f1':
-                    effectPreview.classList.add('wave-slow');
-                    break;
-                case 'f2':
-                    effectPreview.classList.add('wave-very-slow');
-                    break;
-                case 'o2':
-                    effectPreview.classList.add('wave-fast');
-                    break;
-                case 'o3':
-                    effectPreview.classList.add('wave-very-fast');
-                    break;
-            }
+            const speedClass = {
+                'o1': 'wave-normal',
+                'f1': 'wave-slow',
+                'f2': 'wave-very-slow',
+                'o2': 'wave-fast',
+                'o3': 'wave-very-fast'
+            }[speed];
+            effectPreview.classList.add(speedClass);
         }
     } else if (colors.length === 1) {
         effectPreview.style.background = colors[0];
