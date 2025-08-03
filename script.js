@@ -331,31 +331,29 @@ document.addEventListener('DOMContentLoaded', function() {
             effectPreview.style.webkitBackgroundClip = 'text';
             effectPreview.style.webkitTextFillColor = 'transparent';
             
-            // Reset animation
+            // Reset all animations first
             effectPreview.style.animation = 'none';
-            effectPreview.style.backgroundSize = '100% 100%';
+            effectPreview.style.backgroundSize = '200% 100%';
+            
+            // Force reflow before applying new animation
+            void effectPreview.offsetWidth;
             
             if (speed) {
-                effectPreview.style.backgroundSize = '200% 100%';
-                
-                // Force reflow to restart animation
-                void effectPreview.offsetWidth;
-                
                 switch(speed) {
                     case 'o1':
-                        effectPreview.style.animation = 'wave-flow 3s linear infinite';
+                        effectPreview.classList.add('wave-normal');
                         break;
                     case 'f1':
-                        effectPreview.style.animation = 'wave-flow 6s linear infinite';
+                        effectPreview.classList.add('wave-slow');
                         break;
                     case 'f2':
-                        effectPreview.style.animation = 'wave-flow 9s linear infinite';
+                        effectPreview.classList.add('wave-very-slow');
                         break;
                     case 'o2':
-                        effectPreview.style.animation = 'wave-flow 1.5s linear infinite';
+                        effectPreview.classList.add('wave-fast');
                         break;
                     case 'o3':
-                        effectPreview.style.animation = 'wave-flow 0.75s linear infinite';
+                        effectPreview.classList.add('wave-very-fast');
                         break;
                 }
             }
