@@ -578,7 +578,27 @@ nav a:hover, nav a.active {
 
 @keyframes gradientFlow {
     0% { background-position: 0% 50%; }
-    100% { background-position: 100% 50%; }
+    100% { background-position: 200% 50%; }
+}
+
+.wave-normal {
+    animation: gradientFlow 3s linear infinite;
+}
+
+.wave-slow {
+    animation: gradientFlow 6s linear infinite;
+}
+
+.wave-very-slow {
+    animation: gradientFlow 9s linear infinite;
+}
+
+.wave-fast {
+    animation: gradientFlow 1.5s linear infinite;
+}
+
+.wave-very-fast {
+    animation: gradientFlow 0.75s linear infinite;
 }
 
 .code-section {
@@ -600,6 +620,53 @@ nav a:hover, nav a.active {
     font-family: monospace;
     word-break: break-all;
     min-height: 60px;
+}
+
+.custom-select {
+    position: relative;
+    flex: 1;
+}
+
+.custom-select select {
+    width: 100%;
+    padding: 10px 15px;
+    border: var(--border);
+    border-radius: var(--radius);
+    background-color: var(--card-bg);
+    color: var(--text);
+    appearance: none;
+    cursor: pointer;
+}
+
+.select-arrow {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: var(--text);
+}
+
+.color-picker-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+}
+
+.color-picker-wrapper input[type="color"] {
+    width: 40px;
+    height: 40px;
+    border: 2px solid var(--primary);
+    border-radius: 8px;
+    cursor: pointer;
+    padding: 0;
+}
+
+.color-picker-wrapper .color-value {
+    font-family: monospace;
+    font-size: 0.9rem;
+    opacity: 0.8;
 }
 
 @keyframes pulse {
