@@ -324,7 +324,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Apply gradient
         if (colors.length > 1) {
             // Create seamless gradient by duplicating the colors
-            const gradientColors = [...colors, ...colors];
+            const gradientColors = [...colors, colors[0]];
             const gradient = `linear-gradient(${angle}deg, ${gradientColors.join(', ')})`;
             
             // Apply styles
