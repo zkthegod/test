@@ -313,9 +313,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function updateEffects() {
     const colors = [];
     document.querySelectorAll('.color-picker').forEach(picker => {
-        if (picker.value) {
-            colors.push(picker.value);
-        }
+        if (picker.value) colors.push(picker.value);
     });
 
     const text = effectText.value || 'xat';
@@ -323,24 +321,16 @@ function updateEffects() {
     const glow = glowColor.value;
     const speed = waveSpeed.value;
 
-    // Clamp angle between -190 and 190 (optional, can be removed)
+    // Clamp angle to avoid weird rotations (optional)
     if (angle > 190) angle = 190;
     if (angle < -190) angle = -190;
 
-    // Apply gradient effect
+    // Apply gradient
     if (colors.length > 1) {
-        const totalColors = colors.length;
-        const gradientStops = [];
+        // Duplicate colors to create seamless looping
+        const doubledColors = [...colors, ...colors];
 
-        colors.forEach((color, i) => {
-            const percent = Math.round((i / totalColors) * 100);
-            gradientStops.push(`${color} ${percent}%`);
-        });
-
-        // Repeat the first color at 100% to close the loop
-        gradientStops.push(`${colors[0]} 100%`);
-
-        const gradient = `repeating-linear-gradient(${angle}deg, ${gradientStops.join(', ')})`;
+        const gradient = `linear-gradient(${angle}deg, ${doubledColors.join(', ')})`;
 
         // Apply styles
         effectPreview.style.backgroundImage = gradient;
@@ -354,10 +344,10 @@ function updateEffects() {
             'wave-fast', 'wave-very-fast'
         );
 
-        // Force reflow to restart animation
+        // Force reflow
         void effectPreview.offsetWidth;
 
-        // Reapply animation
+        // Reapply animation class
         if (speed) {
             const speedClass = {
                 'o1': 'wave-normal',
@@ -366,20 +356,18 @@ function updateEffects() {
                 'o2': 'wave-fast',
                 'o3': 'wave-very-fast'
             }[speed];
-            if (speedClass) {
-                effectPreview.classList.add(speedClass);
-            }
+            if (speedClass) effectPreview.classList.add(speedClass);
         }
     } else if (colors.length === 1) {
-        // Just one color, no animation
+        // Static color, no gradient or animation
         effectPreview.style.background = colors[0];
         effectPreview.style.animation = 'none';
     }
 
-    // Apply glow
+    // Apply glow color
     effectPreview.style.setProperty('--glow-color', glow);
 
-    // Generate code output
+    // Generate output code
     let code = '(glow';
     code += `#${glow.replace('#', '')}`;
 
@@ -396,6 +384,7 @@ function updateEffects() {
     code += ')';
     codeOutput.textContent = code;
 }
+
 
     
     // Initialize
