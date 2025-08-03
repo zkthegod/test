@@ -572,13 +572,12 @@ nav a:hover, nav a.active {
     padding: 0 10px;
     letter-spacing: -1px;
     text-shadow: none;
-    filter: drop-shadow(0 0 8px var(--glow-color));
+    filter: drop-shadow(0 0 12px var(--glow-color));
 }
 
 @keyframes gradientFlow {
     0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
 }
 
 .code-section {
