@@ -323,8 +323,8 @@ function updateEffects() {
     
     // Apply gradient
     if (colors.length > 1) {
-        // Create extended gradient with more segments for smoother flow
-        const extendedColors = [...colors, ...colors]; // Double the colors for seamless transition
+        // Create extended gradient by repeating colors 3 times for smoother flow
+        const extendedColors = [...colors, ...colors, ...colors];
         const gradient = `linear-gradient(${angle}deg, ${extendedColors.join(', ')})`;
         
         effectPreview.style.background = gradient;
@@ -333,12 +333,12 @@ function updateEffects() {
         effectPreview.style.webkitTextFillColor = 'transparent';
         effectPreview.style.backgroundSize = '200% 100%';
         
-        // Reset all animations first
+        // Reset animation state
         effectPreview.style.animation = 'none';
-        void effectPreview.offsetWidth; // Trigger reflow
-        
-        // Apply new animation class if speed is selected
         effectPreview.classList.remove('wave-normal', 'wave-slow', 'wave-very-slow', 'wave-fast', 'wave-very-fast');
+        
+        // Force reflow before applying new animation
+        void effectPreview.offsetWidth;
         
         if (speed) {
             switch(speed) {
