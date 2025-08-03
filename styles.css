@@ -630,40 +630,43 @@ nav a:hover, nav a.active {
 
 /* Updated wave animations with slower speeds */
 .wave-normal {
-    animation: wave-flow 3s linear infinite !important;
+    animation: wave-flow 4s linear infinite !important;
     background-size: 200% 100% !important;
+    background-repeat: repeat-x !important;
 }
 
 .wave-slow {
-    animation: wave-flow 6s linear infinite !important;
+    animation: wave-flow 8s linear infinite !important;
     background-size: 200% 100% !important;
+    background-repeat: repeat-x !important;
 }
 
 .wave-very-slow {
-    animation: wave-flow 9s linear infinite !important;
+    animation: wave-flow 12s linear infinite !important;
     background-size: 200% 100% !important;
+    background-repeat: repeat-x !important;
 }
 
 .wave-fast {
-    animation: wave-flow 1.5s linear infinite !important;
+    animation: wave-flow 2s linear infinite !important;
     background-size: 200% 100% !important;
+    background-repeat: repeat-x !important;
 }
 
 .wave-very-fast {
-    animation: wave-flow 0.75s linear infinite !important;
+    animation: wave-flow 1s linear infinite !important;
     background-size: 200% 100% !important;
+    background-repeat: repeat-x !important;
 }
 
 @keyframes wave-flow {
-    0% { background-position: 0% 50%; }
-    100% { background-position: 100% 50%; }
+    0% { background-position-x: 0%; }
+    100% { background-position-x: 200%; }
 }
 
 .effect-preview {
-    /* Add these properties for better animation */
-    background-repeat: repeat-x;
-    background-origin: border-box;
     will-change: background-position;
+    background-origin: border-box;
 }
 
 /* Add bold class for the effect preview */
