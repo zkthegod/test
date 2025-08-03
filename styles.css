@@ -618,53 +618,44 @@ nav a:hover, nav a.active {
     padding: 0 10px;
     letter-spacing: -1px;
     text-shadow: none;
-    /* Updated glow effect - thicker but more contained */
     filter: drop-shadow(0 0 8px var(--glow-color)) 
             drop-shadow(0 0 5px var(--glow-color))
             drop-shadow(0 0 3px var(--glow-color));
     background-blend-mode: screen;
-    background-size: 400% 100%; /* Larger background for smoother flow */
+    background-size: 200% 100%;
     background-position: 0% 50%;
     transition: var(--transition);
+    will-change: background-position;
+    background-origin: border-box;
+    background-repeat: repeat-x;
 }
 
-/* Updated wave animations with slower speeds */
+/* Perfectly smooth gradient animation */
 .wave-normal {
     animation: wave-flow 4s linear infinite !important;
-    background-size: 100% 100% !important; /* Changed from 200% */
 }
 
 .wave-slow {
     animation: wave-flow 8s linear infinite !important;
-    background-size: 100% 100% !important;
 }
 
 .wave-very-slow {
     animation: wave-flow 12s linear infinite !important;
-    background-size: 100% 100% !important;
 }
 
 .wave-fast {
     animation: wave-flow 2s linear infinite !important;
-    background-size: 100% 100% !important;
 }
 
 .wave-very-fast {
     animation: wave-flow 1s linear infinite !important;
-    background-size: 100% 100% !important;
 }
 
 @keyframes wave-flow {
     0% { background-position-x: 0%; }
-    100% { background-position-x: 100%; } /* Changed from 200% */
+    100% { background-position-x: 200%; }
 }
 
-.effect-preview {
-    will-change: background-position;
-    background-origin: border-box;
-}
-
-/* Add bold class for the effect preview */
 .effect-preview.bold {
     font-weight: 700 !important;
 }
