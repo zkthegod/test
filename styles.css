@@ -12,6 +12,7 @@
     --glow-color: #0000ff;
     --preview-bg: #f1f2f6;
     --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    --nav-active: rgba(108, 92, 231, 0.1);
 }
 
 [data-theme="dark"] {
@@ -25,6 +26,7 @@
     --border: 1px solid rgba(255,255,255,0.08);
     --shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
     --preview-bg: #2d3436;
+    --nav-active: rgba(108, 92, 231, 0.2);
 }
 
 * {
@@ -50,17 +52,23 @@ body {
 }
 
 header {
-    padding: 20px 0;
+    padding: 0;
     position: relative;
     margin-bottom: 20px;
-    border-bottom: var(--border);
 }
 
 .header-content {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    padding: 15px 0;
+    border-bottom: var(--border);
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 30px;
 }
 
 .logo {
@@ -74,10 +82,6 @@ header {
     font-weight: 700;
     color: var(--primary);
     margin: 0;
-    background: none;
-    -webkit-background-clip: initial;
-    background-clip: initial;
-    color: initial;
 }
 
 .logo .subtitle {
@@ -89,7 +93,7 @@ header {
 .theme-toggle-container {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
 }
 
 .theme-label {
@@ -144,9 +148,8 @@ input:checked + .slider:before {
 
 nav ul {
     display: flex;
-    justify-content: center;
     list-style: none;
-    gap: 15px;
+    gap: 5px;
 }
 
 nav a {
@@ -163,7 +166,7 @@ nav a {
 
 nav a:hover, nav a.active {
     color: var(--primary);
-    background-color: rgba(108, 92, 231, 0.1);
+    background-color: var(--nav-active);
 }
 
 .page {
@@ -222,7 +225,7 @@ nav a:hover, nav a.active {
 
 .icon-btn:hover {
     color: var(--primary);
-    background-color: rgba(108, 92, 231, 0.1);
+    background-color: var(--nav-active);
 }
 
 .embed-controls {
@@ -284,6 +287,10 @@ nav a:hover, nav a.active {
 .primary-btn.small {
     padding: 8px 12px;
     font-size: 0.9rem;
+}
+
+.primary-btn.active {
+    background-color: var(--primary-dark);
 }
 
 .settings-panel {
@@ -614,6 +621,7 @@ nav a:hover, nav a.active {
     filter: drop-shadow(0 0 15px var(--glow-color));
     background-blend-mode: screen;
     background-size: 200% 100%;
+    background-position: 0% 50%;
     transition: var(--transition);
 }
 
@@ -621,29 +629,29 @@ nav a:hover, nav a.active {
     font-weight: 700;
 }
 
-@keyframes wave-flow {
-    0% { background-position: 0% 50%; }
-    100% { background-position: 100% 50%; }
-}
-
 .wave-normal {
-    animation: wave-flow 3s linear infinite;
+    animation: wave-flow 3s linear infinite !important;
 }
 
 .wave-slow {
-    animation: wave-flow 6s linear infinite;
+    animation: wave-flow 6s linear infinite !important;
 }
 
 .wave-very-slow {
-    animation: wave-flow 9s linear infinite;
+    animation: wave-flow 9s linear infinite !important;
 }
 
 .wave-fast {
-    animation: wave-flow 1.5s linear infinite;
+    animation: wave-flow 1.5s linear infinite !important;
 }
 
 .wave-very-fast {
-    animation: wave-flow 0.75s linear infinite;
+    animation: wave-flow 0.75s linear infinite !important;
+}
+
+@keyframes wave-flow {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
 }
 
 .code-section {
@@ -765,7 +773,19 @@ footer {
         gap: 15px;
     }
     
+    .header-right {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+        width: 100%;
+    }
+    
     nav ul {
         flex-wrap: wrap;
+        width: 100%;
+    }
+    
+    .theme-toggle-container {
+        align-self: flex-end;
     }
 }
