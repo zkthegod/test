@@ -112,15 +112,25 @@
                                 <span id="gradRotationValue">90°</span>
                             </div>
                             <div class="option">
-                                <label>Glow Color:</label>
-                                <input type="color" id="glowColor" value="#0000ff">
+                                <label>Wave Speed:</label>
+                                <div class="custom-select">
+                                    <select id="waveSpeed">
+                                        <option value="">No wave</option>
+                                        <option value="o1">Normal speed</option>
+                                        <option value="f1">Slow</option>
+                                        <option value="f2">Very slow</option>
+                                        <option value="o2">Fast</option>
+                                        <option value="o3">Very fast</option>
+                                    </select>
+                                    <div class="select-arrow"></div>
+                                </div>
                             </div>
-                            <div class="option-group">
-                                <label class="switch">
-                                    <input type="checkbox" id="namewaveToggle" checked>
-                                    <span class="slider"></span>
-                                    <span class="label">Namewave</span>
-                                </label>
+                            <div class="option">
+                                <label>Glow Color:</label>
+                                <div class="color-picker-wrapper">
+                                    <input type="color" id="glowColor" value="#0000ff">
+                                    <span class="color-value">#0000ff</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -134,7 +144,7 @@
                         <div class="code-section">
                             <h3><i class="fas fa-code"></i> xat Code</h3>
                             <div class="code-container">
-                                <div class="code-box" id="codeOutput">(glow#0000ff#grad#r90#ff0000#0000ff)</div>
+                                <div class="code-box" id="codeOutput">(glow#0000ff#grad#r90)</div>
                                 <button id="copyCode" class="primary-btn"><i class="fas fa-copy"></i> Copy</button>
                             </div>
                         </div>
