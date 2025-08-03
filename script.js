@@ -325,7 +325,7 @@ document.addEventListener('DOMContentLoaded', function() {
             effectPreview.style.webkitTextFillColor = 'transparent';
             
             if (wave) {
-                effectPreview.style.backgroundSize = '200% 100%';
+                effectPreview.style.backgroundSize = '200% 200%';
                 effectPreview.style.animation = 'gradientFlow 3s linear infinite';
             } else {
                 effectPreview.style.animation = 'none';
