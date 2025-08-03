@@ -618,10 +618,14 @@ nav a:hover, nav a.active {
     padding: 0 10px;
     letter-spacing: -1px;
     text-shadow: none;
+
+    /* Glow effect */
     filter: drop-shadow(0 0 8px var(--glow-color))
             drop-shadow(0 0 5px var(--glow-color))
             drop-shadow(0 0 3px var(--glow-color));
-    background-size: 200% 100%;
+
+    /* Seamless animated gradient */
+    background-size: 800% 100%; /* dynamically updated in JS to match duplicated color count */
     background-position: 0% 50%;
     background-repeat: repeat-x;
     background-origin: border-box;
@@ -629,7 +633,12 @@ nav a:hover, nav a.active {
     transition: background-position 0.2s ease;
 }
 
-/* Smooth animation speeds */
+/* Bold toggle */
+.effect-preview.bold {
+    font-weight: 700 !important;
+}
+
+/* Animation speeds */
 .wave-normal {
     animation: wave-flow 4s linear infinite;
 }
@@ -646,14 +655,16 @@ nav a:hover, nav a.active {
     animation: wave-flow 1s linear infinite;
 }
 
+/* Gradient animation keyframes */
 @keyframes wave-flow {
-    0% { background-position-x: 0%; }
-    100% { background-position-x: 100%; }
+    0% {
+        background-position-x: 0%;
+    }
+    100% {
+        background-position-x: 100%;
+    }
 }
 
-.effect-preview.bold {
-    font-weight: 700 !important;
-}
 
 
 .code-section {
