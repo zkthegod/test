@@ -9,7 +9,7 @@
     --border: 1px solid rgba(0,0,0,0.08);
     --radius: 12px;
     --shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
-    --glow-color: #0000ff;
+    --glow-color: #000000;
     --preview-bg: #f1f2f6;
     --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     --nav-active: rgba(108, 92, 231, 0.1);
@@ -332,115 +332,6 @@ nav a:hover, nav a.active {
     width: 100px;
 }
 
-.chat-viewport {
-    display: flex;
-    align-items: center;
-    position: relative;
-    padding: 0 50px;
-}
-
-.chat-viewport::before,
-.chat-viewport::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 60px;
-    pointer-events: none;
-    z-index: 1;
-}
-
-.chat-viewport::before {
-    left: 0;
-    background: linear-gradient(90deg, var(--bg), transparent);
-}
-
-.chat-viewport::after {
-    right: 0;
-    background: linear-gradient(270deg, var(--bg), transparent);
-}
-
-.scroll-btn {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background-color: var(--primary);
-    color: white;
-    border: none;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    transition: all 0.3s ease;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 2;
-}
-
-.scroll-btn:hover {
-    transform: translateY(-50%) scale(1.1);
-    box-shadow: 0 6px 16px rgba(108, 92, 231, 0.3);
-}
-
-.scroll-btn.left {
-    left: 0;
-}
-
-.scroll-btn.right {
-    right: 0;
-}
-
-.chat-container {
-    display: flex;
-    gap: 30px;
-    overflow-x: auto;
-    scroll-behavior: smooth;
-    padding: 20px 10px;
-    flex: 1;
-    scroll-padding: 0 20px;
-    scrollbar-width: none;
-}
-
-.chat-container::-webkit-scrollbar {
-    display: none;
-}
-
-.embedded-chat {
-    background-color: var(--card-bg);
-    padding: 15px;
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    position: relative;
-    border: var(--border);
-    transition: var(--transition);
-    flex: 0 0 auto;
-    min-width: 700px;
-}
-
-.remove-chat {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background-color: #ff4757;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-size: 12px;
-    opacity: 0;
-    transition: var(--transition);
-}
-
-.embedded-chat:hover .remove-chat {
-    opacity: 1;
-}
-
 .status-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -544,28 +435,36 @@ nav a:hover, nav a.active {
     font-weight: 500;
 }
 
-.option input[type="range"] {
+.custom-select {
+    position: relative;
     flex: 1;
-    margin: 0 10px;
-    -webkit-appearance: none;
-    height: 6px;
-    background: var(--bg);
-    border-radius: 3px;
 }
 
-.option input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 18px;
-    height: 18px;
-    background: var(--primary);
-    border-radius: 50%;
+.custom-select select {
+    width: 100%;
+    padding: 10px 15px;
+    border: var(--border);
+    border-radius: var(--radius);
+    background-color: var(--card-bg);
+    color: var(--text);
+    appearance: none;
     cursor: pointer;
     transition: var(--transition);
 }
 
-.option input[type="range"]::-webkit-slider-thumb:hover {
-    transform: scale(1.2);
-    box-shadow: 0 0 10px var(--primary);
+.custom-select select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.2);
+}
+
+.select-arrow {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: var(--text-light);
 }
 
 .color-controls {
@@ -712,38 +611,6 @@ nav a:hover, nav a.active {
     overflow-x: auto;
 }
 
-.custom-select {
-    position: relative;
-    flex: 1;
-}
-
-.custom-select select {
-    width: 100%;
-    padding: 10px 15px;
-    border: var(--border);
-    border-radius: var(--radius);
-    background-color: var(--card-bg);
-    color: var(--text);
-    appearance: none;
-    cursor: pointer;
-    transition: var(--transition);
-}
-
-.custom-select select:focus {
-    outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.2);
-}
-
-.select-arrow {
-    position: absolute;
-    top: 50%;
-    right: 12px;
-    transform: translateY(-50%);
-    pointer-events: none;
-    color: var(--text-light);
-}
-
 .color-picker-wrapper {
     display: flex;
     align-items: center;
@@ -799,11 +666,6 @@ footer {
         font-size: 2.5rem;
     }
     
-    .scroll-btn {
-        height: 40px;
-        width: 40px;
-    }
-    
     .header-content {
         flex-direction: column;
         align-items: flex-start;
@@ -824,13 +686,5 @@ footer {
     
     .theme-toggle-container {
         align-self: flex-end;
-    }
-    
-    .embedded-chat {
-        min-width: 300px;
-    }
-    
-    .chat-viewport {
-        padding: 0 40px;
     }
 }
