@@ -328,25 +328,27 @@ function updateEffects() {
         const totalColors = colors.length;
         const gradientStops = [];
 
+        // Create smooth color stops
         colors.forEach((color, i) => {
-            const percent = Math.round((i / (totalColors - 1)) * 100);
+            const percent = (i / (totalColors - 1)) * 100;
             gradientStops.push(`${color} ${percent}%`);
         });
 
-        // For smooth diagonal gradients, we need to:
-        // 1. Use repeating-linear-gradient
-        // 2. Set a large enough background-size
-        // 3. Make sure the gradient pattern repeats seamlessly
-        const gradient = `repeating-linear-gradient(${angle}deg, ${gradientStops.join(', ')})`;
-        
-        // Calculate optimal background size for the angle
-        // This ensures the gradient doesn't clip diagonally
-        const angleRad = angle * Math.PI / 180;
-        const gradientSize = Math.ceil(100 * (Math.abs(Math.sin(angleRad)) + Math.abs(Math.cos(angleRad))));
+        // For perfect seamless looping:
+        // 1. Use the first color again at 100% to complete the cycle
+        gradientStops.push(`${colors[0]} 100%`);
 
-        // Apply styles
+        // 2. Calculate optimal background size based on angle
+        const angleRad = angle * Math.PI / 180;
+        const xSize = Math.abs(Math.cos(angleRad));
+        const ySize = Math.abs(Math.sin(angleRad));
+        const bgSize = Math.ceil(100 * (xSize + ySize)) * 2;
+
+        const gradient = `repeating-linear-gradient(${angle}deg, ${gradientStops.join(', ')})`;
+
+        // Apply styles with calculated background size
         effectPreview.style.backgroundImage = gradient;
-        effectPreview.style.backgroundSize = `${gradientSize * 2}% ${gradientSize * 2}%`;
+        effectPreview.style.backgroundSize = `${bgSize}% ${bgSize}%`;
         effectPreview.style.backgroundPosition = '0% 50%';
 
         // Reset animation
@@ -378,7 +380,7 @@ function updateEffects() {
         effectPreview.style.animation = 'none';
     }
 
-    // Apply glow
+    // Rest of the function remains the same...
     effectPreview.style.setProperty('--glow-color', glow);
 
     // Generate code output
