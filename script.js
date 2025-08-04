@@ -327,21 +327,20 @@ function updateEffects() {
         const totalColors = colors.length;
         const gradientStops = [];
 
-        // Compress into ~16.65% space for faster repetition
+        // Space colors evenly to form one full color cycle (0% to 100%)
         colors.forEach((color, i) => {
-            // Match xat’s smooth spacing style
-            const percent = ((i + 1) / (totalColors + 1)) * 16.65;
-            gradientStops.push(`${color} ${percent.toFixed(3)}%`);
+            const percent = (i / (totalColors - 1)) * 100;
+            gradientStops.push(`${color} ${percent.toFixed(2)}%`);
         });
 
-        // Repeat the first color to close the gradient loop
-        gradientStops.push(`${colors[0]} 16.65%`);
+        // Add first color again at 100% to close the cycle
+        gradientStops.push(`${colors[0]} 100%`);
 
         const gradient = `repeating-linear-gradient(${angle}deg, ${gradientStops.join(', ')})`;
 
         // Apply styles
         effectPreview.style.backgroundImage = gradient;
-        effectPreview.style.backgroundSize = '220% 100%'; // xat-like
+        effectPreview.style.backgroundSize = '300% 100%'; // controls how many full repeats
         effectPreview.style.backgroundRepeat = 'repeat';
         effectPreview.style.backgroundPosition = '0% 0%';
 
@@ -352,10 +351,8 @@ function updateEffects() {
             'wave-fast', 'wave-very-fast'
         );
 
-        // Force reflow
-        void effectPreview.offsetWidth;
+        void effectPreview.offsetWidth; // Force reflow
 
-        // Reapply animation
         if (speed) {
             const speedClass = {
                 'o1': 'wave-normal',
@@ -393,6 +390,7 @@ function updateEffects() {
     code += ')';
     codeOutput.textContent = code;
 }
+
 
     
     // Initialize
