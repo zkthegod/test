@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rexor's Name Effects | rexor.lol</title>
+    <title>xat Tools | rexor.lol</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
@@ -14,12 +14,13 @@
             <div class="header-content">
                 <div class="logo">
                     <h1>rexor.lol</h1>
-                    <span class="subtitle">Name Effects Generator</span>
+                    <span class="subtitle">xat Tools</span>
                 </div>
                 <div class="header-right">
                     <nav>
                         <ul>
                             <li><a href="#home" class="active"><i class="fas fa-home"></i> Home</a></li>
+                            <li><a href="#chat-embedder"><i class="fas fa-comment-dots"></i> Chat Embedder</a></li>
                             <li><a href="#name-effects"><i class="fas fa-magic"></i> Name Effects</a></li>
                         </ul>
                     </nav>
@@ -38,8 +39,8 @@
         <main>
             <section id="home" class="page active">
                 <div class="section-header">
-                    <h2>Welcome to Rexor's Name Effects</h2>
-                    <p class="description">Create beautiful gradient name effects for xat.com</p>
+                    <h2>Welcome to xat Tools</h2>
+                    <p class="description">Premium tools for xat.com users</p>
                 </div>
                 
                 <div class="status-grid">
@@ -51,6 +52,46 @@
                         </div>
                         <div class="uptime">Uptime: <span class="value">-</span></div>
                     </div>
+                    <div class="status-card" id="wikiStatus">
+                        <h3><i class="fas fa-book"></i> wiki.xat.com</h3>
+                        <div class="status-indicator loading">
+                            <div class="dot"></div>
+                            <span>Checking...</span>
+                        </div>
+                        <div class="uptime">Uptime: <span class="value">-</span></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="chat-embedder" class="page">
+                <div class="section-header">
+                    <h2>Chat Embedder</h2>
+                    <button id="settingsBtn" class="icon-btn"><i class="fas fa-cog"></i> Settings</button>
+                </div>
+                
+                <div class="embed-controls">
+                    <div class="input-group">
+                        <input type="text" id="chatName" placeholder="Enter chat name">
+                        <button id="embedChat" class="primary-btn"><i class="fas fa-plus"></i> Embed</button>
+                    </div>
+                </div>
+                
+                <div class="settings-panel" id="settingsPanel">
+                    <div class="setting">
+                        <label for="chatWidth">Width:</label>
+                        <input type="number" id="chatWidth" min="300" max="1200" value="700">
+                    </div>
+                    <div class="setting">
+                        <label for="chatHeight">Height:</label>
+                        <input type="number" id="chatHeight" min="300" max="1200" value="500">
+                    </div>
+                    <button id="saveSettings" class="primary-btn"><i class="fas fa-save"></i> Save</button>
+                </div>
+                
+                <div class="chat-viewport">
+                    <button class="scroll-btn left" id="scrollLeft"><i class="fas fa-chevron-left"></i></button>
+                    <div class="chat-container" id="chatContainer"></div>
+                    <button class="scroll-btn right" id="scrollRight"><i class="fas fa-chevron-right"></i></button>
                 </div>
             </section>
 
@@ -85,7 +126,6 @@
                                 <div class="custom-select">
                                     <select id="gradDirection">
                                         <option value="90">Horizontal (left to right)</option>
-                                        <option value="0">Vertical (top to bottom)</option>
                                         <option value="190">Diagonal (bottom right to top left)</option>
                                         <option value="-190">Diagonal (top right to bottom left)</option>
                                     </select>
@@ -135,7 +175,7 @@
         </main>
 
         <footer>
-            <p>&copy; 2023 rexor.lol | Name Effects Generator</p>
+            <p>&copy; 2023 rexor.lol | xat Tools</p>
         </footer>
     </div>
 
