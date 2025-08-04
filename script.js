@@ -396,4 +396,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize
     initColorInputs();
     updateEffects();
-});
+    document.querySelectorAll('.info-toggle').forEach(toggle => {
+        toggle.addEventListener('click', () => {
+            const content = toggle.nextElementSibling;
+            const expanded = toggle.getAttribute('aria-expanded') === 'true';
+            toggle.setAttribute('aria-expanded', !expanded);
+            content.hidden = expanded;
+        });
+    });
