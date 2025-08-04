@@ -319,7 +319,7 @@ function updateEffects() {
     });
 
     const text = effectText.value || 'xat';
-    let angle = parseFloat(gradRotation.value);
+    const angle = parseFloat(document.getElementById('angleSelect').value); // using dropdown
     const glow = glowColor.value;
     const speed = waveSpeed.value;
 
@@ -327,20 +327,18 @@ function updateEffects() {
         const totalColors = colors.length;
         const gradientStops = [];
 
-        const rangeEnd = 25; // Controls how far the full gradient spans (like xat)
-
+        // Spread colors evenly across 0-100%
         colors.forEach((color, i) => {
-            const percent = (i / (totalColors - 1)) * rangeEnd;
+            const percent = (i / (totalColors - 1)) * 100;
             gradientStops.push(`${color} ${percent.toFixed(2)}%`);
         });
 
-        // Repeat the first color again just past the last stop to close the loop
-        gradientStops.push(`${colors[0]} ${rangeEnd + 0.01}%`);
+        // Use linear-gradient (not repeating) to ensure proper blending
+        const gradient = `linear-gradient(${angle}deg, ${gradientStops.join(', ')})`;
 
-        const gradient = `repeating-linear-gradient(${angle}deg, ${gradientStops.join(', ')})`;
-
+        // Apply styles
         effectPreview.style.backgroundImage = gradient;
-        effectPreview.style.backgroundSize = '150% 100%'; // Tight repeat like xat
+        effectPreview.style.backgroundSize = `${totalColors * 100}% 100%`; // 100% per full cycle
         effectPreview.style.backgroundRepeat = 'repeat';
         effectPreview.style.backgroundPosition = '0% 0%';
 
@@ -350,11 +348,9 @@ function updateEffects() {
             'wave-normal', 'wave-slow', 'wave-very-slow',
             'wave-fast', 'wave-very-fast'
         );
-
-        // Force reflow
         void effectPreview.offsetWidth;
 
-        // Reapply wave animation class
+        // Apply speed class
         if (speed) {
             const speedClass = {
                 'o1': 'wave-normal',
@@ -372,16 +368,13 @@ function updateEffects() {
         effectPreview.style.animation = 'none';
     }
 
-    // Apply glow
+    // Glow
     effectPreview.style.setProperty('--glow-color', glow);
 
-    // Generate xat-style code
+    // Generate xat code
     let code = '(glow';
     code += `#${glow.replace('#', '')}`;
-
-    if (effectPreview.classList.contains('bold')) {
-        code += '#b';
-    }
+    if (effectPreview.classList.contains('bold')) code += '#b';
 
     if (colors.length > 1) {
         code += `#grad#r${angle}`;
@@ -392,6 +385,7 @@ function updateEffects() {
     code += ')';
     codeOutput.textContent = code;
 }
+
 
 
 
