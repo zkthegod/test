@@ -325,12 +325,6 @@ function updateEffects() {
 
     // Apply gradient effect
     if (colors.length > 1) {
-        // Calculate the correct gradient size based on angle
-        const rad = angle * (Math.PI / 180);
-        const absCos = Math.abs(Math.cos(rad));
-        const absSin = Math.abs(Math.sin(rad));
-        const gradientWidth = 100 * (absSin + absCos);
-
         const totalColors = colors.length;
         const gradientStops = [];
 
@@ -339,12 +333,20 @@ function updateEffects() {
             gradientStops.push(`${color} ${percent}%`);
         });
 
-        const gradient = `linear-gradient(${angle}deg, ${gradientStops.join(', ')})`;
+        // For smooth diagonal gradients, we need to:
+        // 1. Use repeating-linear-gradient
+        // 2. Set a large enough background-size
+        // 3. Make sure the gradient pattern repeats seamlessly
+        const gradient = `repeating-linear-gradient(${angle}deg, ${gradientStops.join(', ')})`;
+        
+        // Calculate optimal background size for the angle
+        // This ensures the gradient doesn't clip diagonally
+        const angleRad = angle * Math.PI / 180;
+        const gradientSize = Math.ceil(100 * (Math.abs(Math.sin(angleRad)) + Math.abs(Math.cos(angleRad))));
 
-        // Apply styles with calculated gradient size
+        // Apply styles
         effectPreview.style.backgroundImage = gradient;
-        effectPreview.style.backgroundSize = `${gradientWidth}% 100%`;
-        effectPreview.style.backgroundRepeat = 'repeat-x';
+        effectPreview.style.backgroundSize = `${gradientSize * 2}% ${gradientSize * 2}%`;
         effectPreview.style.backgroundPosition = '0% 50%';
 
         // Reset animation
@@ -376,7 +378,7 @@ function updateEffects() {
         effectPreview.style.animation = 'none';
     }
 
-    // Rest of your code remains the same...
+    // Apply glow
     effectPreview.style.setProperty('--glow-color', glow);
 
     // Generate code output
