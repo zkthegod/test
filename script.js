@@ -327,20 +327,20 @@ function updateEffects() {
         const totalColors = colors.length;
         const gradientStops = [];
 
-        // Space colors evenly to form one full color cycle (0% to 100%)
+        const rangeEnd = 25; // Controls how far the full gradient spans (like xat)
+
         colors.forEach((color, i) => {
-            const percent = (i / (totalColors - 1)) * 100;
+            const percent = (i / (totalColors - 1)) * rangeEnd;
             gradientStops.push(`${color} ${percent.toFixed(2)}%`);
         });
 
-        // Add first color again at 100% to close the cycle
-        gradientStops.push(`${colors[0]} 100%`);
+        // Repeat the first color again just past the last stop to close the loop
+        gradientStops.push(`${colors[0]} ${rangeEnd + 0.01}%`);
 
         const gradient = `repeating-linear-gradient(${angle}deg, ${gradientStops.join(', ')})`;
 
-        // Apply styles
         effectPreview.style.backgroundImage = gradient;
-        effectPreview.style.backgroundSize = '300% 100%'; // controls how many full repeats
+        effectPreview.style.backgroundSize = '150% 100%'; // Tight repeat like xat
         effectPreview.style.backgroundRepeat = 'repeat';
         effectPreview.style.backgroundPosition = '0% 0%';
 
@@ -351,8 +351,10 @@ function updateEffects() {
             'wave-fast', 'wave-very-fast'
         );
 
-        void effectPreview.offsetWidth; // Force reflow
+        // Force reflow
+        void effectPreview.offsetWidth;
 
+        // Reapply wave animation class
         if (speed) {
             const speedClass = {
                 'o1': 'wave-normal',
@@ -373,7 +375,7 @@ function updateEffects() {
     // Apply glow
     effectPreview.style.setProperty('--glow-color', glow);
 
-    // Generate code output
+    // Generate xat-style code
     let code = '(glow';
     code += `#${glow.replace('#', '')}`;
 
@@ -390,6 +392,7 @@ function updateEffects() {
     code += ')';
     codeOutput.textContent = code;
 }
+
 
 
     
