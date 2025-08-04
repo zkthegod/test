@@ -37,9 +37,116 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
+    // Chat embedder functionality
+    const embedChatBtn = document.getElementById('embedChat');
+    const chatNameInput = document.getElementById('chatName');
+    const chatContainer = document.getElementById('chatContainer');
+    const settingsBtn = document.getElementById('settingsBtn');
+    const settingsPanel = document.getElementById('settingsPanel');
+    const saveSettingsBtn = document.getElementById('saveSettings');
+    const chatWidthInput = document.getElementById('chatWidth');
+    const chatHeightInput = document.getElementById('chatHeight');
+    const scrollLeftBtn = document.getElementById('scrollLeft');
+    const scrollRightBtn = document.getElementById('scrollRight');
+    
+    // Load saved settings or set defaults
+    const savedSettings = JSON.parse(localStorage.getItem('chatSettings')) || {
+        width: 700,
+        height: 500
+    };
+    
+    chatWidthInput.value = savedSettings.width;
+    chatHeightInput.value = savedSettings.height;
+    
+    settingsBtn.addEventListener('click', function() {
+        settingsPanel.classList.toggle('active');
+    });
+    
+    saveSettingsBtn.addEventListener('click', function() {
+        const newSettings = {
+            width: parseInt(chatWidthInput.value) || 700,
+            height: parseInt(chatHeightInput.value) || 500
+        };
+        
+        localStorage.setItem('chatSettings', JSON.stringify(newSettings));
+        settingsPanel.classList.remove('active');
+        
+        document.querySelectorAll('.embedded-chat iframe').forEach(iframe => {
+            iframe.width = newSettings.width;
+            iframe.height = newSettings.height;
+        });
+        
+        const originalText = saveSettingsBtn.innerHTML;
+        saveSettingsBtn.innerHTML = '<i class="fas fa-check"></i> Saved!';
+        setTimeout(() => {
+            saveSettingsBtn.innerHTML = originalText;
+        }, 2000);
+    });
+    
+    embedChatBtn.addEventListener('click', embedChat);
+    chatNameInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            embedChat();
+        }
+    });
+    
+    function embedChat() {
+        const chatName = chatNameInput.value.trim();
+        if (!chatName) {
+            chatNameInput.focus();
+            return;
+        }
+        
+        const settings = JSON.parse(localStorage.getItem('chatSettings')) || {
+            width: 700,
+            height: 500
+        };
+        
+        const chatId = Date.now();
+        const chatWrapper = document.createElement('div');
+        chatWrapper.className = 'embedded-chat';
+        chatWrapper.id = `chat-${chatId}`;
+        
+        chatWrapper.innerHTML = `
+            <button class="remove-chat" data-chat-id="${chatId}">×</button>
+            <iframe src="https://xat.com/embed/chat.php#gn=${encodeURIComponent(chatName)}" 
+                    width="${settings.width}" height="${settings.height}" 
+                    frameborder="0" scrolling="no"></iframe>
+        `;
+        
+        chatContainer.appendChild(chatWrapper);
+        chatNameInput.value = '';
+        
+        setTimeout(() => {
+            chatContainer.scrollTo({
+                left: chatContainer.scrollWidth,
+                behavior: 'smooth'
+            });
+        }, 100);
+        
+        chatWrapper.querySelector('.remove-chat').addEventListener('click', function() {
+            document.getElementById(`chat-${this.getAttribute('data-chat-id')}`).remove();
+        });
+    }
+    
+    scrollLeftBtn.addEventListener('click', function() {
+        chatContainer.scrollBy({
+            left: -300,
+            behavior: 'smooth'
+        });
+    });
+    
+    scrollRightBtn.addEventListener('click', function() {
+        chatContainer.scrollBy({
+            left: 300,
+            behavior: 'smooth'
+        });
+    });
+    
     // Status monitoring
     const services = [
-        { name: 'xat', url: 'https://xat.com', element: document.getElementById('xatStatus') }
+        { name: 'xat', url: 'https://xat.com', element: document.getElementById('xatStatus') },
+        { name: 'wiki', url: 'https://wiki.xat.com', element: document.getElementById('wikiStatus') }
     ];
     
     function checkServiceStatus(service) {
@@ -187,7 +294,7 @@ document.addEventListener('DOMContentLoaded', function() {
         gradColorsContainer.innerHTML = '';
         randomPreset.forEach(color => addColorInput(color));
         
-        const directions = ['90', '0', '190', '-190'];
+        const directions = ['90', '190', '-190'];
         gradDirection.value = directions[Math.floor(Math.random() * directions.length)];
         
         glowColor.value = '#000000';
@@ -213,21 +320,20 @@ document.addEventListener('DOMContentLoaded', function() {
         const speed = waveSpeed.value;
 
         // Apply gradient effect
-        if (colors.length > 0) {
+        if (colors.length > 1) {
             const totalColors = colors.length;
             const gradientStops = [];
-            const colorPercentage = 100 / totalColors;
 
             colors.forEach((color, i) => {
-                const startPercent = Math.round(i * colorPercentage);
-                const endPercent = Math.round((i + 1) * colorPercentage);
-                gradientStops.push(`${color} ${startPercent}%`);
-                gradientStops.push(`${color} ${endPercent}%`);
+                const percent = Math.round((i / totalColors) * 100);
+                gradientStops.push(`${color} ${percent}%`);
             });
 
-            // Create smooth gradient
+            // Repeat the first color at 100% to close the loop
+            gradientStops.push(`${colors[0]} 100%`);
+
             const gradient = `linear-gradient(${angle}deg, ${gradientStops.join(', ')})`;
-            
+
             // Apply styles
             effectPreview.style.backgroundImage = gradient;
             effectPreview.style.backgroundSize = '200% 100%';
@@ -256,6 +362,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     effectPreview.classList.add(speedClass);
                 }
             }
+        } else if (colors.length === 1) {
+            // Just one color, no animation
+            effectPreview.style.background = colors[0];
+            effectPreview.style.animation = 'none';
         }
 
         // Apply glow
@@ -269,7 +379,7 @@ document.addEventListener('DOMContentLoaded', function() {
             code += '#b';
         }
 
-        if (colors.length > 0) {
+        if (colors.length > 1) {
             code += `#grad#r${angle}`;
             if (speed) code += `#${speed}`;
             colors.forEach(c => code += `#${c.replace('#', '')}`);
