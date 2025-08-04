@@ -653,12 +653,14 @@ nav a:hover, nav a.active {
             drop-shadow(0 0 5px var(--glow-color))
             drop-shadow(0 0 3px var(--glow-color));
     background-blend-mode: screen;
-    background-size: 220% 100%; /* tighter loop like xat */
+
+    /* Important: makes sure it repeats enough to be smooth */
+    background-size: 220% 100%;
+    background-repeat: repeat;
     background-position: 0% 0%;
     transition: var(--transition);
     will-change: background-position;
     background-origin: border-box;
-    background-repeat: repeat;
 }
 
 @keyframes wave-flow {
@@ -670,22 +672,19 @@ nav a:hover, nav a.active {
     }
 }
 
+/* Animation speeds */
 .wave-very-slow {
     animation: wave-flow 12s linear infinite !important;
 }
-
 .wave-slow {
     animation: wave-flow 8s linear infinite !important;
 }
-
 .wave-normal {
     animation: wave-flow 4s linear infinite !important;
 }
-
 .wave-fast {
     animation: wave-flow 2s linear infinite !important;
 }
-
 .wave-very-fast {
     animation: wave-flow 1s linear infinite !important;
 }
@@ -693,6 +692,7 @@ nav a:hover, nav a.active {
 .effect-preview.bold {
     font-weight: 700 !important;
 }
+
 
 
 .code-section {
