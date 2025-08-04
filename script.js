@@ -310,88 +310,92 @@ document.addEventListener('DOMContentLoaded', function() {
         updateEffects();
     });
     
-    function updateEffects() {
-        const colors = [];
-        document.querySelectorAll('.color-picker').forEach(picker => {
-            if (picker.value) {
-                colors.push(picker.value);
-            }
+function updateEffects() {
+    const colors = [];
+    document.querySelectorAll('.color-picker').forEach(picker => {
+        if (picker.value) {
+            colors.push(picker.value);
+        }
+    });
+
+    const text = effectText.value || 'xat';
+    let angle = parseFloat(gradRotation.value);
+    const glow = glowColor.value;
+    const speed = waveSpeed.value;
+
+    // Apply gradient effect
+    if (colors.length > 1) {
+        // Calculate the correct gradient size based on angle
+        const rad = angle * (Math.PI / 180);
+        const absCos = Math.abs(Math.cos(rad));
+        const absSin = Math.abs(Math.sin(rad));
+        const gradientWidth = 100 * (absSin + absCos);
+
+        const totalColors = colors.length;
+        const gradientStops = [];
+
+        colors.forEach((color, i) => {
+            const percent = Math.round((i / (totalColors - 1)) * 100);
+            gradientStops.push(`${color} ${percent}%`);
         });
 
-        const text = effectText.value || 'xat';
-        let angle = parseFloat(gradRotation.value);
-        const glow = glowColor.value;
-        const speed = waveSpeed.value;
+        const gradient = `linear-gradient(${angle}deg, ${gradientStops.join(', ')})`;
 
-        // Apply gradient effect
-        if (colors.length > 1) {
-            const totalColors = colors.length;
-            const gradientStops = [];
+        // Apply styles with calculated gradient size
+        effectPreview.style.backgroundImage = gradient;
+        effectPreview.style.backgroundSize = `${gradientWidth}% 100%`;
+        effectPreview.style.backgroundRepeat = 'repeat-x';
+        effectPreview.style.backgroundPosition = '0% 50%';
 
-            colors.forEach((color, i) => {
-                const percent = Math.round((i / totalColors) * 100);
-                gradientStops.push(`${color} ${percent}%`);
-            });
+        // Reset animation
+        effectPreview.style.animation = 'none';
+        effectPreview.classList.remove(
+            'wave-normal', 'wave-slow', 'wave-very-slow',
+            'wave-fast', 'wave-very-fast'
+        );
 
-            // Repeat the first color at 100% to close the loop
-            gradientStops.push(`${colors[0]} 100%`);
+        // Force reflow to restart animation
+        void effectPreview.offsetWidth;
 
-            const gradient = `repeating-linear-gradient(${angle}deg, ${gradientStops.join(', ')})`;
-
-            // Apply styles
-            effectPreview.style.backgroundImage = gradient;
-            effectPreview.style.backgroundSize = '200% 100%';
-            effectPreview.style.backgroundRepeat = 'repeat-x';
-
-            // Reset animation
-            effectPreview.style.animation = 'none';
-            effectPreview.classList.remove(
-                'wave-normal', 'wave-slow', 'wave-very-slow',
-                'wave-fast', 'wave-very-fast'
-            );
-
-            // Force reflow to restart animation
-            void effectPreview.offsetWidth;
-
-            // Reapply animation
-            if (speed) {
-                const speedClass = {
-                    'o1': 'wave-normal',
-                    'f1': 'wave-slow',
-                    'f2': 'wave-very-slow',
-                    'o2': 'wave-fast',
-                    'o3': 'wave-very-fast'
-                }[speed];
-                if (speedClass) {
-                    effectPreview.classList.add(speedClass);
-                }
+        // Reapply animation
+        if (speed) {
+            const speedClass = {
+                'o1': 'wave-normal',
+                'f1': 'wave-slow',
+                'f2': 'wave-very-slow',
+                'o2': 'wave-fast',
+                'o3': 'wave-very-fast'
+            }[speed];
+            if (speedClass) {
+                effectPreview.classList.add(speedClass);
             }
-        } else if (colors.length === 1) {
-            // Just one color, no animation
-            effectPreview.style.background = colors[0];
-            effectPreview.style.animation = 'none';
         }
-
-        // Apply glow
-        effectPreview.style.setProperty('--glow-color', glow);
-
-        // Generate code output
-        let code = '(glow';
-        code += `#${glow.replace('#', '')}`;
-
-        if (effectPreview.classList.contains('bold')) {
-            code += '#b';
-        }
-
-        if (colors.length > 1) {
-            code += `#grad#r${angle}`;
-            if (speed) code += `#${speed}`;
-            colors.forEach(c => code += `#${c.replace('#', '')}`);
-        }
-
-        code += ')';
-        codeOutput.textContent = code;
+    } else if (colors.length === 1) {
+        // Just one color, no animation
+        effectPreview.style.background = colors[0];
+        effectPreview.style.animation = 'none';
     }
+
+    // Rest of your code remains the same...
+    effectPreview.style.setProperty('--glow-color', glow);
+
+    // Generate code output
+    let code = '(glow';
+    code += `#${glow.replace('#', '')}`;
+
+    if (effectPreview.classList.contains('bold')) {
+        code += '#b';
+    }
+
+    if (colors.length > 1) {
+        code += `#grad#r${angle}`;
+        if (speed) code += `#${speed}`;
+        colors.forEach(c => code += `#${c.replace('#', '')}`);
+    }
+
+    code += ')';
+    codeOutput.textContent = code;
+}
     
     // Initialize
     initColorInputs();
