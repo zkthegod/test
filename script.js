@@ -327,20 +327,21 @@ function updateEffects() {
         const totalColors = colors.length;
         const gradientStops = [];
 
-        // Compress stops into ~16% range like xat
+        // Compress into ~16.65% space for faster repetition
         colors.forEach((color, i) => {
-            const percent = ((i + 1) / (totalColors + 1)) * 16;
+            // Match xat’s smooth spacing style
+            const percent = ((i + 1) / (totalColors + 1)) * 16.65;
             gradientStops.push(`${color} ${percent.toFixed(3)}%`);
         });
 
-        // Repeat the first color to complete the loop
+        // Repeat the first color to close the gradient loop
         gradientStops.push(`${colors[0]} 16.65%`);
 
         const gradient = `repeating-linear-gradient(${angle}deg, ${gradientStops.join(', ')})`;
 
         // Apply styles
         effectPreview.style.backgroundImage = gradient;
-        effectPreview.style.backgroundSize = '220% 100%';
+        effectPreview.style.backgroundSize = '220% 100%'; // xat-like
         effectPreview.style.backgroundRepeat = 'repeat';
         effectPreview.style.backgroundPosition = '0% 0%';
 
@@ -368,7 +369,6 @@ function updateEffects() {
             }
         }
     } else if (colors.length === 1) {
-        // Just one color, no animation
         effectPreview.style.background = colors[0];
         effectPreview.style.animation = 'none';
     }
