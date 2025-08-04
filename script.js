@@ -336,11 +336,9 @@ document.addEventListener('DOMContentLoaded', function() {
             // Repeat the first color at 100% to close the loop
             gradientStops.push(`${colors[0]} 100%`);
 
-            const gradient = `repeating-linear-gradient(${angle}deg, ${gradientStops.join(', ')})`;
-
-            // Apply styles
-            effectPreview.style.backgroundImage = gradient;
-            effectPreview.style.backgroundSize = '200% 100%';
+const gradient = `linear-gradient(${angle}deg, ${gradientStops.join(', ')})`;
+effectPreview.style.backgroundImage = gradient;
+effectPreview.style.backgroundSize = '300% 300%';
             effectPreview.style.backgroundRepeat = 'repeat-x';
 
             // Reset animation
