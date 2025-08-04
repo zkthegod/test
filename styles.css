@@ -653,40 +653,39 @@ nav a:hover, nav a.active {
             drop-shadow(0 0 5px var(--glow-color))
             drop-shadow(0 0 3px var(--glow-color));
     background-blend-mode: screen;
-
-    /* Updated to allow smooth diagonal wave */
-    background-size: 300% 300%;
+    background-size: 220% 100%; /* tighter loop like xat */
     background-position: 0% 0%;
-    background-repeat: no-repeat; /* Avoid visible seams */
-    background-origin: border-box;
-
     transition: var(--transition);
     will-change: background-position;
+    background-origin: border-box;
+    background-repeat: repeat;
 }
 
-/* Updated wave animation using both X and Y */
 @keyframes wave-flow {
     0% {
         background-position: 0% 0%;
     }
     100% {
-        background-position: 100% 100%;
+        background-position: 100% 0%;
     }
 }
 
-/* Speed variants */
 .wave-very-slow {
     animation: wave-flow 12s linear infinite !important;
 }
+
 .wave-slow {
     animation: wave-flow 8s linear infinite !important;
 }
+
 .wave-normal {
     animation: wave-flow 4s linear infinite !important;
 }
+
 .wave-fast {
     animation: wave-flow 2s linear infinite !important;
 }
+
 .wave-very-fast {
     animation: wave-flow 1s linear infinite !important;
 }
@@ -694,6 +693,7 @@ nav a:hover, nav a.active {
 .effect-preview.bold {
     font-weight: 700 !important;
 }
+
 
 .code-section {
     margin-top: 30px;
