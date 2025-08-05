@@ -322,21 +322,20 @@ function updateEffects() {
     // Apply gradient effect
     if (colors.length > 0) {
         // Create gradient stops that show all colors simultaneously
-        const gradientStops = [];
-        const segmentWidth = 100 / colors.length;
-        
-        colors.forEach((color, i) => {
-            const start = i * segmentWidth;
-            const end = (i + 1) * segmentWidth;
-            gradientStops.push(`${color} ${start}%`);
-            gradientStops.push(`${color} ${end}%`);
-        });
+// Step 1: Build smoother gradient
+const gradientStops = [];
+const segmentWidth = 100 / colors.length;
 
-        const gradient = `linear-gradient(${angle}deg, ${gradientStops.join(', ')})`;
+colors.forEach((color, i) => {
+    const start = i * segmentWidth;
+    const end = (i + 1) * segmentWidth;
+    gradientStops.push(`${color} ${start}%`, `${color} ${end}%`);
+});
 
-        // Apply styles
-        // Apply styles
-        effectPreview.style.backgroundImage = gradient;
+const gradient = `linear-gradient(${angle}deg, ${gradientStops.join(', ')})`;
+
+// Step 2: Apply proper sizing
+effectPreview.style.backgroundImage = gradient;
 effectPreview.style.backgroundSize = `${colors.length * 150}% ${colors.length * 150}%`;
 effectPreview.style.backgroundRepeat = 'repeat';
 
