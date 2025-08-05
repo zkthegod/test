@@ -336,7 +336,13 @@ function updateEffects() {
 
         // Apply styles
         effectPreview.style.backgroundImage = gradient;
-        effectPreview.style.backgroundSize = colors.length * 100 + '% 100%';
+        const angleRad = (parseFloat(angle) % 360) * Math.PI / 180;
+const x = Math.abs(Math.cos(angleRad));
+const y = Math.abs(Math.sin(angleRad));
+const scaleFactor = colors.length * 100;
+const sizeX = scaleFactor * x;
+const sizeY = scaleFactor * y;
+effectPreview.style.backgroundSize = `${sizeX}% ${sizeY}%`;
         effectPreview.style.backgroundRepeat = 'repeat-x';
 
         // Reset animation
