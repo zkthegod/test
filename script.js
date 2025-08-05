@@ -389,10 +389,6 @@ function updateEffects() {
         codeOutput.textContent = code;
     }
     
-    // Initialize
-    initColorInputs();
-    updateEffects();
-});
 
     
     // Initialize
