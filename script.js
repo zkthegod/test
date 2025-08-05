@@ -335,15 +335,15 @@ function updateEffects() {
         const gradient = `linear-gradient(${angle}deg, ${gradientStops.join(', ')})`;
 
         // Apply styles
-        effectPreview.style.backgroundImage = gradient;
-        const angleRad = (parseFloat(angle) % 360) * Math.PI / 180;
-const x = Math.abs(Math.cos(angleRad));
-const y = Math.abs(Math.sin(angleRad));
-const scaleFactor = colors.length * 100;
-const sizeX = scaleFactor * x;
-const sizeY = scaleFactor * y;
-effectPreview.style.backgroundSize = `${sizeX}% ${sizeY}%`;
-        effectPreview.style.backgroundRepeat = 'repeat-x';
+// Apply styles
+effectPreview.style.backgroundImage = gradient;
+
+// Use fixed background size to avoid banding/artifacts
+effectPreview.style.backgroundRepeat = 'no-repeat';
+
+// Optional: match gradient size to text width for smoother appearance
+// Try different scaling factors for longer names or more colors
+effectPreview.style.backgroundSize = '100% 100%';;
 
         // Reset animation
         effectPreview.style.animation = 'none';
