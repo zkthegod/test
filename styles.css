@@ -653,8 +653,6 @@ nav a:hover, nav a.active {
             drop-shadow(0 0 5px var(--glow-color))
             drop-shadow(0 0 3px var(--glow-color));
     background-blend-mode: screen;
-    background-size: 200% 100%;
-    background-position: 0% 50%;
     transition: var(--transition);
     will-change: background-position;
     background-origin: border-box;
@@ -683,7 +681,7 @@ nav a:hover, nav a.active {
 
 @keyframes wave-flow {
     0% { background-position: 0% 0%; }
-    100% { background-position: 200% 0%; }
+    100% { background-position: 200% 100%; }
 }
 
 .effect-preview.bold {
