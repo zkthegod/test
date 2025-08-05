@@ -321,32 +321,34 @@ function updateEffects() {
 
     // Apply gradient effect
     if (colors.length > 0) {
-        let gradientStops = [];
-        
-        if (speed) {
-            // For animation - duplicate colors for seamless looping
-            colors.forEach(color => {
-                gradientStops.push(`${color} 0%`);
-                gradientStops.push(`${color} 50%`);
-            });
-            // Add first color again to complete the loop
-            gradientStops.push(`${colors[0]} 100%`);
+        const totalColors = colors.length;
+        const gradientStops = [];
+
+        // Create gradient with colors repeated twice
+        colors.forEach((color, i) => {
+            // First occurrence
+            const firstPos = (i / totalColors) * 50;
+            gradientStops.push(`${color} ${firstPos}%`);
             
-            effectPreview.style.backgroundSize = '200% 100%';
-        } else {
-            // No animation - just show the colors evenly distributed
-            colors.forEach((color, i) => {
-                const position = (i / colors.length) * 100;
-                gradientStops.push(`${color} ${position}%`);
-            });
-            // Add last color at 100%
-            gradientStops.push(`${colors[colors.length-1]} 100%`);
+            // Second occurrence
+            const secondPos = 50 + firstPos;
+            gradientStops.push(`${color} ${secondPos}%`);
             
-            effectPreview.style.backgroundSize = '100% 100%';
-        }
+            // Add next color for blending (except for last color)
+            if (i < totalColors - 1) {
+                gradientStops.push(`${colors[i+1]} ${firstPos}%`);
+                gradientStops.push(`${colors[i+1]} ${secondPos}%`);
+            }
+        });
+
+        // Complete the loop
+        gradientStops.push(`${colors[0]} 100%`);
 
         const gradient = `linear-gradient(${angle}deg, ${gradientStops.join(', ')})`;
+
+        // Apply styles
         effectPreview.style.backgroundImage = gradient;
+        effectPreview.style.backgroundSize = speed ? '200% 100%' : '100% 100%';
         effectPreview.style.backgroundRepeat = 'repeat-x';
 
         // Reset animation
