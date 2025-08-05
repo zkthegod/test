@@ -324,29 +324,25 @@ function updateEffects() {
         const totalColors = colors.length;
         const gradientStops = [];
         
-        // Create smooth gradient with overlapping color stops
+        // Create smooth blended gradient stops
         colors.forEach((color, i) => {
-            const startPercent = (i / totalColors) * 100;
-            const endPercent = ((i + 1) / totalColors) * 100;
+            const position = (i / totalColors) * 100;
+            gradientStops.push(`${color} ${position}%`);
             
-            // Add overlapping stops for smoother transitions
-            gradientStops.push(`${color} ${startPercent}%`);
-            gradientStops.push(`${color} ${endPercent}%`);
-            
-            // Add next color for blending
+            // Add next color at same position for blending
             if (i < totalColors - 1) {
-                gradientStops.push(`${colors[i + 1]} ${endPercent}%`);
+                gradientStops.push(`${colors[i+1]} ${position}%`);
             }
         });
-
-        // Complete the loop with the first color
+        
+        // Complete the loop by blending back to first color
         gradientStops.push(`${colors[0]} 100%`);
 
         const gradient = `linear-gradient(${angle}deg, ${gradientStops.join(', ')})`;
 
         // Apply styles
         effectPreview.style.backgroundImage = gradient;
-        effectPreview.style.backgroundSize = '200% 200%'; // Increased size for smoother diagonal
+        effectPreview.style.backgroundSize = '200% 100%';
         effectPreview.style.backgroundRepeat = 'repeat-x';
         effectPreview.style.backgroundPosition = '0% 0%';
 
