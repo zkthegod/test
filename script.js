@@ -34,12 +34,6 @@ document.addEventListener('DOMContentLoaded', function() {
             document.querySelector(targetId).classList.add('active');
             
             window.scrollTo({ top: 0, behavior: 'smooth' });
-            
-            // Load avatars if we're on the avatars page
-            if (targetId === '#avatars' && currentPage === 0) {
-                currentPage = 1;
-                loadAvatars();
-            }
         });
     });
     
@@ -312,7 +306,7 @@ document.addEventListener('DOMContentLoaded', function() {
         updateEffects();
     });
     
-    function updateEffects() {
+function updateEffects() {
         const colors = [];
         document.querySelectorAll('.color-picker').forEach(picker => {
             if (picker.value) {
@@ -395,90 +389,7 @@ document.addEventListener('DOMContentLoaded', function() {
         codeOutput.textContent = code;
     }
     
-    // Avatars functionality
-const avatarsContainer = document.getElementById('avatarsContainer');
-const avatarSearch = document.getElementById('avatarSearch');
-const searchAvatarBtn = document.getElementById('searchAvatar');
-const prevPageBtn = document.getElementById('prevPage');
-const nextPageBtn = document.getElementById('nextPage');
-const pageInfo = document.getElementById('pageInfo');
 
-let currentPage = 0;
-const avatarsPerPage = 400; // Show 400 avatars per page (20x20 grid)
-const totalAvatars = 1758;
-const totalPages = Math.ceil(totalAvatars / avatarsPerPage);
-
-function loadAvatars() {
-    avatarsContainer.innerHTML = '';
-    
-    const start = (currentPage - 1) * avatarsPerPage + 1;
-    const end = Math.min(currentPage * avatarsPerPage, totalAvatars);
-    
-    for (let i = start; i <= end; i++) {
-        const avatarCard = document.createElement('div');
-        avatarCard.className = 'avatar-card';
-        avatarCard.innerHTML = `
-            <img src="https://xat.com/web_gear/chat/av/${i}.png" alt="Avatar ${i}" class="avatar-img">
-            <span class="avatar-number">${i}</span>
-            <div class="copied-notification">Copied!</div>
-        `;
-        
-        avatarCard.addEventListener('click', function() {
-            navigator.clipboard.writeText(i.toString());
-            
-            // Add copied class and remove after animation
-            avatarCard.classList.add('copied');
-            setTimeout(() => {
-                avatarCard.classList.remove('copied');
-            }, 1000);
-        });
-        
-        avatarsContainer.appendChild(avatarCard);
-    }
-    
-    pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
-    prevPageBtn.disabled = currentPage === 1;
-    nextPageBtn.disabled = currentPage === totalPages;
-}
-
-prevPageBtn.addEventListener('click', function() {
-    if (currentPage > 1) {
-        currentPage--;
-        loadAvatars();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-});
-
-nextPageBtn.addEventListener('click', function() {
-    if (currentPage < totalPages) {
-        currentPage++;
-        loadAvatars();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-});
-
-searchAvatarBtn.addEventListener('click', function() {
-    const searchNum = parseInt(avatarSearch.value);
-    if (!isNaN(searchNum) {
-        currentPage = Math.min(Math.max(1, Math.ceil(searchNum / avatarsPerPage)), totalPages);
-        loadAvatars();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        avatarSearch.value = '';
-    }
-});
-
-avatarSearch.addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-        searchAvatarBtn.click();
-    }
-});
-
-// Load avatars if on the avatars page initially
-if (window.location.hash === '#avatars') {
-    currentPage = 1;
-    loadAvatars();
-}
-    });
     
     // Initialize
     initColorInputs();
