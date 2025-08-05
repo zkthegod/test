@@ -683,7 +683,7 @@ nav a:hover, nav a.active {
 
 @keyframes wave-flow {
     0% { background-position: 0% 0%; }
-    100% { background-position: 1000% 0%; }
+    100% { background-position: 70% 0%; }
 }
 
 .effect-preview.bold {
