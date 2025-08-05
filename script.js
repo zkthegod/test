@@ -335,15 +335,10 @@ function updateEffects() {
         const gradient = `linear-gradient(${angle}deg, ${gradientStops.join(', ')})`;
 
         // Apply styles
-// Apply styles
-effectPreview.style.backgroundImage = gradient;
-
-// Use fixed background size to avoid banding/artifacts
-effectPreview.style.backgroundRepeat = 'no-repeat';
-
-// Optional: match gradient size to text width for smoother appearance
-// Try different scaling factors for longer names or more colors
-effectPreview.style.backgroundSize = '100% 100%';;
+        // Apply styles
+        effectPreview.style.backgroundImage = gradient;
+        effectPreview.style.backgroundSize = `${colors.length * 100}% auto`;
+        effectPreview.style.backgroundRepeat = 'repeat-x';
 
         // Reset animation
         effectPreview.style.animation = 'none';
