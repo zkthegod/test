@@ -1,4 +1,4 @@
-    document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {
     // Theme toggle
     const themeToggle = document.getElementById('themeToggle');
     const currentTheme = localStorage.getItem('theme') || 'light';
@@ -294,7 +294,7 @@
         gradColorsContainer.innerHTML = '';
         randomPreset.forEach(color => addColorInput(color));
         
-        const directions = ['90', '190', '-190'];
+        const directions = ['90', '45', '-45'];
         gradDirection.value = directions[Math.floor(Math.random() * directions.length)];
         
         glowColor.value = '#000000';
@@ -321,18 +321,17 @@ function updateEffects() {
 
         // Apply gradient effect
         if (colors.length > 1) {
-            const totalColors = colors.length;
             const gradientStops = [];
-
-            colors.forEach((color, i) => {
-                const percent = Math.round((i / totalColors) * 100);
+            const gradientColors = [...colors, colors[0]];
+            const totalStops = gradientColors.length;
+        
+            gradientColors.forEach((color, i) => {
+                const percent = (i / (totalStops - 1)) * 26.35;
                 gradientStops.push(`${color} ${percent}%`);
             });
-
-            // Repeat the first color at 100% to close the loop
-            gradientStops.push(`${colors[0]} 100%`);
-
-            const gradient = `linear-gradient(${angle}deg, ${gradientStops.join(', ')})`;
+        
+            const gradient = `repeating-linear-gradient(${angle}deg, ${gradientStops.join(', ')})`;
+            console.log(gradient)
 
             // Apply styles
             effectPreview.style.backgroundImage = gradient;
