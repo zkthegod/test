@@ -337,8 +337,9 @@ function updateEffects() {
         // Apply styles
         // Apply styles
         effectPreview.style.backgroundImage = gradient;
-        effectPreview.style.backgroundSize = `${colors.length * 100}% ${colors.length * 100}%`;
-        effectPreview.style.backgroundRepeat = 'repeat-x';
+effectPreview.style.backgroundSize = `${colors.length * 150}% ${colors.length * 150}%`;
+effectPreview.style.backgroundRepeat = 'repeat';
+
 
         // Reset animation
         effectPreview.style.animation = 'none';
