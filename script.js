@@ -105,14 +105,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const chatId = Date.now();
         const chatWrapper = document.createElement('div');
         chatWrapper.className = 'embedded-chat';
-        chatWrapper.id = `chat-${chatId}`;
+        chatWrapper.id = chat-${chatId};
         
-        chatWrapper.innerHTML = `
+        chatWrapper.innerHTML = 
             <button class="remove-chat" data-chat-id="${chatId}">×</button>
             <iframe src="https://xat.com/embed/chat.php#gn=${encodeURIComponent(chatName)}" 
                     width="${settings.width}" height="${settings.height}" 
                     frameborder="0" scrolling="no"></iframe>
-        `;
+        ;
         
         chatContainer.appendChild(chatWrapper);
         chatNameInput.value = '';
@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 100);
         
         chatWrapper.querySelector('.remove-chat').addEventListener('click', function() {
-            document.getElementById(`chat-${this.getAttribute('data-chat-id')}`).remove();
+            document.getElementById(chat-${this.getAttribute('data-chat-id')}).remove();
         });
     }
     
@@ -166,7 +166,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (isOnline) {
                 const days = Math.floor(Math.random() * 30);
                 const hours = Math.floor(Math.random() * 24);
-                uptimeElement.textContent = `${days}d ${hours}h`;
+                uptimeElement.textContent = ${days}d ${hours}h;
             } else {
                 uptimeElement.textContent = 'N/A';
             }
@@ -222,11 +222,11 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const colorInput = document.createElement('div');
         colorInput.className = 'color-input';
-        colorInput.innerHTML = `
+        colorInput.innerHTML = 
             <input type="color" value="${color}" class="color-picker">
             <input type="text" value="${color}" class="color-hex" maxlength="7">
             <button class="remove-color"><i class="fas fa-times"></i></button>
-        `;
+        ;
         gradColorsContainer.appendChild(colorInput);
         
         const picker = colorInput.querySelector('.color-picker');
@@ -322,21 +322,22 @@ function updateEffects() {
     // Apply gradient effect
     if (colors.length > 0) {
         // Create gradient stops that show all colors simultaneously
-// Step 1: Build smoother gradient
-// Build gradient stops
-const gradientStops = colors.map((color, i) => {
-    const stop = (i / (colors.length - 1)) * 100;
-    return `${color} ${stop}%`;
-}).join(', ');
+        const gradientStops = [];
+        const segmentWidth = 100 / colors.length;
+        
+        colors.forEach((color, i) => {
+            const start = i * segmentWidth;
+            const end = (i + 1) * segmentWidth;
+            gradientStops.push(${color} ${start}%);
+            gradientStops.push(${color} ${end}%);
+        });
 
-// Create gradient string
-const gradient = `linear-gradient(${angle}deg, ${gradientStops})`;
+        const gradient = linear-gradient(${angle}deg, ${gradientStops.join(', ')});
 
-// Apply to preview
-effectPreview.style.backgroundImage = gradient;
-effectPreview.style.backgroundSize = '200% 200%';  // Key fix for diagonal flow
-effectPreview.style.backgroundRepeat = 'no-repeat';  // Prevent harsh repetition
-
+        // Apply styles
+        effectPreview.style.backgroundImage = gradient;
+        effectPreview.style.backgroundSize = colors.length * 100 + '% 100%';
+        effectPreview.style.backgroundRepeat = 'repeat-x';
 
         // Reset animation
         effectPreview.style.animation = 'none';
@@ -368,16 +369,16 @@ effectPreview.style.backgroundRepeat = 'no-repeat';  // Prevent harsh repetition
 
     // Generate code output
     let code = '(glow';
-    code += `#${glow.replace('#', '')}`;
+    code += #${glow.replace('#', '')};
 
     if (effectPreview.classList.contains('bold')) {
         code += '#b';
     }
 
     if (colors.length > 1) {
-        code += `#grad#r${angle}`;
-        if (speed) code += `#${speed}`;
-        colors.forEach(c => code += `#${c.replace('#', '')}`);
+        code += #grad#r${angle};
+        if (speed) code += #${speed};
+        colors.forEach(c => code += #${c.replace('#', '')});
     }
 
     code += ')';
