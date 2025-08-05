@@ -323,21 +323,19 @@ function updateEffects() {
     if (colors.length > 0) {
         // Create gradient stops that show all colors simultaneously
 // Step 1: Build smoother gradient
-const gradientStops = [];
-const segmentWidth = 100 / colors.length;
+// Build gradient stops
+const gradientStops = colors.map((color, i) => {
+    const stop = (i / (colors.length - 1)) * 100;
+    return `${color} ${stop}%`;
+}).join(', ');
 
-colors.forEach((color, i) => {
-    const start = i * segmentWidth;
-    const end = (i + 1) * segmentWidth;
-    gradientStops.push(`${color} ${start}%`, `${color} ${end}%`);
-});
+// Create gradient string
+const gradient = `linear-gradient(${angle}deg, ${gradientStops})`;
 
-const gradient = `linear-gradient(${angle}deg, ${gradientStops.join(', ')})`;
-
-// Step 2: Apply proper sizing
+// Apply to preview
 effectPreview.style.backgroundImage = gradient;
-effectPreview.style.backgroundSize = `${colors.length * 150}% ${colors.length * 150}%`;
-effectPreview.style.backgroundRepeat = 'repeat';
+effectPreview.style.backgroundSize = '200% 200%';  // Key fix for diagonal flow
+effectPreview.style.backgroundRepeat = 'no-repeat';  // Prevent harsh repetition
 
 
         // Reset animation
