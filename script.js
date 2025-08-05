@@ -396,84 +396,88 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Avatars functionality
-    const avatarsContainer = document.getElementById('avatarsContainer');
-    const avatarSearch = document.getElementById('avatarSearch');
-    const searchAvatarBtn = document.getElementById('searchAvatar');
-    const prevPageBtn = document.getElementById('prevPage');
-    const nextPageBtn = document.getElementById('nextPage');
-    const pageInfo = document.getElementById('pageInfo');
+const avatarsContainer = document.getElementById('avatarsContainer');
+const avatarSearch = document.getElementById('avatarSearch');
+const searchAvatarBtn = document.getElementById('searchAvatar');
+const prevPageBtn = document.getElementById('prevPage');
+const nextPageBtn = document.getElementById('nextPage');
+const pageInfo = document.getElementById('pageInfo');
+
+let currentPage = 0;
+const avatarsPerPage = 400; // Show 400 avatars per page (20x20 grid)
+const totalAvatars = 1758;
+const totalPages = Math.ceil(totalAvatars / avatarsPerPage);
+
+function loadAvatars() {
+    avatarsContainer.innerHTML = '';
     
-    let currentPage = 1;
-    const avatarsPerPage = 20;
-    const totalAvatars = 1758;
-    const totalPages = Math.ceil(totalAvatars / avatarsPerPage);
+    const start = (currentPage - 1) * avatarsPerPage + 1;
+    const end = Math.min(currentPage * avatarsPerPage, totalAvatars);
     
-    function loadAvatars() {
-        avatarsContainer.innerHTML = '';
+    for (let i = start; i <= end; i++) {
+        const avatarCard = document.createElement('div');
+        avatarCard.className = 'avatar-card';
+        avatarCard.innerHTML = `
+            <img src="https://xat.com/web_gear/chat/av/${i}.png" alt="Avatar ${i}" class="avatar-img">
+            <span class="avatar-number">${i}</span>
+            <div class="copied-notification">Copied!</div>
+        `;
         
-        const start = (currentPage - 1) * avatarsPerPage + 1;
-        const end = Math.min(currentPage * avatarsPerPage, totalAvatars);
-        
-        for (let i = start; i <= end; i++) {
-            const avatarItem = document.createElement('div');
-            avatarItem.className = 'avatar-item';
-            avatarItem.innerHTML = `
-                <img src="https://xat.com/web_gear/chat/av/${i}.png" alt="Avatar ${i}" class="avatar-img">
-                <span class="avatar-number">${i}</span>
-            `;
+        avatarCard.addEventListener('click', function() {
+            navigator.clipboard.writeText(i.toString());
             
-            avatarItem.addEventListener('click', function() {
-                navigator.clipboard.writeText(i.toString());
-                
-                // Visual feedback
-                const originalBg = avatarItem.style.backgroundColor;
-                avatarItem.style.backgroundColor = 'var(--primary)';
-                avatarItem.querySelector('.avatar-number').style.color = 'white';
-                
-                setTimeout(() => {
-                    avatarItem.style.backgroundColor = originalBg;
-                    avatarItem.querySelector('.avatar-number').style.color = '';
-                }, 500);
-            });
-            
-            avatarsContainer.appendChild(avatarItem);
-        }
+            // Add copied class and remove after animation
+            avatarCard.classList.add('copied');
+            setTimeout(() => {
+                avatarCard.classList.remove('copied');
+            }, 1000);
+        });
         
-        pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
-        prevPageBtn.disabled = currentPage === 1;
-        nextPageBtn.disabled = currentPage === totalPages;
+        avatarsContainer.appendChild(avatarCard);
     }
     
-    prevPageBtn.addEventListener('click', function() {
-        if (currentPage > 1) {
-            currentPage--;
-            loadAvatars();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-    });
-    
-    nextPageBtn.addEventListener('click', function() {
-        if (currentPage < totalPages) {
-            currentPage++;
-            loadAvatars();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-    });
-    
-    searchAvatarBtn.addEventListener('click', function() {
-        const searchNum = parseInt(avatarSearch.value);
-        if (!isNaN(searchNum) && searchNum >= 1 && searchNum <= totalAvatars) {
-            currentPage = Math.ceil(searchNum / avatarsPerPage);
-            loadAvatars();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            avatarSearch.value = '';
-        }
-    });
-    
-    avatarSearch.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            searchAvatarBtn.click();
-        }
+    pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+    prevPageBtn.disabled = currentPage === 1;
+    nextPageBtn.disabled = currentPage === totalPages;
+}
+
+prevPageBtn.addEventListener('click', function() {
+    if (currentPage > 1) {
+        currentPage--;
+        loadAvatars();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+});
+
+nextPageBtn.addEventListener('click', function() {
+    if (currentPage < totalPages) {
+        currentPage++;
+        loadAvatars();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+});
+
+searchAvatarBtn.addEventListener('click', function() {
+    const searchNum = parseInt(avatarSearch.value);
+    if (!isNaN(searchNum) {
+        currentPage = Math.min(Math.max(1, Math.ceil(searchNum / avatarsPerPage)), totalPages);
+        loadAvatars();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        avatarSearch.value = '';
+    }
+});
+
+avatarSearch.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        searchAvatarBtn.click();
+    }
+});
+
+// Load avatars if on the avatars page initially
+if (window.location.hash === '#avatars') {
+    currentPage = 1;
+    loadAvatars();
+}
     });
     
     // Initialize
