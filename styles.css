@@ -833,4 +833,74 @@ footer {
     .chat-viewport {
         padding: 0 40px;
     }
+
+.avatars-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.avatar-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: var(--transition);
+    padding: 10px;
+    border-radius: var(--radius);
+    background-color: var(--card-bg);
+    border: var(--border);
+}
+
+.avatar-item:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow);
+}
+
+.avatar-img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 8px;
+}
+
+.avatar-number {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    font-weight: 500;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-top: 30px;
+}
+
+#pageInfo {
+    font-weight: 500;
+    color: var(--text-light);
+}
+
+#avatarSearch {
+    width: 150px;
+    padding: 10px 15px;
+    border: var(--border);
+    border-radius: var(--radius);
+    background-color: var(--card-bg);
+    color: var(--text);
+}
+
+@media (max-width: 768px) {
+    .avatars-container {
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    }
+    
+    .avatar-img {
+        width: 70px;
+        height: 70px;
+    }
 }
