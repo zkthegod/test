@@ -300,13 +300,13 @@ document.addEventListener('DOMContentLoaded', function() {
         glowColor.value = '#000000';
         document.querySelector('.color-picker-wrapper .color-value').textContent = glowColor.value;
         
-        const speeds = ['', 'o1', 'f1', 'f2', 'o2', 'o3'];
+        const speeds = ['', 'o1', 'o2', 'o3', 'f1', 'f2', 'f3', 'f4'];
         waveSpeed.value = speeds[Math.floor(Math.random() * speeds.length)];
         
         updateEffects();
     });
     
-function updateEffects() {
+    function updateEffects() {
         const colors = [];
         document.querySelectorAll('.color-picker').forEach(picker => {
             if (picker.value) {
@@ -331,9 +331,6 @@ function updateEffects() {
             });
         
             const gradient = `repeating-linear-gradient(${angle}deg, ${gradientStops.join(', ')})`;
-            console.log(gradient)
-
-            // Apply styles
             effectPreview.style.backgroundImage = gradient;
             effectPreview.style.backgroundSize = '200% 100%';
             effectPreview.style.backgroundRepeat = 'repeat-x';
@@ -342,7 +339,8 @@ function updateEffects() {
             effectPreview.style.animation = 'none';
             effectPreview.classList.remove(
                 'wave-normal', 'wave-slow', 'wave-very-slow',
-                'wave-fast', 'wave-very-fast'
+                'wave-fast', 'wave-very-fast', 'wave-slower',
+                'wave-even-slower', 'wave-slowest'
             );
 
             // Force reflow to restart animation
@@ -352,10 +350,12 @@ function updateEffects() {
             if (speed) {
                 const speedClass = {
                     'o1': 'wave-normal',
-                    'f1': 'wave-slow',
-                    'f2': 'wave-very-slow',
                     'o2': 'wave-fast',
-                    'o3': 'wave-very-fast'
+                    'o3': 'wave-very-fast',
+                    'f1': 'wave-slow',
+                    'f2': 'wave-slower',
+                    'f3': 'wave-even-slower',
+                    'f4': 'wave-slowest'
                 }[speed];
                 if (speedClass) {
                     effectPreview.classList.add(speedClass);
@@ -387,8 +387,6 @@ function updateEffects() {
         code += ')';
         codeOutput.textContent = code;
     }
-    
-
     
     // Initialize
     initColorInputs();
