@@ -326,7 +326,7 @@ function updateEffects() {
             const totalStops = gradientColors.length;
         
             gradientColors.forEach((color, i) => {
-                const percent = (i / (totalStops - 1)) * 26.35;
+                const percent = (i / (totalStops - 1)) * (angle != 90 ? 26.25 : 25);
                 gradientStops.push(`${color} ${percent}%`);
             });
         
