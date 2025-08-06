@@ -321,15 +321,41 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Apply gradient effect
         if (colors.length > 1) {
-            const gradientStops = [];
+            let gradientStops = [];
             const gradientColors = [...colors, colors[0]];
             const totalStops = gradientColors.length;
-        
-            gradientColors.forEach((color, i) => {
-                const percent = (i / (totalStops - 1)) * (angle != 90 ? 26.25 : 25);
-                gradientStops.push(`${color} ${percent}%`);
-            });
-        
+            
+            // Different display modes based on speed setting
+            if (speed && speed.startsWith('f')) {
+                // f1-f4: Show only 1 color at a time
+                gradientColors.forEach((color, i) => {
+                    const startPercent = (i / totalStops) * 100;
+                    const endPercent = ((i + 1) / totalStops) * 100;
+                    gradientStops.push(`${color} ${startPercent}%`);
+                    gradientStops.push(`${color} ${endPercent}%`);
+                });
+            } else if (speed && speed.startsWith('o')) {
+                // o1-o3: Show multiple colors based on speed
+                const colorsToShow = {
+                    'o1': 1,
+                    'o2': 2,
+                    'o3': 3
+                }[speed] || 1;
+                
+                gradientColors.forEach((color, i) => {
+                    const startPercent = (i / totalStops) * 100;
+                    const endPercent = ((i + colorsToShow) / totalStops) * 100;
+                    gradientStops.push(`${color} ${startPercent}%`);
+                    gradientStops.push(`${color} ${endPercent}%`);
+                });
+            } else {
+                // No wave - show full gradient
+                gradientColors.forEach((color, i) => {
+                    const percent = (i / (totalStops - 1)) * (angle != 90 ? 26.25 : 25);
+                    gradientStops.push(`${color} ${percent}%`);
+                });
+            }
+            
             const gradient = `repeating-linear-gradient(${angle}deg, ${gradientStops.join(', ')})`;
             effectPreview.style.backgroundImage = gradient;
             effectPreview.style.backgroundSize = '200% 100%';
