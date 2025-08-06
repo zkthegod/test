@@ -679,6 +679,18 @@ nav a:hover, nav a.active {
     animation: wave-flow 1s linear infinite !important;
 }
 
+.wave-slower {
+    animation: wave-flow 16s linear infinite !important;
+}
+
+.wave-even-slower {
+    animation: wave-flow 20s linear infinite !important;
+}
+
+.wave-slowest {
+    animation: wave-flow 24s linear infinite !important;
+}
+
 @keyframes wave-flow {
     0% { background-position: 0% 0%; }
     100% { background-position: 200% 100%; }
