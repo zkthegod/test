@@ -567,7 +567,6 @@ document.addEventListener('DOMContentLoaded', function() {
 { name: "Gastly", file: "092-icon.png", category: "pokemon" },
 { name: "Zubat", file: "041-icon.png", category: "pokemon" },
 { name: "Exeggcute", file: "102-icon.png", category: "pokemon" },
-{ name: "Rhyhorn", file: "111-icon.png", category: "pokemon" }, // Note: 112 is Rhydon (not in your list)
 { name: "Weezing", file: "110-icon.png", category: "pokemon" },
 { name: "Lickitung", file: "108-icon.png", category: "pokemon" },
 { name: "Koffing", file: "109-icon.png", category: "pokemon" },
