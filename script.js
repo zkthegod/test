@@ -887,15 +887,17 @@ document.addEventListener('DOMContentLoaded', function() {
             ? avatarData 
             : avatarData.filter(avatar => avatar.category === category);
         
-        filteredAvatars.forEach(avatar => {
-            const avatarItem = document.createElement('div');
-            avatarItem.className = 'avatar-item loading';
-            avatarItem.dataset.category = avatar.category;
-            avatarItem.innerHTML = `
-                <img src="avatars/${avatar.file}" alt="${avatar.name}" class="avatar-img" loading="lazy">
-                <span class="avatar-name">${avatar.name}</span>
-                <div class="copy-icon" title="Copy URL"><i class="fas fa-copy"></i></div>
-            `;
+filteredAvatars.forEach(avatar => {
+    const avatarItem = document.createElement('div');
+    avatarItem.className = 'avatar-item loading';
+    avatarItem.dataset.category = avatar.category;
+    avatarItem.innerHTML = `
+        <div class="avatar-img-container">  <!-- New container -->
+            <img src="avatars/${avatar.file}" alt="${avatar.name}" class="avatar-img" loading="lazy">
+        </div>
+        <span class="avatar-name">${avatar.name}</span>
+        <div class="copy-icon" title="Copy URL"><i class="fas fa-copy"></i></div>
+    `;
             
             const img = avatarItem.querySelector('img');
             img.onload = () => {
