@@ -293,6 +293,10 @@ nav a:hover, nav a.active {
     background-color: var(--primary-dark);
 }
 
+.primary-btn.no-underline {
+    text-decoration: none;
+}
+
 .settings-panel {
     background-color: var(--card-bg);
     padding: 20px;
@@ -873,6 +877,35 @@ nav a:hover, nav a.active {
     box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.2);
 }
 
+.avatar-categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.avatar-category {
+    padding: 8px 16px;
+    border-radius: 20px;
+    background-color: var(--bg);
+    color: var(--text-light);
+    border: none;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: var(--transition);
+    border: 1px solid var(--border);
+}
+
+.avatar-category:hover {
+    background-color: var(--primary-light);
+    color: white;
+}
+
+.avatar-category.active {
+    background-color: var(--primary);
+    color: white;
+}
+
 .avatar-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
@@ -919,6 +952,27 @@ nav a:hover, nav a.active {
     overflow: hidden;
     text-overflow: ellipsis;
     width: 100%;
+}
+
+.copy-icon {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: var(--primary);
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: var(--transition);
+    font-size: 0.8rem;
+}
+
+.avatar-item:hover .copy-icon {
+    opacity: 1;
 }
 
 /* Loading state */
@@ -993,6 +1047,12 @@ nav a:hover, nav a.active {
     .avatar-img {
         width: 36px;
         height: 36px;
+    }
+    
+    .avatar-categories {
+        overflow-x: auto;
+        padding-bottom: 10px;
+        flex-wrap: nowrap;
     }
 }
 
