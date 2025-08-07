@@ -751,10 +751,35 @@ document.addEventListener('DOMContentLoaded', function() {
 { name: "Dad", file: "Dad-icon.png", category: "garfield" },
 { name: "Grandmother", file: "Grandmother-icon.png", category: "garfield" },
         
-        // Grimm
-        { name: "Grimm", file: "grimm-main.32.png", category: "grimm" },
-        { name: "Billy", file: "grimm-billy.32.png", category: "grimm" },
-        { name: "Mandy", file: "grimm-mandy.32.png", category: "grimm" },
+// Main Characters
+{ name: "Grimm", file: "Grimm-1-icon.png", category: "grimm" },
+{ name: "Grimm (Alternate 1)", file: "Grimm-2-icon.png", category: "grimm" },
+{ name: "Grimm (Alternate 2)", file: "Grimm-3-icon.png", category: "grimm" },
+{ name: "Grimm (Head)", file: "Grimm-Head-icon.png", category: "grimm" },
+{ name: "Grimm (Smiling 1)", file: "Grimm-Smiling-1-icon.png", category: "grimm" },
+{ name: "Grimm (Smiling 2)", file: "Grimm-Smiling-2-icon.png", category: "grimm" },
+{ name: "Grimm (Sad)", file: "Grimm-Sad-1-icon.png", category: "grimm" },
+{ name: "Grimm (Screaming)", file: "Grimm-Screaming-icon.png", category: "grimm" },
+{ name: "Grimm (Sleepy)", file: "Grimm-Sleepy-icon.png", category: "grimm" },
+{ name: "Grimm (Running)", file: "Grimm-Running-icon.png", category: "grimm" },
+{ name: "Grimm (Freezing)", file: "Grimm-Freezing-icon.png", category: "grimm" },
+{ name: "Grimm (Yuk)", file: "Grimm-Yuk-icon.png", category: "grimm" },
+
+// Attila the Dog
+{ name: "Attila", file: "Attila-icon.png", category: "grimm" },
+{ name: "Attila (Front)", file: "Attila-Front-icon.png", category: "grimm" },
+{ name: "Attila (Side)", file: "Attila-Side-icon.png", category: "grimm" },
+{ name: "Attila (Scared)", file: "Attila-Scared-icon.png", category: "grimm" },
+{ name: "Attila (Screaming)", file: "Attila-Screaming-icon.png", category: "grimm" },
+{ name: "Attila (Sleeping 1)", file: "Attila-Sleeping-1-icon.png", category: "grimm" },
+{ name: "Attila (Sleeping 2)", file: "Attila-Sleeping-2-icon.png", category: "grimm" },
+{ name: "Attila (Freezing)", file: "Attila-Freezing-icon.png", category: "grimm" },
+
+// Supporting Characters
+{ name: "Mother Goose", file: "Mother-Goose-1-icon.png", category: "grimm" },
+{ name: "Whiz (Version 1)", file: "Whiz-1-icon.png", category: "grimm" },
+{ name: "Whiz (Version 2)", file: "Whiz-2-icon.png", category: "grimm" },
+{ name: "Sumo", file: "Sumo-icon.png", category: "grimm" },
         
         // Sesame Street
 { name: "Twiddlebug Queen", file: "Pino-Sesame-Street-Twiddlebug-Queen.32.png", category: "sesame" },
@@ -787,11 +812,62 @@ document.addEventListener('DOMContentLoaded', function() {
 { name: "Baby Bear", file: "Pino-Sesame-Street-Baby-Bear.32.png", category: "sesame" },
 { name: "Barkley", file: "Pino-Sesame-Street-Barkley.32.png", category: "sesame" },
         
-        // Giant Robo
-        { name: "Robo", file: "giantrobo-main.32.png", category: "giantrobo" },
-        { name: "Dr. Shizuma", file: "giantrobo-shizuma.32.png", category: "giantrobo" },
-        { name: "GinRei", file: "giantrobo-ginrei.32.png", category: "giantrobo" },
+// Main Characters
+{ name: "Daisaku Kusama", file: "Daisaku-icon.png", category: "giantrobo" },
+{ name: "Daisaku Kusama (Alternate 1)", file: "Daisaku1-icon.png", category: "giantrobo" },
+{ name: "Daisaku Kusama (Alternate 2)", file: "Daisaku2-icon.png", category: "giantrobo" },
+{ name: "Ginrei", file: "Ginrei1-icon.png", category: "giantrobo" },
+{ name: "Ginrei (Alternate 1)", file: "Ginrei2-icon.png", category: "giantrobo" },
+{ name: "Ginrei (Alternate 2)", file: "Ginrei3-icon.png", category: "giantrobo" },
+{ name: "Young Ginrei", file: "young-Ginrei-icon.png", category: "giantrobo" },
+{ name: "Ginrei (Disguise)", file: "Ginrei-disguise-icon.png", category: "giantrobo" },
 
+// Experts of Justice
+{ name: "Chief Chujo", file: "Chief-Chujo-icon.png", category: "giantrobo" },
+{ name: "Genya", file: "Genya-icon.png", category: "giantrobo" },
+{ name: "Taisou", file: "Taisou-icon.png", category: "giantrobo" },
+{ name: "Koshin", file: "Koshin-icon.png", category: "giantrobo" },
+{ name: "Yoshi", file: "Yoshi-icon.png", category: "giantrobo" },
+{ name: "Cho Katsu Kome", file: "Cho-Katsu-Kome-icon.png", category: "giantrobo" },
+{ name: "Sun Getsu", file: "Sun-getsu-icon.png", category: "giantrobo" },
+{ name: "Red Mask", file: "Red-mask-icon.png", category: "giantrobo" },
+
+// BF Group Villains
+{ name: "Big Fire", file: "Big-Fire-icon.png", category: "giantrobo" },
+{ name: "Ivan", file: "Ivan-icon.png", category: "giantrobo" },
+{ name: "Dr. Von Fogler", file: "Dr.-VonFogler-icon.png", category: "giantrobo" },
+{ name: "Dr. Shizuma", file: "Dr.-Shizuma-icon.png", category: "giantrobo" },
+{ name: "Dr. Kusama", file: "Dr.-Kusama-icon.png", category: "giantrobo" },
+{ name: "Fitzcaral", file: "Fitzcaral-icon.png", category: "giantrobo" },
+{ name: "Galuda", file: "Galuda-icon.png", category: "giantrobo" },
+{ name: "Gana", file: "Gana-icon.png", category: "giantrobo" },
+{ name: "Hanzui", file: "Hanzui-icon.png", category: "giantrobo" },
+{ name: "Kaiho", file: "Kaiho-icon.png", category: "giantrobo" },
+{ name: "Ko Enshaku", file: "Ko-Enshaku-icon.png", category: "giantrobo" },
+{ name: "Q Boss", file: "Q-Boss-icon.png", category: "giantrobo" },
+{ name: "Roden", file: "Roden-icon.png", category: "giantrobo" },
+{ name: "Uranus", file: "Uranus-icon.png", category: "giantrobo" },
+{ name: "Cervantes", file: "Cervantes-icon.png", category: "giantrobo" },
+
+// Robots and Technology
+{ name: "Giant Robo", file: "Robo-1-icon.png", category: "giantrobo" },
+{ name: "Giant Robo (Variant 5)", file: "robo-5-icon.png", category: "giantrobo" },
+{ name: "Giant Robo (Variant 7)", file: "robo-7-icon.png", category: "giantrobo" },
+{ name: "Giant Robo (Variant 10)", file: "robo-10-icon.png", category: "giantrobo" },
+{ name: "Giant Robo (Variant 11)", file: "robo-11-icon.png", category: "giantrobo" },
+{ name: "Giant Robo (Variant 12)", file: "robo-12-icon.png", category: "giantrobo" },
+{ name: "Giant Robo (Variant 14)", file: "robo-14-icon.png", category: "giantrobo" },
+{ name: "Giant Robo (Variant 15)", file: "robo-15-icon.png", category: "giantrobo" },
+{ name: "Giant Robo (Variant 17)", file: "robo-17-icon.png", category: "giantrobo" },
+{ name: "Giant Robo (Variant 18)", file: "robo-18-icon.png", category: "giantrobo" },
+{ name: "GR-2", file: "GR2-icon.png", category: "giantrobo" },
+{ name: "Head Piece", file: "head-piece-icon.png", category: "giantrobo" },
+{ name: "Orb", file: "Orb-icon.png", category: "giantrobo" },
+
+// Minions
+{ name: "Goon", file: "Goon-1-icon.png", category: "giantrobo" },
+{ name: "Goon (Variant)", file: "Goon-2-icon.png", category: "giantrobo" },
+{ name: "Unknown Character", file: "unknown-2-icon.png", category: "giantrobo" },
 
 { name: "Bob", file: "Bob-icon.png", category: "shermans" },
 { name: "Ernest", file: "Ernest-icon.png", category: "shermans" },
