@@ -707,11 +707,49 @@ document.addEventListener('DOMContentLoaded', function() {
 { name: "Bullseye", file: "Bulls-eye-icon.png", category: "robinhood" },
 { name: "Allan-a-Dale", file: "Allan-a-Dale-icon.png", category: "robinhood" },
         
-        // Garfield
-        { name: "Garfield", file: "garfield-main.32.png", category: "garfield" },
-        { name: "Odie", file: "garfield-odie.32.png", category: "garfield" },
-        { name: "Jon", file: "garfield-jon.32.png", category: "garfield" },
-        { name: "Nermal", file: "garfield-nermal.32.png", category: "garfield" },
+// Main Characters
+{ name: "Garfield", file: "Garfield-1-icon.png", category: "garfield" },
+{ name: "Garfield (Alternate 1)", file: "Garfield-2-icon.png", category: "garfield" },
+{ name: "Garfield (Alternate 2)", file: "Garfield-3-icon.png", category: "garfield" },
+{ name: "Garfield (Alternate 3)", file: "Garfield-4-icon.png", category: "garfield" },
+{ name: "Garfield (Screaming)", file: "Garfield-Screaming-icon.png", category: "garfield" },
+{ name: "Jon Arbuckle", file: "Jon-Arbuckle-1-icon.png", category: "garfield" },
+{ name: "Odie", file: "Odie-1-icon.png", category: "garfield" },
+{ name: "Odie (Alternate 1)", file: "Odie-2-icon.png", category: "garfield" },
+{ name: "Odie (Alternate 2)", file: "Odie-3-icon.png", category: "garfield" },
+{ name: "Odie (Alternate 3)", file: "Odie-4-icon.png", category: "garfield" },
+{ name: "Nermal", file: "Nermal-1-icon.png", category: "garfield" },
+{ name: "Nermal (Alternate)", file: "Nermal-2-icon.png", category: "garfield" },
+
+// Supporting Characters
+{ name: "Arlene", file: "Arlene-1-icon.png", category: "garfield" },
+{ name: "Arlene (Alternate)", file: "Arlene-2-icon.png", category: "garfield" },
+{ name: "Lyman", file: "Wade-icon.png", category: "garfield" }, // Note: Wade appears to be Lyman
+{ name: "Sheldon", file: "Sheldon-icon.png", category: "garfield" },
+{ name: "Roy", file: "Roy-1-icon.png", category: "garfield" },
+{ name: "Roy (Alternate)", file: "Roy-2-icon.png", category: "garfield" },
+{ name: "Orson", file: "Orson-1-icon.png", category: "garfield" },
+{ name: "Orson (Alternate)", file: "Orson-2-icon.png", category: "garfield" },
+{ name: "Liz", file: "Liz-icon.png", category: "garfield" },
+{ name: "Dr. Liz Wilson", file: "Doc-icon.png", category: "garfield" },
+{ name: "Irma", file: "Irma-icon.png", category: "garfield" },
+{ name: "Mailman", file: "Mailman-icon.png", category: "garfield" },
+
+// Farm Characters
+{ name: "Bo", file: "Bo-icon.png", category: "garfield" },
+{ name: "Booker", file: "Booker-1-icon.png", category: "garfield" },
+{ name: "Booker (Alternate 1)", file: "Booker-2-icon.png", category: "garfield" },
+{ name: "Booker (Alternate 2)", file: "Booker-3-icon.png", category: "garfield" },
+{ name: "Lanolin", file: "Lanolin-icon.png", category: "garfield" },
+{ name: "Worm", file: "Worm-icon.png", category: "garfield" },
+{ name: "Blue", file: "Blue-icon.png", category: "garfield" },
+{ name: "Cody", file: "Cody-icon.png", category: "garfield" },
+{ name: "Poekie", file: "Poekie-1-icon.png", category: "garfield" },
+
+// Family Members
+{ name: "Mom", file: "Mom-icon.png", category: "garfield" },
+{ name: "Dad", file: "Dad-icon.png", category: "garfield" },
+{ name: "Grandmother", file: "Grandmother-icon.png", category: "garfield" },
         
         // Grimm
         { name: "Grimm", file: "grimm-main.32.png", category: "grimm" },
