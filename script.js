@@ -300,13 +300,13 @@ document.addEventListener('DOMContentLoaded', function() {
         glowColor.value = '#000000';
         document.querySelector('.color-picker-wrapper .color-value').textContent = glowColor.value;
         
-        const speeds = ['', 'o1', 'o2', 'o3', 'f1', 'f2', 'f3', 'f4'];
+        const speeds = ['', 'o1', 'f1', 'f2', 'o2', 'o3'];
         waveSpeed.value = speeds[Math.floor(Math.random() * speeds.length)];
         
         updateEffects();
     });
     
-    function updateEffects() {
+function updateEffects() {
         const colors = [];
         document.querySelectorAll('.color-picker').forEach(picker => {
             if (picker.value) {
@@ -321,42 +321,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Apply gradient effect
         if (colors.length > 1) {
-            let gradientStops = [];
+            const gradientStops = [];
             const gradientColors = [...colors, colors[0]];
             const totalStops = gradientColors.length;
-            
-            // Different display modes based on speed setting
-            if (speed && speed.startsWith('f')) {
-                // f1-f4: Show only 1 color at a time
-                gradientColors.forEach((color, i) => {
-                    const startPercent = (i / totalStops) * 100;
-                    const endPercent = ((i + 1) / totalStops) * 100;
-                    gradientStops.push(`${color} ${startPercent}%`);
-                    gradientStops.push(`${color} ${endPercent}%`);
-                });
-            } else if (speed && speed.startsWith('o')) {
-                // o1-o3: Show multiple colors based on speed
-                const colorsToShow = {
-                    'o1': 1,
-                    'o2': 2,
-                    'o3': 3
-                }[speed] || 1;
-                
-                gradientColors.forEach((color, i) => {
-                    const startPercent = (i / totalStops) * 100;
-                    const endPercent = ((i + colorsToShow) / totalStops) * 100;
-                    gradientStops.push(`${color} ${startPercent}%`);
-                    gradientStops.push(`${color} ${endPercent}%`);
-                });
-            } else {
-                // No wave - show full gradient
-                gradientColors.forEach((color, i) => {
-                    const percent = (i / (totalStops - 1)) * (angle != 90 ? 26.25 : 25);
-                    gradientStops.push(`${color} ${percent}%`);
-                });
-            }
-            
+        
+            gradientColors.forEach((color, i) => {
+                const percent = (i / (totalStops - 1)) * (angle != 90 ? 26.25 : 25);
+                gradientStops.push(`${color} ${percent}%`);
+            });
+        
             const gradient = `repeating-linear-gradient(${angle}deg, ${gradientStops.join(', ')})`;
+            console.log(gradient)
+
+            // Apply styles
             effectPreview.style.backgroundImage = gradient;
             effectPreview.style.backgroundSize = '200% 100%';
             effectPreview.style.backgroundRepeat = 'repeat-x';
@@ -365,8 +342,7 @@ document.addEventListener('DOMContentLoaded', function() {
             effectPreview.style.animation = 'none';
             effectPreview.classList.remove(
                 'wave-normal', 'wave-slow', 'wave-very-slow',
-                'wave-fast', 'wave-very-fast', 'wave-slower',
-                'wave-even-slower', 'wave-slowest'
+                'wave-fast', 'wave-very-fast'
             );
 
             // Force reflow to restart animation
@@ -376,12 +352,10 @@ document.addEventListener('DOMContentLoaded', function() {
             if (speed) {
                 const speedClass = {
                     'o1': 'wave-normal',
-                    'o2': 'wave-fast',
-                    'o3': 'wave-very-fast',
                     'f1': 'wave-slow',
-                    'f2': 'wave-slower',
-                    'f3': 'wave-even-slower',
-                    'f4': 'wave-slowest'
+                    'f2': 'wave-very-slow',
+                    'o2': 'wave-fast',
+                    'o3': 'wave-very-fast'
                 }[speed];
                 if (speedClass) {
                     effectPreview.classList.add(speedClass);
@@ -413,6 +387,8 @@ document.addEventListener('DOMContentLoaded', function() {
         code += ')';
         codeOutput.textContent = code;
     }
+    
+
     
     // Initialize
     initColorInputs();
