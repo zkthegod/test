@@ -913,9 +913,9 @@ nav a:hover, nav a.active {
 }
 
 .avatar-item {
-    background-color: var(--card-bg);
-    border-radius: var(--radius);
-    padding: 10px;
+    background-color: transparent !important; /* Makes background transparent */
+    border: none !important; /* Removes border */
+    padding: 5px !important; /* Reduces padding */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -928,7 +928,8 @@ nav a:hover, nav a.active {
 
 .avatar-item:hover {
     transform: translateY(-3px);
-    box-shadow: var(--shadow);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: transparent !important;
 }
 
 .avatar-img {
