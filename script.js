@@ -553,11 +553,19 @@ document.addEventListener('DOMContentLoaded', function() {
         { name: "Eevee", file: "pokemon-eevee.32.png", category: "pokemon" },
         
         // Smurf
-        { name: "Papa Smurf", file: "smurf-papa.32.png", category: "smurf" },
-        { name: "Smurfette", file: "smurf-smurfette.32.png", category: "smurf" },
-        { name: "Brainy Smurf", file: "smurf-brainy.32.png", category: "smurf" },
-        { name: "Clumsy Smurf", file: "smurf-clumsy.32.png", category: "smurf" },
-        { name: "Grouchy Smurf", file: "smurf-grouchy.32.png", category: "smurf" },
+{ name: "Puppy", file: "Puppy-icon.png", category: "smurf" },
+{ name: "Nat", file: "Nat-icon.png", category: "smurf" },
+{ name: "Mushroom", file: "Mushroom-icon.png", category: "smurf" },
+{ name: "Papa Smurf", file: "Papa-Smurf-icon.png", category: "smurf" },
+{ name: "Smurfette", file: "Smurfette-icon.png", category: "smurf" },
+{ name: "Asmurf", file: "Asmurf-icon.png", category: "smurf" },
+{ name: "Azrael", file: "Azreal-icon.png", category: "smurf" },
+{ name: "Bigmouth Smurf", file: "Bigmouth-icon.png", category: "smurf" },
+{ name: "Hefty Smurf", file: "Hefty-icon.png", category: "smurf" },
+{ name: "Handy Smurf", file: "Handy-icon.png", category: "smurf" },
+{ name: "Grouchy Smurf", file: "Grouchy-icon.png", category: "smurf" },
+{ name: "Greedy Smurf", file: "Greedy-icon.png", category: "smurf" },
+{ name: "Jokey's Present", file: "Jokeys-present-icon.png", category: "smurf" },
         
         // Dilbert
         { name: "Dilbert", file: "dilbert-main.32.png", category: "dilbert" },
@@ -600,7 +608,7 @@ document.addEventListener('DOMContentLoaded', function() {
 { name: "Friar Tuck", file: "Friar-Tuck-icon.png", category: "robinhood" },
 { name: "Crocodile", file: "Crocodile-icon.png", category: "robinhood" },
 { name: "Bullseye", file: "Bulls-eye-icon.png", category: "robinhood" },
-{ name: "Allan-a-Dale", file: "Allan-a-Dale-icon.png", category: "robinhood" }
+{ name: "Allan-a-Dale", file: "Allan-a-Dale-icon.png", category: "robinhood" },
         
         // Garfield
         { name: "Garfield", file: "garfield-main.32.png", category: "garfield" },
