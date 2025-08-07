@@ -775,6 +775,117 @@ nav a:hover, nav a.active {
     100% { opacity: 1; }
 }
 
+/* Xatspace Templates */
+.templates-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 25px;
+    margin-top: 30px;
+}
+
+.template-card {
+    background-color: var(--card-bg);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+    border: var(--border);
+}
+
+.template-card.dark {
+    background-color: var(--bg);
+}
+
+.template-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.template-preview {
+    height: 200px;
+    overflow: hidden;
+    border-bottom: var(--border);
+}
+
+.template-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.template-card:hover .template-preview img {
+    transform: scale(1.05);
+}
+
+.template-info {
+    padding: 20px;
+}
+
+.template-info h3 {
+    margin-bottom: 10px;
+    color: var(--primary);
+}
+
+.template-info p {
+    color: var(--text-light);
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+}
+
+.template-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.template-actions .primary-btn {
+    flex: 1;
+    min-width: 120px;
+    text-align: center;
+    padding: 10px 15px;
+    font-size: 0.9rem;
+}
+
+/* Simpsons Avatars */
+.avatars-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+    gap: 10px;
+    margin-top: 30px;
+}
+
+.avatar-item {
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    transition: var(--transition);
+    border: var(--border);
+    padding: 8px;
+}
+
+.avatar-item:nth-child(4n+1),
+.avatar-item:nth-child(4n+4) {
+    background-color: var(--bg);
+}
+
+.avatar-item:hover {
+    transform: scale(1.1);
+    background-color: var(--primary-light);
+    box-shadow: 0 4px 12px rgba(108, 92, 231, 0.2);
+}
+
+.avatar-item img {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    image-rendering: pixelated;
+}
+
 footer {
     text-align: center;
     padding: 20px 0;
@@ -830,5 +941,24 @@ footer {
     
     .chat-viewport {
         padding: 0 40px;
+    }
+    
+    .templates-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .avatars-grid {
+        grid-template-columns: repeat(auto-fill, minmax(48px, 1fr));
+    }
+    
+    .avatar-item {
+        width: 48px;
+        height: 48px;
+        padding: 4px;
+    }
+    
+    .avatar-item img {
+        width: 24px;
+        height: 24px;
     }
 }
