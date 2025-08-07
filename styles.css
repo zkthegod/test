@@ -933,26 +933,28 @@ nav a:hover, nav a.active {
 }
 
 .avatar-img-container {
-    position: relative;
     width: 48px;
     height: 48px;
     background: 
-        /* Checkerboard pattern */
+        /* Layer 1 */ 
         linear-gradient(45deg, #e0e0e0 25%, transparent 25%, transparent 75%, #e0e0e0 75%),
+        /* Layer 2 (offset) */
         linear-gradient(45deg, #e0e0e0 25%, transparent 25%, transparent 75%, #e0e0e0 75%);
     background-size: 16px 16px;
-    background-position: 0 0, 8px 8px;
+    background-position: 0 0, 8px 8px; /* Key: Second layer is offset */
     border-radius: 4px;
     margin-bottom: 8px;
 }
 
+/* Dark mode checkerboard - PROPER dual-layer version */
 [data-theme="dark"] .avatar-img-container {
     background: 
-        /* Darker checkerboard for dark theme */
-        linear-gradient(45deg, #555 25%, transparent 25%, transparent 75%, #555 75%),
-        linear-gradient(45deg, #555 25%, transparent 25%, transparent 75%, #555 75%);
+        /* Layer 1 */
+        linear-gradient(45deg, #555555 25%, transparent 25%, transparent 75%, #555555 75%),
+        /* Layer 2 (offset) */
+        linear-gradient(45deg, #555555 25%, transparent 25%, transparent 75%, #555555 75%);
     background-size: 16px 16px;
-    background-position: 0 0, 8px 8px;
+    background-position: 0 0, 8px 8px; /* Same offset as light mode */
 }
 
 .avatar-img {
