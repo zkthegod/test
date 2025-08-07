@@ -188,8 +188,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const charCount = document.getElementById('charCount');
     const gradColorsContainer = document.getElementById('gradColors');
     const addColorBtn = document.getElementById('addColor');
-    const gradRotation = document.getElementById('gradRotation');
-    const gradRotationValue = document.getElementById('gradRotationValue');
+    const gradDirection = document.getElementById('gradDirection');
     const glowColor = document.getElementById('glowColor');
     const waveSpeed = document.getElementById('waveSpeed');
     const effectPreview = document.getElementById('effectPreview');
@@ -266,12 +265,8 @@ document.addEventListener('DOMContentLoaded', function() {
         updateEffects();
     });
     
-    [gradRotation, glowColor, waveSpeed].forEach(control => {
+    [gradDirection, glowColor, waveSpeed].forEach(control => {
         control.addEventListener('input', updateEffects);
-    });
-    
-    gradRotation.addEventListener('input', () => {
-        gradRotationValue.textContent = `${gradRotation.value}°`;
     });
     
     glowColor.addEventListener('input', () => {
@@ -298,8 +293,7 @@ document.addEventListener('DOMContentLoaded', function() {
         gradColorsContainer.innerHTML = '';
         randomPreset.forEach(color => addColorInput(color));
         
-        gradRotation.value = Math.floor(Math.random() * 360);
-        gradRotationValue.textContent = `${gradRotation.value}°`;
+        gradDirection.value = ['90', '45', '-45'][Math.floor(Math.random() * 3)];
         
         glowColor.value = `#${Math.floor(Math.random()*16777215).toString(16).padStart(6, '0')}`;
         document.querySelector('.color-picker-wrapper .color-value').textContent = glowColor.value;
@@ -319,13 +313,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         const text = effectText.value || 'xat';
-        let angle = parseFloat(gradRotation.value);
+        let angle = parseFloat(gradDirection.value);
         const glow = glowColor.value;
         const speed = waveSpeed.value;
-
-        // Clamp angle between -190 and 190 (optional, can be removed)
-        if (angle > 190) angle = 190;
-        if (angle < -190) angle = -190;
 
         // Apply gradient effect
         if (colors.length > 1) {
@@ -337,27 +327,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 gradientStops.push(`${color} ${percent}%`);
             });
 
-            // Repeat the first color at 100% to close the loop
             gradientStops.push(`${colors[0]} 100%`);
 
             const gradient = `repeating-linear-gradient(${angle}deg, ${gradientStops.join(', ')})`;
 
-            // Apply styles
             effectPreview.style.backgroundImage = gradient;
             effectPreview.style.backgroundSize = '200% 100%';
             effectPreview.style.backgroundRepeat = 'repeat-x';
 
-            // Reset animation
             effectPreview.style.animation = 'none';
             effectPreview.classList.remove(
                 'wave-normal', 'wave-slow', 'wave-very-slow',
                 'wave-fast', 'wave-very-fast'
             );
 
-            // Force reflow to restart animation
             void effectPreview.offsetWidth;
 
-            // Reapply animation
             if (speed) {
                 const speedClass = {
                     'o1': 'wave-normal',
@@ -371,15 +356,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         } else if (colors.length === 1) {
-            // Just one color, no animation
             effectPreview.style.background = colors[0];
             effectPreview.style.animation = 'none';
         }
 
-        // Apply glow
         effectPreview.style.setProperty('--glow-color', glow);
 
-        // Generate code output
         let code = '(glow';
         code += `#${glow.replace('#', '')}`;
 
@@ -428,104 +410,135 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Simpsons Avatars - Generate avatar grid
-    const avatarUrls = [
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Bart-Unabridged-Bart-movie-director-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Bart-Unabridged-Bart-rapping-recording-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Episode-Tom-Sawyer-Homer-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Episode-Tom-Sawyer-Moe-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Episode-Tom-Sawyer-Nelson-as-Huck-Finn-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Episode-Tom-Sawyer-Rev-Lovejoy-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Folder-Bart-rapping-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Folder-Bart-rapping-into-mic-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Folder-Blue-Green-Homer-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Folder-Blue-Green-Simpsons-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Folder-Blue-Green-Simpsons-2-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Folder-Frink-fish-in-water-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Folder-Guest-Stars-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Folder-Springfield-11-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Folder-U2-logo-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Food-Khlav-Kalash-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Guest-Stars-Al-Jean-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Guest-Stars-Clint-Eastwood-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Guest-Stars-Jay-Sherman-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Guest-Stars-Lee-Marvin-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Guest-Stars-U2-Adam-Clayton-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Guest-Stars-U2-Bono-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Guest-Stars-U2-Edge-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Guest-Stars-U2-Larry-Mullen-Jr-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Homertopia-Homer-as-Wolverine-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Homertopia-Homer-in-Tom-Sawyer-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Misc-Episodes-Ad-Executive-1-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Misc-Episodes-Ad-Executive-2-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Misc-Episodes-Dueling-Colonel-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Misc-Episodes-Duff-Man-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Misc-Episodes-Duff-Mans-beer-belt-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Misc-Episodes-Glen-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Misc-Episodes-Gloria-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Misc-Episodes-Grocery-cashier-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Misc-Episodes-Jane-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Misc-Episodes-Johnny-boy-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Misc-Episodes-Johnny-tight-lips-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Misc-Episodes-Khlav-Kalash-vendor-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Misc-Episodes-Lil-Vicky-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Misc-Episodes-Mexican-Milhouse-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Misc-Episodes-Millicent-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Misc-Episodes-Patches-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Misc-Episodes-Poor-Violet-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Misc-Episodes-Rich-Texan-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Nuclear-Plant-Baby-Waylon-Smithers-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Nuclear-Plant-Ernest-K-Smithers-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Public-Figures-Fallout-Boy-Milhouse-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Public-Figures-Laramie-spokesman-Jack-Larson-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Public-Figures-Quimbys-wife-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Public-Figures-Rupert-Murdoch-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Bart-mooning-1-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Bart-mooning-2-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Bart-reaching-up-1-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Bart-reaching-up-2-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Bartacuda-1-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Bartacuda-2-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Barts-joke-face-1-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Barts-joke-face-2-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Beach-Lisa-1-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Beach-Lisa-2-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Cool-Bart-1-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Cool-Bart-2-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Duff-can-1-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Duff-can-2-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Fallout-Boy-Milhouse-1-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Fallout-Boy-Milhouse-2-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Homer-donut-1-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Homer-donut-2-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Homer-swills-beer-1-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Homer-swills-beer-2-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Krusty-1-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Krusty-2-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Mischievous-Bart-1-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Mischievous-Bart-2-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Uder-1-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Uder-2-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Willie-1-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Willie-2-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/School-Armin-Tamzarian-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/School-Ding-a-ling-kid-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/School-Sgt-Seymour-Skinner-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Townspeople-Colonel-Leslie-Hapablap-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Townspeople-Gil-icon.png',
-        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Townspeople-Otis-town-drunk-icon.png'
+    // Simpsons Avatars
+    const avatarGrid = document.getElementById('avatarGrid');
+    const avatarSearch = document.getElementById('avatarSearch');
+    
+    const avatarData = [
+        { name: "Bart Director", file: "Jeanette-Foshee-Simpsons-11-Bart-Unabridged-Bart-movie-director.32.png" },
+        { name: "Bart Rapping", file: "Jeanette-Foshee-Simpsons-11-Bart-Unabridged-Bart-rapping-recording.32.png" },
+        { name: "Homer Tom Sawyer", file: "Jeanette-Foshee-Simpsons-11-Episode-Tom-Sawyer-Homer.32.png" },
+        { name: "Moe Tom Sawyer", file: "Jeanette-Foshee-Simpsons-11-Episode-Tom-Sawyer-Moe.32.png" },
+        { name: "Nelson Huck Finn", file: "Jeanette-Foshee-Simpsons-11-Episode-Tom-Sawyer-Nelson-as-Huck-Finn.32.png" },
+        { name: "Rev Lovejoy", file: "Jeanette-Foshee-Simpsons-11-Episode-Tom-Sawyer-Rev-Lovejoy.32.png" },
+        { name: "Bart Rapping", file: "Jeanette-Foshee-Simpsons-11-Folder-Bart-rapping.32.png" },
+        { name: "Bart Mic", file: "Jeanette-Foshee-Simpsons-11-Folder-Bart-rapping-into-mic.32.png" },
+        { name: "Homer Blue", file: "Jeanette-Foshee-Simpsons-11-Folder-Blue-Green-Homer.32.png" },
+        { name: "Simpsons Blue", file: "Jeanette-Foshee-Simpsons-11-Folder-Blue-Green-Simpsons.32.png" },
+        { name: "Simpsons Blue 2", file: "Jeanette-Foshee-Simpsons-11-Folder-Blue-Green-Simpsons-2.32.png" },
+        { name: "Frink Fish", file: "Jeanette-Foshee-Simpsons-11-Folder-Frink-fish-in-water.32.png" },
+        { name: "Guest Stars", file: "Jeanette-Foshee-Simpsons-11-Folder-Guest-Stars.32.png" },
+        { name: "Springfield", file: "Jeanette-Foshee-Simpsons-11-Folder-Springfield-11.32.png" },
+        { name: "U2 Logo", file: "Jeanette-Foshee-Simpsons-11-Folder-U2-logo.32.png" },
+        { name: "Khlav Kalash", file: "Jeanette-Foshee-Simpsons-11-Food-Khlav-Kalash.32.png" },
+        { name: "Al Jean", file: "Jeanette-Foshee-Simpsons-11-Guest-Stars-Al-Jean.32.png" },
+        { name: "Clint Eastwood", file: "Jeanette-Foshee-Simpsons-11-Guest-Stars-Clint-Eastwood.32.png" },
+        { name: "Jay Sherman", file: "Jeanette-Foshee-Simpsons-11-Guest-Stars-Jay-Sherman.32.png" },
+        { name: "Lee Marvin", file: "Jeanette-Foshee-Simpsons-11-Guest-Stars-Lee-Marvin.32.png" },
+        { name: "Adam Clayton", file: "Jeanette-Foshee-Simpsons-11-Guest-Stars-U2-Adam-Clayton.32.png" },
+        { name: "Bono", file: "Jeanette-Foshee-Simpsons-11-Guest-Stars-U2-Bono.32.png" },
+        { name: "The Edge", file: "Jeanette-Foshee-Simpsons-11-Guest-Stars-U2-Edge.32.png" },
+        { name: "Larry Mullen", file: "Jeanette-Foshee-Simpsons-11-Guest-Stars-U2-Larry-Mullen-Jr.32.png" },
+        { name: "Homer Wolverine", file: "Jeanette-Foshee-Simpsons-11-Homertopia-Homer-as-Wolverine.32.png" },
+        { name: "Homer Tom", file: "Jeanette-Foshee-Simpsons-11-Homertopia-Homer-in-Tom-Sawyer.32.png" },
+        { name: "Ad Exec 1", file: "Jeanette-Foshee-Simpsons-11-Misc-Episodes-Ad-Executive-1.32.png" },
+        { name: "Ad Exec 2", file: "Jeanette-Foshee-Simpsons-11-Misc-Episodes-Ad-Executive-2.32.png" },
+        { name: "Dueling Colonel", file: "Jeanette-Foshee-Simpsons-11-Misc-Episodes-Dueling-Colonel.32.png" },
+        { name: "Duff Man", file: "Jeanette-Foshee-Simpsons-11-Misc-Episodes-Duff-Man.32.png" },
+        { name: "Duff Belt", file: "Jeanette-Foshee-Simpsons-11-Misc-Episodes-Duff-Mans-beer-belt.32.png" },
+        { name: "Glen", file: "Jeanette-Foshee-Simpsons-11-Misc-Episodes-Glen.32.png" },
+        { name: "Gloria", file: "Jeanette-Foshee-Simpsons-11-Misc-Episodes-Gloria.32.png" },
+        { name: "Cashier", file: "Jeanette-Foshee-Simpsons-11-Misc-Episodes-Grocery-cashier.32.png" },
+        { name: "Jane", file: "Jeanette-Foshee-Simpsons-11-Misc-Episodes-Jane.32.png" },
+        { name: "Johnny Boy", file: "Jeanette-Foshee-Simpsons-11-Misc-Episodes-Johnny-boy.32.png" },
+        { name: "Johnny Tightlips", file: "Jeanette-Foshee-Simpsons-11-Misc-Episodes-Johnny-tight-lips.32.png" },
+        { name: "Khlav Vendor", file: "Jeanette-Foshee-Simpsons-11-Misc-Episodes-Khlav-Kalash-vendor.32.png" },
+        { name: "Lil Vicky", file: "Jeanette-Foshee-Simpsons-11-Misc-Episodes-Lil-Vicky.32.png" },
+        { name: "Mexican Milhouse", file: "Jeanette-Foshee-Simpsons-11-Misc-Episodes-Mexican-Milhouse.32.png" },
+        { name: "Millicent", file: "Jeanette-Foshee-Simpsons-11-Misc-Episodes-Millicent.32.png" },
+        { name: "Patches", file: "Jeanette-Foshee-Simpsons-11-Misc-Episodes-Patches.32.png" },
+        { name: "Poor Violet", file: "Jeanette-Foshee-Simpsons-11-Misc-Episodes-Poor-Violet.32.png" },
+        { name: "Rich Texan", file: "Jeanette-Foshee-Simpsons-11-Misc-Episodes-Rich-Texan.32.png" },
+        { name: "Baby Smithers", file: "Jeanette-Foshee-Simpsons-11-Nuclear-Plant-Baby-Waylon-Smithers.32.png" },
+        { name: "Ernest Smithers", file: "Jeanette-Foshee-Simpsons-11-Nuclear-Plant-Ernest-K-Smithers.32.png" },
+        { name: "Fallout Boy", file: "Jeanette-Foshee-Simpsons-11-Public-Figures-Fallout-Boy-Milhouse.32.png" },
+        { name: "Jack Larson", file: "Jeanette-Foshee-Simpsons-11-Public-Figures-Laramie-spokesman-Jack-Larson.32.png" },
+        { name: "Quimby's Wife", file: "Jeanette-Foshee-Simpsons-11-Public-Figures-Quimbys-wife.32.png" },
+        { name: "Rupert Murdoch", file: "Jeanette-Foshee-Simpsons-11-Public-Figures-Rupert-Murdoch.32.png" },
+        { name: "Bart Mooning 1", file: "Jeanette-Foshee-Simpsons-11-Rollover-Bart-mooning-1.32.png" },
+        { name: "Bart Mooning 2", file: "Jeanette-Foshee-Simpsons-11-Rollover-Bart-mooning-2.32.png" },
+        { name: "Bart Reaching 1", file: "Jeanette-Foshee-Simpsons-11-Rollover-Bart-reaching-up-1.32.png" },
+        { name: "Bart Reaching 2", file: "Jeanette-Foshee-Simpsons-11-Rollover-Bart-reaching-up-2.32.png" },
+        { name: "Bartacuda 1", file: "Jeanette-Foshee-Simpsons-11-Rollover-Bartacuda-1.32.png" },
+        { name: "Bartacuda 2", file: "Jeanette-Foshee-Simpsons-11-Rollover-Bartacuda-2.32.png" },
+        { name: "Bart Joke 1", file: "Jeanette-Foshee-Simpsons-11-Rollover-Barts-joke-face-1.32.png" },
+        { name: "Bart Joke 2", file: "Jeanette-Foshee-Simpsons-11-Rollover-Barts-joke-face-2.32.png" },
+        { name: "Beach Lisa 1", file: "Jeanette-Foshee-Simpsons-11-Rollover-Beach-Lisa-1.32.png" },
+        { name: "Beach Lisa 2", file: "Jeanette-Foshee-Simpsons-11-Rollover-Beach-Lisa-2.32.png" },
+        { name: "Cool Bart 1", file: "Jeanette-Foshee-Simpsons-11-Rollover-Cool-Bart-1.32.png" },
+        { name: "Cool Bart 2", file: "Jeanette-Foshee-Simpsons-11-Rollover-Cool-Bart-2.32.png" },
+        { name: "Duff Can 1", file: "Jeanette-Foshee-Simpsons-11-Rollover-Duff-can-1.32.png" },
+        { name: "Duff Can 2", file: "Jeanette-Foshee-Simpsons-11-Rollover-Duff-can-2.32.png" },
+        { name: "Fallout Milhouse 1", file: "Jeanette-Foshee-Simpsons-11-Rollover-Fallout-Boy-Milhouse-1.32.png" },
+        { name: "Fallout Milhouse 2", file: "Jeanette-Foshee-Simpsons-11-Rollover-Fallout-Boy-Milhouse-2.32.png" },
+        { name: "Homer Donut 1", file: "Jeanette-Foshee-Simpsons-11-Rollover-Homer-donut-1.32.png" },
+        { name: "Homer Donut 2", file: "Jeanette-Foshee-Simpsons-11-Rollover-Homer-donut-2.32.png" },
+        { name: "Homer Beer 1", file: "Jeanette-Foshee-Simpsons-11-Rollover-Homer-swills-beer-1.32.png" },
+        { name: "Homer Beer 2", file: "Jeanette-Foshee-Simpsons-11-Rollover-Homer-swills-beer-2.32.png" },
+        { name: "Krusty 1", file: "Jeanette-Foshee-Simpsons-11-Rollover-Krusty-1.32.png" },
+        { name: "Krusty 2", file: "Jeanette-Foshee-Simpsons-11-Rollover-Krusty-2.32.png" },
+        { name: "Mischievous Bart 1", file: "Jeanette-Foshee-Simpsons-11-Rollover-Mischievous-Bart-1.32.png" },
+        { name: "Mischievous Bart 2", file: "Jeanette-Foshee-Simpsons-11-Rollover-Mischievous-Bart-2.32.png" },
+        { name: "Uder 1", file: "Jeanette-Foshee-Simpsons-11-Rollover-Uder-1.32.png" },
+        { name: "Uder 2", file: "Jeanette-Foshee-Simpsons-11-Rollover-Uder-2.32.png" },
+        { name: "Willie 1", file: "Jeanette-Foshee-Simpsons-11-Rollover-Willie-1.32.png" },
+        { name: "Willie 2", file: "Jeanette-Foshee-Simpsons-11-Rollover-Willie-2.32.png" },
+        { name: "Armin Tamzarian", file: "Jeanette-Foshee-Simpsons-11-School-Armin-Tamzarian.32.png" },
+        { name: "Ding-a-ling Kid", file: "Jeanette-Foshee-Simpsons-11-School-Ding-a-ling-kid.32.png" },
+        { name: "Skinner", file: "Jeanette-Foshee-Simpsons-11-School-Sgt-Seymour-Skinner.32.png" },
+        { name: "Colonel Hapablap", file: "Jeanette-Foshee-Simpsons-11-Townspeople-Colonel-Leslie-Hapablap.32.png" },
+        { name: "Gil", file: "Jeanette-Foshee-Simpsons-11-Townspeople-Gil.32.png" },
+        { name: "Otis", file: "Jeanette-Foshee-Simpsons-11-Townspeople-Otis-town-drunk.32.png" }
     ];
 
-    const avatarsGrid = document.querySelector('.avatars-grid');
+    function loadAvatars() {
+        avatarGrid.innerHTML = '';
+        
+        avatarData.forEach(avatar => {
+            const avatarItem = document.createElement('div');
+            avatarItem.className = 'avatar-item loading';
+            avatarItem.innerHTML = `
+                <img src="avatars/${avatar.file}" alt="${avatar.name}" class="avatar-img" loading="lazy">
+                <span class="avatar-name">${avatar.name}</span>
+            `;
+            
+            const img = avatarItem.querySelector('img');
+            img.onload = () => {
+                avatarItem.classList.remove('loading');
+            };
+            
+            img.onerror = () => {
+                avatarItem.classList.remove('loading');
+                img.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="%236c5ce7"><text x="12" y="16" text-anchor="middle" font-size="12" fill="white">?</text></svg>';
+            };
+            
+            avatarGrid.appendChild(avatarItem);
+        });
+    }
     
-    avatarUrls.forEach(url => {
-        const avatarItem = document.createElement('div');
-        avatarItem.className = 'avatar-item';
-        avatarItem.innerHTML = `<img src="${url}" alt="Simpsons avatar">`;
-        avatarsGrid.appendChild(avatarItem);
+    // Search functionality
+    avatarSearch.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        const items = avatarGrid.querySelectorAll('.avatar-item');
+        
+        items.forEach(item => {
+            const name = item.querySelector('.avatar-name').textContent.toLowerCase();
+            item.style.display = name.includes(searchTerm) ? 'flex' : 'none';
+        });
     });
-
+    
     // Initialize
     initColorInputs();
     updateEffects();
+    loadAvatars();
 });
