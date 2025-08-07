@@ -51,8 +51,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Load saved settings or set defaults
     const savedSettings = JSON.parse(localStorage.getItem('chatSettings')) || {
-        width: 700,
-        height: 500
+        width: 650,
+        height: 486
     };
     
     chatWidthInput.value = savedSettings.width;
@@ -64,8 +64,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     saveSettingsBtn.addEventListener('click', function() {
         const newSettings = {
-            width: parseInt(chatWidthInput.value) || 700,
-            height: parseInt(chatHeightInput.value) || 500
+            width: parseInt(chatWidthInput.value) || 650,
+            height: parseInt(chatHeightInput.value) || 486
         };
         
         localStorage.setItem('chatSettings', JSON.stringify(newSettings));
@@ -98,8 +98,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         const settings = JSON.parse(localStorage.getItem('chatSettings')) || {
-            width: 700,
-            height: 500
+            width: 650,
+            height: 486
         };
         
         const chatId = Date.now();
@@ -188,7 +188,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const charCount = document.getElementById('charCount');
     const gradColorsContainer = document.getElementById('gradColors');
     const addColorBtn = document.getElementById('addColor');
-    const gradDirection = document.getElementById('gradDirection');
+    const gradRotation = document.getElementById('gradRotation');
+    const gradRotationValue = document.getElementById('gradRotationValue');
     const glowColor = document.getElementById('glowColor');
     const waveSpeed = document.getElementById('waveSpeed');
     const effectPreview = document.getElementById('effectPreview');
@@ -199,7 +200,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Color presets
     const colorPresets = [
-        ['#ff69b4', '#87ceeb'], // Pink and Sky Blue
         ['#ff0000', '#0000ff'],
         ['#ff00ff', '#00ffff'],
         ['#ffff00', '#ff00ff'],
@@ -210,15 +210,15 @@ document.addEventListener('DOMContentLoaded', function() {
         ['#ff00ff', '#00ffff', '#ffff00', '#ff0000']
     ];
     
-    // Initialize with default colors (Pink and Sky Blue)
+    // Initialize with 2 colors
     function initColorInputs() {
         gradColorsContainer.innerHTML = '';
-        addColorInput('#ff69b4');
-        addColorInput('#87ceeb');
+        addColorInput('#ff0000');
+        addColorInput('#0000ff');
     }
     
     function addColorInput(color) {
-        if (gradColorsContainer.children.length >= 10) return;
+        if (gradColorsContainer.children.length >= 6) return;
         
         const colorInput = document.createElement('div');
         colorInput.className = 'color-input';
@@ -254,7 +254,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     addColorBtn.addEventListener('click', () => {
-        if (gradColorsContainer.children.length < 10) {
+        if (gradColorsContainer.children.length < 6) {
             addColorInput('#00ff00');
         }
     });
@@ -262,12 +262,16 @@ document.addEventListener('DOMContentLoaded', function() {
     effectText.addEventListener('input', () => {
         const text = effectText.value;
         charCount.textContent = text.length;
-        effectPreview.textContent = text || 'Rexor';
+        effectPreview.textContent = text || 'xat';
         updateEffects();
     });
     
-    [gradDirection, glowColor, waveSpeed].forEach(control => {
+    [gradRotation, glowColor, waveSpeed].forEach(control => {
         control.addEventListener('input', updateEffects);
+    });
+    
+    gradRotation.addEventListener('input', () => {
+        gradRotationValue.textContent = `${gradRotation.value}°`;
     });
     
     glowColor.addEventListener('input', () => {
@@ -294,10 +298,10 @@ document.addEventListener('DOMContentLoaded', function() {
         gradColorsContainer.innerHTML = '';
         randomPreset.forEach(color => addColorInput(color));
         
-        const directions = ['90', '45', '-45'];
-        gradDirection.value = directions[Math.floor(Math.random() * directions.length)];
+        gradRotation.value = Math.floor(Math.random() * 360);
+        gradRotationValue.textContent = `${gradRotation.value}°`;
         
-        glowColor.value = '#000000';
+        glowColor.value = `#${Math.floor(Math.random()*16777215).toString(16).padStart(6, '0')}`;
         document.querySelector('.color-picker-wrapper .color-value').textContent = glowColor.value;
         
         const speeds = ['', 'o1', 'f1', 'f2', 'o2', 'o3'];
@@ -306,7 +310,7 @@ document.addEventListener('DOMContentLoaded', function() {
         updateEffects();
     });
     
-function updateEffects() {
+    function updateEffects() {
         const colors = [];
         document.querySelectorAll('.color-picker').forEach(picker => {
             if (picker.value) {
@@ -314,24 +318,29 @@ function updateEffects() {
             }
         });
 
-        const text = effectText.value || 'Rexor';
-        const angle = gradDirection.value;
+        const text = effectText.value || 'xat';
+        let angle = parseFloat(gradRotation.value);
         const glow = glowColor.value;
         const speed = waveSpeed.value;
 
+        // Clamp angle between -190 and 190 (optional, can be removed)
+        if (angle > 190) angle = 190;
+        if (angle < -190) angle = -190;
+
         // Apply gradient effect
         if (colors.length > 1) {
+            const totalColors = colors.length;
             const gradientStops = [];
-            const gradientColors = [...colors, colors[0]];
-            const totalStops = gradientColors.length;
-        
-            gradientColors.forEach((color, i) => {
-                const percent = (i / (totalStops - 1)) * (angle != 90 ? 26.25 : 25);
+
+            colors.forEach((color, i) => {
+                const percent = Math.round((i / totalColors) * 100);
                 gradientStops.push(`${color} ${percent}%`);
             });
-        
+
+            // Repeat the first color at 100% to close the loop
+            gradientStops.push(`${colors[0]} 100%`);
+
             const gradient = `repeating-linear-gradient(${angle}deg, ${gradientStops.join(', ')})`;
-            console.log(gradient)
 
             // Apply styles
             effectPreview.style.backgroundImage = gradient;
@@ -388,8 +397,134 @@ function updateEffects() {
         codeOutput.textContent = code;
     }
     
+    // Xatspace Templates - Download Code functionality
+    document.querySelectorAll('.template-actions button').forEach(button => {
+        button.addEventListener('click', function() {
+            const templateName = this.closest('.template-card').querySelector('h3').textContent;
+            const templateCode = `<!-- ${templateName} xatspace Template -->
+<div class="xatspace-template ${templateName.toLowerCase().replace(/\s+/g, '-')}">
+    <!-- Your xatspace content here -->
+</div>
 
+<style>
+.xatspace-template.${templateName.toLowerCase().replace(/\s+/g, '-')} {
+    /* Template styles will be here */
+    background: #f5f6fa;
+    color: #2d3436;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+    border-radius: 12px;
+}
+</style>`;
+            
+            navigator.clipboard.writeText(templateCode).then(() => {
+                const originalText = this.innerHTML;
+                this.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                setTimeout(() => {
+                    this.innerHTML = originalText;
+                }, 2000);
+            });
+        });
+    });
     
+    // Simpsons Avatars - Generate avatar grid
+    const avatarUrls = [
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Bart-Unabridged-Bart-movie-director-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Bart-Unabridged-Bart-rapping-recording-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Episode-Tom-Sawyer-Homer-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Episode-Tom-Sawyer-Moe-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Episode-Tom-Sawyer-Nelson-as-Huck-Finn-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Episode-Tom-Sawyer-Rev-Lovejoy-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Folder-Bart-rapping-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Folder-Bart-rapping-into-mic-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Folder-Blue-Green-Homer-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Folder-Blue-Green-Simpsons-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Folder-Blue-Green-Simpsons-2-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Folder-Frink-fish-in-water-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Folder-Guest-Stars-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Folder-Springfield-11-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Folder-U2-logo-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Food-Khlav-Kalash-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Guest-Stars-Al-Jean-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Guest-Stars-Clint-Eastwood-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Guest-Stars-Jay-Sherman-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Guest-Stars-Lee-Marvin-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Guest-Stars-U2-Adam-Clayton-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Guest-Stars-U2-Bono-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Guest-Stars-U2-Edge-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Guest-Stars-U2-Larry-Mullen-Jr-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Homertopia-Homer-as-Wolverine-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Homertopia-Homer-in-Tom-Sawyer-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Misc-Episodes-Ad-Executive-1-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Misc-Episodes-Ad-Executive-2-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Misc-Episodes-Dueling-Colonel-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Misc-Episodes-Duff-Man-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Misc-Episodes-Duff-Mans-beer-belt-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Misc-Episodes-Glen-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Misc-Episodes-Gloria-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Misc-Episodes-Grocery-cashier-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Misc-Episodes-Jane-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Misc-Episodes-Johnny-boy-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Misc-Episodes-Johnny-tight-lips-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Misc-Episodes-Khlav-Kalash-vendor-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Misc-Episodes-Lil-Vicky-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Misc-Episodes-Mexican-Milhouse-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Misc-Episodes-Millicent-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Misc-Episodes-Patches-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Misc-Episodes-Poor-Violet-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Misc-Episodes-Rich-Texan-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Nuclear-Plant-Baby-Waylon-Smithers-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Nuclear-Plant-Ernest-K-Smithers-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Public-Figures-Fallout-Boy-Milhouse-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Public-Figures-Laramie-spokesman-Jack-Larson-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Public-Figures-Quimbys-wife-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Public-Figures-Rupert-Murdoch-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Bart-mooning-1-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Bart-mooning-2-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Bart-reaching-up-1-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Bart-reaching-up-2-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Bartacuda-1-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Bartacuda-2-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Barts-joke-face-1-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Barts-joke-face-2-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Beach-Lisa-1-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Beach-Lisa-2-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Cool-Bart-1-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Cool-Bart-2-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Duff-can-1-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Duff-can-2-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Fallout-Boy-Milhouse-1-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Fallout-Boy-Milhouse-2-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Homer-donut-1-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Homer-donut-2-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Homer-swills-beer-1-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Homer-swills-beer-2-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Krusty-1-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Krusty-2-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Mischievous-Bart-1-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Mischievous-Bart-2-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Uder-1-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Uder-2-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Willie-1-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Rollover-Willie-2-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/School-Armin-Tamzarian-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/School-Ding-a-ling-kid-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/School-Sgt-Seymour-Skinner-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Townspeople-Colonel-Leslie-Hapablap-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Townspeople-Gil-icon.png',
+        'https://icons.iconarchive.com/icons/jeanette-foshee/simpsons-11/32/Townspeople-Otis-town-drunk-icon.png'
+    ];
+
+    const avatarsGrid = document.querySelector('.avatars-grid');
+    
+    avatarUrls.forEach(url => {
+        const avatarItem = document.createElement('div');
+        avatarItem.className = 'avatar-item';
+        avatarItem.innerHTML = `<img src="${url}" alt="Simpsons avatar">`;
+        avatarsGrid.appendChild(avatarItem);
+    });
+
     // Initialize
     initColorInputs();
     updateEffects();
