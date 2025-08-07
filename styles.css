@@ -935,36 +935,38 @@ nav a:hover, nav a.active {
 .avatar-img-container {
     width: 48px;
     height: 48px;
+    display: flex;                  /* Enables flexbox */
+    align-items: center;            /* Vertical centering */
+    justify-content: center;        /* Horizontal centering */
     background: 
         /* Layer 1 */ 
         linear-gradient(45deg, #e0e0e0 25%, transparent 25%, transparent 75%, #e0e0e0 75%),
         /* Layer 2 (offset) */
         linear-gradient(45deg, #e0e0e0 25%, transparent 25%, transparent 75%, #e0e0e0 75%);
     background-size: 16px 16px;
-    background-position: 0 0, 8px 8px; /* Key: Second layer is offset */
+    background-position: 0 0, 8px 8px;
     border-radius: 4px;
     margin-bottom: 8px;
+    position: relative;             /* For absolute positioning if needed */
 }
 
-/* Dark mode checkerboard - PROPER dual-layer version */
+/* Dark mode */
 [data-theme="dark"] .avatar-img-container {
     background: 
-        /* Layer 1 */
         linear-gradient(45deg, #555555 25%, transparent 25%, transparent 75%, #555555 75%),
-        /* Layer 2 (offset) */
         linear-gradient(45deg, #555555 25%, transparent 25%, transparent 75%, #555555 75%);
-    background-size: 16px 16px;
-    background-position: 0 0, 8px 8px; /* Same offset as light mode */
 }
 
 .avatar-img {
-    position: relative;
     width: 32px;
     height: 32px;
     object-fit: contain;
     image-rendering: pixelated;
-    z-index: 1;
-    background: transparent !important; /* Ensures no background */
+    display: block;                /* Removes inline spacing */
+    margin: 0 auto;                /* Additional centering */
+    background: transparent;
+    /* Remove position relative if not needed */
+    /* z-index only needed if you have overlapping elements */
 }
 
 
