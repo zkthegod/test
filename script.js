@@ -573,11 +573,54 @@ document.addEventListener('DOMContentLoaded', function() {
         { name: "Pointy Haired Boss", file: "dilbert-boss.32.png", category: "dilbert" },
         { name: "Wally", file: "dilbert-wally.32.png", category: "dilbert" },
         
-        // South Park
-        { name: "Stan", file: "southpark-stan.32.png", category: "southpark" },
-        { name: "Kyle", file: "southpark-kyle.32.png", category: "southpark" },
-        { name: "Cartman", file: "southpark-cartman.32.png", category: "southpark" },
-        { name: "Kenny", file: "southpark-kenny.32.png", category: "southpark" },
+// Main Characters
+{ name: "Stan Marsh", file: "Storyboard-Stan-icon.png", category: "southpark" },
+{ name: "Kyle Broflovski", file: "Storyboard-Kyle-icon.png", category: "southpark" },
+{ name: "Eric Cartman", file: "Cartman-icon.png", category: "southpark" },
+{ name: "Eric Cartman (Alternate)", file: "Cartman-2-icon.png", category: "southpark" },
+{ name: "Kenny McCormick", file: "Kenny-icon.png", category: "southpark" },
+{ name: "Kenny McCormick (Storyboard)", file: "Storyboard-Kenny-icon.png", category: "southpark" },
+
+// Supporting Characters
+{ name: "Wendy Testaburger", file: "Wendy-icon.png", category: "southpark" },
+{ name: "Wendy Testaburger (Alternate)", file: "Wendy-2-icon.png", category: "southpark" },
+{ name: "Chef", file: "Chef-icon.png", category: "southpark" },
+{ name: "Chef (Slut 1)", file: "Chef-Slut-1-icon.png", category: "southpark" },
+{ name: "Chef (Slut 2)", file: "Chef-Slut-2-icon.png", category: "southpark" },
+{ name: "Officer Barbrady", file: "Barbrady-icon.png", category: "southpark" },
+{ name: "Officer Barbrady (Singa)", file: "Barbrady-Singa-icon.png", category: "southpark" },
+{ name: "Bebe Stevens", file: "Bebe-icon.png", category: "southpark" },
+{ name: "Big Gay Al", file: "Big-Gay-Al-icon.png", category: "southpark" },
+
+// Storyboard Characters
+{ name: "Storyboard Cartman", file: "Storyboard-Cartman-icon.png", category: "southpark" },
+{ name: "Storyboard Cartman 2", file: "Storyboard-Cartman-2-icon.png", category: "southpark" },
+{ name: "Storyboard Ned", file: "Storyboard-Ned-icon.png", category: "southpark" },
+{ name: "Storyboard Onlooker", file: "Storyboard-Onlooker-icon.png", category: "southpark" },
+{ name: "Storyboard Sparky", file: "Storyboard-Sparky-icon.png", category: "southpark" },
+
+// Special Versions
+{ name: "Cartman (Beefcake)", file: "Cartman-Beefcake-icon.png", category: "southpark" },
+{ name: "Cartman (Exam)", file: "Cartman-Exam-icon.png", category: "southpark" },
+{ name: "Cartman (Mom)", file: "Cartman-Mom-icon.png", category: "southpark" },
+{ name: "Cartman (Pink Eye)", file: "Cartman-Pink-Eye-icon.png", category: "southpark" },
+{ name: "Cartman (Singa)", file: "Cartman-Singa-icon.png", category: "southpark" },
+
+// Other Characters
+{ name: "Marvin", file: "Marvin-icon.png", category: "southpark" },
+{ name: "Death", file: "Death-icon.png", category: "southpark" },
+{ name: "Conductor", file: "Conductor-icon.png", category: "southpark" },
+{ name: "Carl the Visitor", file: "Carl-the-Visitor-icon.png", category: "southpark" },
+{ name: "Brave Chef", file: "Brave-chef-icon.png", category: "southpark" },
+
+// Items/Animals
+{ name: "Cheesy Poofs", file: "Cheesy-Poofs-icon.png", category: "southpark" },
+{ name: "Fluffy", file: "Fluffy-icon.png", category: "southpark" },
+{ name: "Black Cow", file: "Black-Cow-icon.png", category: "southpark" },
+{ name: "Brown Cow", file: "Brown-Cow-icon.png", category: "southpark" },
+
+// Folders
+{ name: "South Park Icons Folder", file: "Bos-South-Park-Icons-folder-icon.png", category: "southpark" },
         
 { name: "Trigger", file: "TRIGGER-icon.png", category: "robinhood" },
 { name: "Toby", file: "TOBY-icon.png", category: "robinhood" },
