@@ -946,15 +946,15 @@ nav a:hover, nav a.active {
     background-size: 16px 16px;
     background-position: 0 0, 8px 8px;
     border-radius: 11px;
+    overflow: hidden;
     margin-bottom: 8px;
     position: relative;             /* For absolute positioning if needed */
 }
 
-/* Dark mode */
 [data-theme="dark"] .avatar-img-container {
     background:
-        linear-gradient(45deg, #444444 25%, #1e1e1e 25%, #1e1e1e 75%, #444444 75%),
-        linear-gradient(45deg, #444444 25%, #1e1e1e 25%, #1e1e1e 75%, #444444 75%);
+        linear-gradient(45deg, rgba(255, 255, 255, 0.07) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, 0.07) 75%),
+        linear-gradient(45deg, rgba(255, 255, 255, 0.07) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, 0.07) 75%);
     background-size: 16px 16px;
     background-position: 0 0, 8px 8px;
 }
