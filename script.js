@@ -698,7 +698,18 @@ document.addEventListener('DOMContentLoaded', function() {
         // Giant Robo
         { name: "Robo", file: "giantrobo-main.32.png", category: "giantrobo" },
         { name: "Dr. Shizuma", file: "giantrobo-shizuma.32.png", category: "giantrobo" },
-        { name: "GinRei", file: "giantrobo-ginrei.32.png", category: "giantrobo" }
+        { name: "GinRei", file: "giantrobo-ginrei.32.png", category: "giantrobo" },
+
+
+{ name: "Bob", file: "Bob-icon.png", category: "shermans" },
+{ name: "Ernest", file: "Ernest-icon.png", category: "shermans" },
+{ name: "Fillmore", file: "Fillmore-icon.png", category: "shermans" },
+{ name: "Hawthorn", file: "Hawthorn-icon.png", category: "shermans" },
+{ name: "Megan", file: "Megan-icon.png", category: "shermans" },
+{ name: "Quigley", file: "Quigley-icon.png", category: "shermans" },
+{ name: "Sherman (Version 1)", file: "Sherman-1-icon.png", category: "shermans" },
+{ name: "Sherman (Version 2)", file: "Sherman-2-icon.png", category: "shermans" },
+{ name: "Thornton", file: "Thornton-icon.png", category: "shermans" }
     ];
 
     function loadAvatars(category = 'all') {
