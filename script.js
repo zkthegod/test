@@ -689,7 +689,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const copyIcon = avatarItem.querySelector('.copy-icon');
             copyIcon.addEventListener('click', (e) => {
                 e.stopPropagation();
-                const avatarUrl = `https://raw.githubusercontent.com/yourusername/yourrepo/main/avatars/${avatar.file}`;
+                const avatarUrl = `https://zkthegod.github.io/test/avatars/${avatar.file}`;
                 navigator.clipboard.writeText(avatarUrl).then(() => {
                     const originalIcon = copyIcon.innerHTML;
                     copyIcon.innerHTML = '<i class="fas fa-check"></i>';
