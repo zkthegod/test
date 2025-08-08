@@ -173,7 +173,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // Snap quick toggle
         snapBtn.addEventListener('click', () => {
             state.snap = !state.snap; 
-            menuSnap.checked = state.snap;
             toggleGridOverlay(state.snap ? state.grid : null);
             if (state.snap) snapToGrid(widget, state);
             persistWidget(widget, state);
