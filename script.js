@@ -56,8 +56,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Load saved settings or set defaults
     const savedSettings = JSON.parse(localStorage.getItem('chatSettings')) || {
-        width: 650,
-        height: 486
+        width: 728,
+        height: 486,
+        snap: false,
+        grid: 16
     };
     
     chatWidthInput.value = savedSettings.width;
@@ -71,7 +73,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     saveSettingsBtn.addEventListener('click', function() {
         const newSettings = {
-            width: parseInt(chatWidthInput.value) || 650,
+            width: parseInt(chatWidthInput.value) || 728,
             height: parseInt(chatHeightInput.value) || 486,
             snap: !!snapToggle?.checked,
             grid: Math.max(4, Math.min(128, parseInt(gridSizeInput?.value) || 16))
@@ -110,7 +112,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function getGlobalSettings() {
         const s = JSON.parse(localStorage.getItem('chatSettings')) || {};
-        return { width: s.width || 650, height: s.height || 486, snap: !!s.snap, grid: s.grid || 16 };
+        return { width: s.width || 728, height: s.height || 486, snap: !!s.snap, grid: s.grid || 16 };
     }
 
     // Drag/Resize/Snap
@@ -128,6 +130,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const menuSnap = widget.querySelector('.menu-snap');
         const menuGrid = widget.querySelector('.menu-grid');
         const menuStyle = widget.querySelector('.menu-style');
+        // add accent color input
+        let accentRow = document.createElement('div');
+        accentRow.className = 'menu-row';
+        accentRow.innerHTML = '<label>Accent</label><input type="color" class="menu-accent" value="#6c5ce7">';
+        menu.insertBefore(accentRow, menu.querySelector('.menu-actions'));
+        const menuAccent = accentRow.querySelector('.menu-accent');
         const resizeSE = widget.querySelector('.resize-handle.se');
         const resizeE = widget.querySelector('.resize-handle.e');
         const resizeS = widget.querySelector('.resize-handle.s');
@@ -144,6 +152,7 @@ document.addEventListener('DOMContentLoaded', function() {
             grid: opts?.grid || global.grid,
             sizeMode: 'fixed',
             style: 'default',
+            accent: '#6c5ce7',
         };
 
         // Initialize menu values
@@ -152,6 +161,8 @@ document.addEventListener('DOMContentLoaded', function() {
         menuGrid.value = state.grid;
         menuStyle.value = state.style;
         menuSizeMode.value = state.sizeMode;
+        menuAccent.value = state.accent;
+        widget.style.setProperty('--widget-accent', state.accent);
 
         // Close
         closeBtn.addEventListener('click', () => { widget.remove(); removeWidgetState(state.id); });
@@ -180,6 +191,7 @@ document.addEventListener('DOMContentLoaded', function() {
         snapBtn.addEventListener('click', () => {
             state.snap = !state.snap; 
             menuSnap.checked = state.snap;
+            toggleGridOverlay(state.snap ? state.grid : null);
             if (state.snap) snapToGrid(widget, state);
             persistWidget(widget, state);
         });
@@ -194,6 +206,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const nextStyle = menuStyle.value;
             applyStyle(widget, nextStyle);
             state.style = nextStyle;
+            state.accent = menuAccent.value || state.accent;
+            widget.style.setProperty('--widget-accent', state.accent);
+            toggleGridOverlay(state.snap ? state.grid : null);
             if (state.snap) snapToGrid(widget, state);
             persistWidget(widget, state);
             menu.classList.remove('active');
@@ -338,6 +353,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Restore additional state
             if (s.sizeMode) widget._state.sizeMode = s.sizeMode;
             if (s.style) { widget._state.style = s.style; applyStyle(widget, s.style); }
+            if (s.accent) { widget._state.accent = s.accent; widget.style.setProperty('--widget-accent', s.accent); }
         });
     }
 
@@ -355,7 +371,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!state) return;
         const list = JSON.parse(localStorage.getItem('chatWidgets') || '[]');
         const idx = list.findIndex(x => x.id === state.id);
-        const payload = { id: state.id, name: state.name, x: state.x, y: state.y, w: state.w, h: state.h, snap: !!state.snap, grid: state.grid, sizeMode: state.sizeMode, style: state.style };
+        const payload = { id: state.id, name: state.name, x: state.x, y: state.y, w: state.w, h: state.h, snap: !!state.snap, grid: state.grid, sizeMode: state.sizeMode, style: state.style, accent: state.accent };
         if (idx >= 0) list[idx] = payload; else list.push(payload);
         localStorage.setItem('chatWidgets', JSON.stringify(list));
     }
@@ -1144,7 +1160,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const chatName = chatNameInput.value.trim();
         if (!chatName) { chatNameInput.focus(); return; }
 
-        const settings = JSON.parse(localStorage.getItem('chatSettings')) || { width: 650, height: 486, snap: false, grid: 16 };
+        const settings = JSON.parse(localStorage.getItem('chatSettings')) || { width: 728, height: 486, snap: false, grid: 16 };
         const widgetId = `widget-${Date.now()}`;
         const widget = document.createElement('div');
         widget.className = 'chat-widget';
@@ -1231,4 +1247,25 @@ document.addEventListener('DOMContentLoaded', function() {
     initColorInputs();
     updateEffects();
     loadAvatars();
+
+    // Grid overlay controller
+    const gridOverlay = document.getElementById('gridOverlay');
+    function toggleGridOverlay(grid) {
+        if (!gridOverlay) return;
+        if (grid && grid > 0) {
+            gridOverlay.style.setProperty('--grid-size', `${grid}px`);
+            gridOverlay.classList.add('active');
+        } else {
+            gridOverlay.classList.remove('active');
+        }
+    }
+    // Show overlay when global snap is on
+    if (snapToggle) {
+        snapToggle.addEventListener('change', () => toggleGridOverlay(snapToggle.checked ? (parseInt(gridSizeInput.value)||16) : null));
+    }
+    if (gridSizeInput) {
+        gridSizeInput.addEventListener('input', () => { if (snapToggle?.checked) toggleGridOverlay(parseInt(gridSizeInput.value)||16); });
+    }
+    // Initialize overlay from saved settings
+    toggleGridOverlay(savedSettings.snap ? (savedSettings.grid||16) : null);
 });

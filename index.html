@@ -78,27 +78,27 @@
                     </div>
                 </div>
                 
-                <div class="settings-panel" id="settingsPanel">
+                <div class="settings-panel compact" id="settingsPanel">
                     <div class="setting">
                         <label for="chatWidth">Width:</label>
-                        <input type="number" id="chatWidth" min="300" max="1200" value="700">
+                        <input type="number" id="chatWidth" min="300" max="1400" value="728">
                     </div>
                     <div class="setting">
                         <label for="chatHeight">Height:</label>
-                        <input type="number" id="chatHeight" min="300" max="1200" value="500">
+                        <input type="number" id="chatHeight" min="260" max="1200" value="486">
                     </div>
 
-                    <div class="setting" style="gap: 12px;">
+                    <div class="setting">
                         <label for="snapToggle">Snap:</label>
                         <label class="switch" aria-label="Toggle snap to grid">
                             <input type="checkbox" id="snapToggle">
                             <span class="slider"></span>
                         </label>
-                        <label for="gridSize" style="margin-left: 16px;">Grid:</label>
-                        <input type="number" id="gridSize" min="8" max="128" value="16" aria-label="Grid size in pixels" style="width: 80px;">
+                        <label for="gridSize" class="ml-16">Grid:</label>
+                        <input type="number" id="gridSize" min="8" max="128" value="16" aria-label="Grid size in pixels" class="w-80">
                     </div>
 
-                    <div class="setting" style="gap: 12px;">
+                    <div class="setting">
                         <button id="autoArrange" class="primary-btn"><i class="fas fa-th-large"></i> Auto Arrange</button>
                         <button id="resetLayout" class="primary-btn"><i class="fas fa-undo"></i> Reset Layout</button>
                     </div>
@@ -113,6 +113,7 @@
                 </div>
 
                 <div id="widgetLayer" aria-live="polite" aria-label="Floating chat widgets layer"></div>
+                <div id="gridOverlay" class="grid-overlay" aria-hidden="true"></div>
             </section>
 
             <section id="name-effects" class="page">
