@@ -43,26 +43,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
 const embedChatBtn = document.getElementById('embedChat');
 const chatNameInput = document.getElementById('chatName');
-const chatContainer = document.getElementById('chatContainer');
-const chatViewport = document.getElementById('chatViewport');
+const chatMasterContainer = document.getElementById('chatMasterContainer');
 const settingsBtn = document.getElementById('settingsBtn');
 const settingsPanel = document.getElementById('settingsPanel');
 const saveSettingsBtn = document.getElementById('saveSettings');
 const chatWidthInput = document.getElementById('chatWidth');
 const chatHeightInput = document.getElementById('chatHeight');
-const defaultThemeSelect = document.getElementById('defaultTheme');
-const scrollLeftBtn = document.getElementById('scrollLeft');
-const scrollRightBtn = document.getElementById('scrollRight');
 const clearAllBtn = document.getElementById('clearAllBtn');
-const zoomInBtn = document.getElementById('zoomIn');
-const zoomOutBtn = document.getElementById('zoomOut');
-const resetViewBtn = document.getElementById('resetView');
+const zoomInBtn = document.getElementById('zoomInBtn');
+const zoomOutBtn = document.getElementById('zoomOutBtn');
+const resetZoomBtn = document.getElementById('resetZoomBtn');
 
 // Load saved settings or set defaults
 const savedSettings = JSON.parse(localStorage.getItem('chatSettings')) || {
     width: 700,
-    height: 500,
-    theme: 'light'
+    height: 500
 };
 
 // Load saved chats
@@ -70,28 +65,17 @@ const savedChats = JSON.parse(localStorage.getItem('savedChats')) || [];
 
 chatWidthInput.value = savedSettings.width;
 chatHeightInput.value = savedSettings.height;
-defaultThemeSelect.value = savedSettings.theme;
 
 // Initialize
 function initChatEmbedder() {
     // Load saved chats
     savedChats.forEach(chat => {
-        createChatWindow(chat.name, chat.width, chat.height, chat.theme, chat.x, chat.y);
+        createChatWindow(chat.name, chat.width, chat.height, chat.x, chat.y);
     });
-    
-    // Scroll to end if there are chats
-    if (savedChats.length > 0) {
-        setTimeout(() => {
-            chatViewport.scrollTo({
-                left: chatViewport.scrollWidth,
-                behavior: 'smooth'
-            });
-        }, 100);
-    }
 }
 
 // Create a new chat window
-function createChatWindow(name, width, height, theme, x, y) {
+function createChatWindow(name, width, height, x, y) {
     const chatId = Date.now();
     const chatWrapper = document.createElement('div');
     chatWrapper.className = 'embedded-chat';
@@ -101,9 +85,14 @@ function createChatWindow(name, width, height, theme, x, y) {
     
     // Set position if provided
     if (x && y) {
-        chatWrapper.style.position = 'absolute';
         chatWrapper.style.left = `${x}px`;
         chatWrapper.style.top = `${y}px`;
+    } else {
+        // Default position (centered)
+        const centerX = window.innerWidth / 2 - width / 2;
+        const centerY = window.innerHeight / 2 - height / 2;
+        chatWrapper.style.left = `${centerX}px`;
+        chatWrapper.style.top = `${centerY}px`;
     }
     
     chatWrapper.innerHTML = `
@@ -114,12 +103,13 @@ function createChatWindow(name, width, height, theme, x, y) {
                 <button class="chat-action-btn remove-chat" title="Remove" data-chat-id="${chatId}"><i class="fas fa-times"></i></button>
             </div>
         </div>
-        <iframe src="https://xat.com/embed/chat.php#gn=${encodeURIComponent(name)}&theme=${theme}" 
-                width="100%" height="calc(100% - 40px)" 
+        <iframe src="https://xat.com/embed/chat.php#gn=${encodeURIComponent(name)}" 
+                width="100%" height="100%" 
                 frameborder="0" scrolling="no"></iframe>
+        <div class="resize-handle"></div>
     `;
     
-    chatContainer.appendChild(chatWrapper);
+    chatMasterContainer.appendChild(chatWrapper);
     
     // Make draggable
     makeDraggable(chatWrapper);
@@ -139,6 +129,210 @@ function createChatWindow(name, width, height, theme, x, y) {
     // Save to localStorage
     saveChatsToStorage();
 }
+
+// Make elements draggable with perfect smoothness
+function makeDraggable(element) {
+    let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+    const header = element.querySelector('.chat-header');
+    
+    header.onmousedown = dragMouseDown;
+    
+    function dragMouseDown(e) {
+        e = e || window.event;
+        e.preventDefault();
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        document.onmouseup = closeDragElement;
+        document.onmousemove = elementDrag;
+        element.classList.add('dragging');
+    }
+    
+    function elementDrag(e) {
+        e = e || window.event;
+        e.preventDefault();
+        pos1 = pos3 - e.clientX;
+        pos2 = pos4 - e.clientY;
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        
+        // Calculate new position
+        let newTop = element.offsetTop - pos2;
+        let newLeft = element.offsetLeft - pos1;
+        
+        // Apply new position
+        element.style.top = newTop + "px";
+        element.style.left = newLeft + "px";
+    }
+    
+    function closeDragElement() {
+        document.onmouseup = null;
+        document.onmousemove = null;
+        element.classList.remove('dragging');
+        saveChatsToStorage();
+    }
+    
+    // Make resizable
+    const resizeHandle = element.querySelector('.resize-handle');
+    resizeHandle.onmousedown = function(e) {
+        e.preventDefault();
+        document.onmouseup = closeResizeElement;
+        document.onmousemove = elementResize;
+    };
+    
+    function elementResize(e) {
+        e.preventDefault();
+        const newWidth = e.clientX - element.offsetLeft;
+        const newHeight = e.clientY - element.offsetTop;
+        
+        // Minimum size constraints
+        if (newWidth > 300) element.style.width = newWidth + "px";
+        if (newHeight > 400) element.style.height = newHeight + "px";
+    }
+    
+    function closeResizeElement() {
+        document.onmouseup = null;
+        document.onmousemove = null;
+        saveChatsToStorage();
+    }
+}
+
+// Remove chat
+function removeChat(chatId) {
+    const chat = document.getElementById(`chat-${chatId}`);
+    if (chat) chat.remove();
+    saveChatsToStorage();
+}
+
+// Clear all chats
+function clearAllChats() {
+    chatMasterContainer.innerHTML = '';
+    localStorage.removeItem('savedChats');
+}
+
+// Save chats to localStorage
+function saveChatsToStorage() {
+    const chats = [];
+    document.querySelectorAll('.embedded-chat').forEach(chat => {
+        chats.push({
+            id: chat.id.replace('chat-', ''),
+            name: chat.querySelector('.chat-header h4').textContent,
+            width: chat.offsetWidth,
+            height: chat.offsetHeight,
+            x: chat.offsetLeft,
+            y: chat.offsetTop
+        });
+    });
+    
+    localStorage.setItem('savedChats', JSON.stringify(chats));
+}
+
+// Event Listeners
+settingsBtn.addEventListener('click', function() {
+    settingsPanel.classList.toggle('active');
+});
+
+saveSettingsBtn.addEventListener('click', function() {
+    const newSettings = {
+        width: parseInt(chatWidthInput.value) || 700,
+        height: parseInt(chatHeightInput.value) || 500
+    };
+    
+    localStorage.setItem('chatSettings', JSON.stringify(newSettings));
+    settingsPanel.classList.remove('active');
+    
+    showToast('Settings saved!');
+});
+
+embedChatBtn.addEventListener('click', embedChat);
+chatNameInput.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') embedChat();
+});
+
+clearAllBtn.addEventListener('click', clearAllChats);
+
+zoomInBtn.addEventListener('click', function() {
+    document.querySelectorAll('.embedded-chat').forEach(chat => {
+        const currentWidth = chat.offsetWidth;
+        chat.style.width = (currentWidth * 1.1) + 'px';
+    });
+});
+
+zoomOutBtn.addEventListener('click', function() {
+    document.querySelectorAll('.embedded-chat').forEach(chat => {
+        const currentWidth = chat.offsetWidth;
+        if (currentWidth > 300) {
+            chat.style.width = (currentWidth * 0.9) + 'px';
+        }
+    });
+});
+
+resetZoomBtn.addEventListener('click', function() {
+    document.querySelectorAll('.embedded-chat').forEach(chat => {
+        chat.style.width = savedSettings.width + 'px';
+        chat.style.height = savedSettings.height + 'px';
+    });
+});
+
+function embedChat() {
+    const chatName = chatNameInput.value.trim();
+    if (!chatName) {
+        chatNameInput.focus();
+        showToast('Please enter a chat name');
+        return;
+    }
+    
+    createChatWindow(
+        chatName, 
+        savedSettings.width, 
+        savedSettings.height
+    );
+    
+    chatNameInput.value = '';
+}
+
+function showToast(message) {
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.classList.add('show');
+    }, 10);
+    
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => {
+            toast.remove();
+        }, 300);
+    }, 3000);
+}
+
+// Initialize on load
+initChatEmbedder();
+
+// Add toast styles
+const toastStyle = document.createElement('style');
+toastStyle.textContent = `
+    .toast {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: var(--primary);
+        color: white;
+        padding: 12px 24px;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        z-index: 1000;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    .toast.show {
+        opacity: 1;
+    }
+`;
+document.head.appendChild(toastStyle);
 
 // Make elements draggable
 function makeDraggable(element) {
