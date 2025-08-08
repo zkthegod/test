@@ -45,6 +45,25 @@ body {
     transition: var(--transition);
 }
 
+/* Page background wallpaper + top fade */
+body.has-wallpaper {
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center top;
+    background-attachment: fixed;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; right: 0; height: 140px;
+    background: linear-gradient(to bottom, var(--bg) 0%, rgba(0,0,0,0) 100%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.container, header, main, footer { position: relative; z-index: 1; }
+
 .container {
     max-width: 1200px;
     margin: 0 auto;
@@ -296,6 +315,15 @@ nav a:hover, nav a.active {
 .primary-btn.no-underline {
     text-decoration: none;
 }
+
+/* Settings panel compact layout */
+.settings-panel {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+}
+.settings-panel .setting label { width: auto; margin-right: 6px; }
 
 .settings-panel {
     background-color: var(--card-bg);
@@ -1098,29 +1126,32 @@ footer {
 }
 
 /* --- Floating Chat Desktop & Windows --- */
+/* Desktop fills available area within section */
 .chat-desktop {
     position: relative;
     height: 70vh;
     min-height: 420px;
     border: var(--border);
     border-radius: var(--radius);
-    background-color: #0e0f12;
+    background: rgba(0,0,0,0.06);
     background-size: cover;
     background-position: center;
     box-shadow: var(--shadow);
-    overflow: hidden;
+    overflow: visible;
 }
 
-.chat-desktop.show-grid::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background-image:
-        linear-gradient(var(--grid-color, rgba(255,255,255,0.06)) 1px, transparent 1px),
-        linear-gradient(90deg, var(--grid-color, rgba(255,255,255,0.06)) 1px, transparent 1px);
-    background-size: var(--grid-size, 16px) var(--grid-size, 16px);
-}
+/* Invisible resize handle positions */
+.resize-handle.n { top: -3px; }
+.resize-handle.s { bottom: -3px; }
+.resize-handle.e { right: -3px; }
+.resize-handle.w { left: -3px; }
+.resize-handle.ne { top: -6px; right: -6px; cursor: nesw-resize; }
+.resize-handle.nw { top: -6px; left: -6px; cursor: nwse-resize; }
+.resize-handle.se { bottom: -6px; right: -6px; cursor: nwse-resize; }
+.resize-handle.sw { bottom: -6px; left: -6px; cursor: nesw-resize; }
+
+/* Remove grid overlay entirely */
+.chat-desktop.show-grid::after { display: none; content: none; }
 
 .chat-window {
     position: absolute;
@@ -1141,16 +1172,11 @@ footer {
     box-shadow: 0 16px 40px rgba(0,0,0,0.35);
 }
 
+/* Window visuals */
 .window-titlebar {
     height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
     padding: 0 10px;
-    background: linear-gradient(180deg, rgba(0,0,0,0.06), rgba(0,0,0,0.02));
-    border-bottom: var(--border);
-    cursor: grab;
-    user-select: none;
+    background: linear-gradient(180deg, rgba(0,0,0,0.04), rgba(0,0,0,0.02));
 }
 
 .window-titlebar .title {
@@ -1198,27 +1224,18 @@ footer {
 }
 
 /* Resize handles */
-.resize-handle {
-    position: absolute;
-    width: 12px;
-    height: 12px;
-    background: rgba(108,92,231,0.8);
-    border-radius: 50%;
-    z-index: 2;
-    opacity: 0;
-    transition: opacity .2s ease;
-}
+/* Replace purple dots handles with invisible edge resize zones for clean look */
+.resize-handle { background: transparent; opacity: 1; border-radius: 0; }
+.resize-handle.n, .resize-handle.s { height: 6px; width: 100%; left: 0; }
+.resize-handle.e, .resize-handle.w { width: 6px; height: 100%; top: 0; }
+.resize-handle.ne, .resize-handle.nw, .resize-handle.se, .resize-handle.sw { width: 12px; height: 12px; }
 
-.chat-window:hover .resize-handle { opacity: 1; }
+/* Wider pointer targets on hover for resize */
+.chat-window:hover .resize-handle { background: transparent; }
 
-.resize-handle.ne { top: -6px; right: -6px; cursor: nesw-resize; }
-.resize-handle.nw { top: -6px; left: -6px; cursor: nwse-resize; }
-.resize-handle.se { bottom: -6px; right: -6px; cursor: nwse-resize; }
-.resize-handle.sw { bottom: -6px; left: -6px; cursor: nesw-resize; }
-.resize-handle.n { top: -6px; left: calc(50% - 6px); cursor: ns-resize; }
-.resize-handle.s { bottom: -6px; left: calc(50% - 6px); cursor: ns-resize; }
-.resize-handle.e { right: -6px; top: calc(50% - 6px); cursor: ew-resize; }
-.resize-handle.w { left: -6px; top: calc(50% - 6px); cursor: ew-resize; }
+/* Smooth transforms during drag/resize */
+.chat-window { transition: box-shadow .12s ease; }
+.chat-window.dragging { transition: none; }
 
 /* Per-window settings menu */
 .window-settings {
