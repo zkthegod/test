@@ -165,10 +165,12 @@ document.addEventListener('DOMContentLoaded', function() {
         menuBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             menu.classList.toggle('active');
-            menu.setAttribute('aria-hidden', menu.classList.contains('active') ? 'false' : 'true');
+            const isOpen = menu.classList.contains('active');
+            menu.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+            widget.classList.toggle('menu-open', isOpen);
         });
         document.addEventListener('click', (ev) => {
-            if (!widget.contains(ev.target)) menu.classList.remove('active');
+            if (!widget.contains(ev.target)) { menu.classList.remove('active'); widget.classList.remove('menu-open'); }
         });
 
         // Style quick cycle
@@ -269,6 +271,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Initial style
         applyStyle(widget, state.style);
+        // Ensure body fits widget size exactly
+        widget.style.width = `${state.w}px`;
+        widget.style.height = `${state.h}px`;
 
         // Expose for persistence
         widget._state = state;
@@ -1185,7 +1190,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             </div>
             <div class="widget-body">
-                <iframe src="https://xat.com/embed/chat.php#gn=${encodeURIComponent(chatName)}" title="${escapeHtml(chatName)}"></iframe>
+                <iframe src="https://xat.com/embed/chat.php#gn=${encodeURIComponent(chatName)}" title="${escapeHtml(chatName)}" scrolling="no"></iframe>
                 <div class="resize-handle se" aria-hidden="true"></div>
                 <div class="resize-handle e" aria-hidden="true"></div>
                 <div class="resize-handle s" aria-hidden="true"></div>
