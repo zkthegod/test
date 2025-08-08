@@ -1275,14 +1275,8 @@ footer {
     background-attachment: fixed;
 }
 
-#chat-embedder::before {
-    content: "";
-    position: absolute;
-    top: 0; left: 0; right: 0; height: 140px;
-    background: linear-gradient(to bottom, var(--bg) 0%, rgba(0,0,0,0) 100%);
-    pointer-events: none;
-    z-index: 0;
-}
+#chat-embedder::before{content:none !important;display:none !important}
+.resize-handle{pointer-events:auto}
 
 /* Remove global body wallpaper styles */
 body.has-wallpaper { background: none; }

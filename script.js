@@ -68,8 +68,8 @@ document.addEventListener('DOMContentLoaded', function() {
     let zCounter = 10;
 
     const defaultDesktopSettings = {
-        width: 728,
-        height: 486,
+        width: 730,
+        height: 495,
         bgColor: getComputedStyle(document.documentElement).getPropertyValue('--bg')?.trim() || '#0e0f12',
         bgImage: '',
         applyBackground: false
@@ -118,10 +118,18 @@ document.addEventListener('DOMContentLoaded', function() {
         if (settings.applyBackground && isChatTabActive()) {
             document.body.style.backgroundColor = settings.bgColor || '';
             document.body.style.backgroundImage = settings.bgImage ? `url('${settings.bgImage}')` : 'none';
+            document.body.style.backgroundSize = settings.bgImage ? 'cover' : '';
+            document.body.style.backgroundPosition = settings.bgImage ? 'center center' : '';
+            document.body.style.backgroundRepeat = settings.bgImage ? 'no-repeat' : '';
+            document.body.style.backgroundAttachment = settings.bgImage ? 'fixed' : '';
         } else {
             // Clear to theme defaults
             document.body.style.backgroundImage = 'none';
             document.body.style.backgroundColor = '';
+            document.body.style.backgroundSize = '';
+            document.body.style.backgroundPosition = '';
+            document.body.style.backgroundRepeat = '';
+            document.body.style.backgroundAttachment = '';
         }
     }
 
