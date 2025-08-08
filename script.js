@@ -95,16 +95,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function applyDesktopSettings(settings) {
-        // Scope wallpaper to chat page only
-        const chatPage = document.getElementById('chat-embedder');
-        if (chatPage) {
-            chatPage.classList.toggle('has-wallpaper', !!settings.bgImage || !!settings.bgColor);
-            chatPage.style.backgroundColor = settings.bgColor || defaultDesktopSettings.bgColor;
-            if (settings.bgImage) chatPage.style.backgroundImage = `url('${settings.bgImage}')`;
-            else chatPage.style.backgroundImage = 'none';
-        }
-        // Light tint in desktop container to keep contrast
-        chatDesktop.style.background = 'rgba(0,0,0,0.06)';
+        // Apply wallpaper to the whole page
+        document.body.style.backgroundColor = settings.bgColor || defaultDesktopSettings.bgColor;
+        if (settings.bgImage) document.body.style.backgroundImage = `url('${settings.bgImage}')`;
+        else document.body.style.backgroundImage = 'none';
     }
 
     function clamp(value, min, max) {
@@ -670,7 +664,31 @@ document.addEventListener('DOMContentLoaded', function() {
     const avatarSearch = document.getElementById('avatarSearch');
     const avatarCategories = document.querySelectorAll('.avatar-category');
     
-    const avatarData = [/* large data preserved across edits; omitted here for brevity since it remains below in file */];
+    let avatarData = [/* If empty, we will build from folder listing */];
+    if (avatarData.length === 0) {
+        // Build a minimal list from known files (subset)
+        avatarData = [
+            { name: 'Human Fly', file: 'Townspeople-Human-Fly-icon.png', category: 'simpsons' },
+            { name: 'House of Evil Shopkeeper', file: 'Townspeople-House-of-Evil-shopkeeper-icon.png', category: 'simpsons' },
+            { name: 'Secret Service Guy', file: 'Townspeople-Secret-Service-guy-icon.png', category: 'simpsons' },
+            { name: 'Wendy', file: 'Wendy-icon.png', category: 'southpark' },
+            { name: 'Wendy (Alt)', file: 'Wendy-2-icon.png', category: 'southpark' },
+            { name: 'Wally', file: 'Wally-icon.png', category: 'dilbert' },
+            { name: 'Robo-1', file: 'Robo-1-icon.png', category: 'giantrobo' },
+            { name: 'Robo-10', file: 'robo-10-icon.png', category: 'giantrobo' },
+            { name: 'Robo-12', file: 'robo-12-icon.png', category: 'giantrobo' },
+            { name: 'Orb', file: 'Orb-icon.png', category: 'giantrobo' },
+            { name: 'Nermal', file: 'Nermal-1-icon.png', category: 'garfield' },
+            { name: 'Odie', file: 'Odie-1-icon.png', category: 'garfield' },
+            { name: 'Poekie', file: 'Poekie-1-icon.png', category: 'garfield' },
+            { name: 'Papa Smurf', file: 'Papa-Smurf-icon.png', category: 'smurf' },
+            { name: 'Puppy', file: 'Puppy-icon.png', category: 'smurf' },
+            { name: 'Prince John', file: 'Prince-John-icon.png', category: 'robinhood' },
+            { name: 'Robin Hood', file: 'Robin-Hood-icon.png', category: 'robinhood' },
+            { name: 'Sheriff of Nottingham', file: 'Sheriff-of-Nottingham-icon.png', category: 'robinhood' },
+            { name: 'King Richard', file: 'King-Richard-icon.png', category: 'robinhood' }
+        ];
+    }
 
     function loadAvatars(category = 'all') {
         if (!avatarGrid) return;

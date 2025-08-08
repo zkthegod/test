@@ -1173,12 +1173,7 @@ footer {
 }
 
 /* Window visuals */
-.window-titlebar {
-    height: 36px;
-    padding: 0 10px;
-    background: linear-gradient(180deg, rgba(0,0,0,0.04), rgba(0,0,0,0.02));
-}
-
+.window-titlebar { display: flex; align-items: center; justify-content: space-between; border-bottom: var(--border); cursor: grab; user-select: none; }
 .window-titlebar .title {
     font-size: 0.95rem;
     font-weight: 600;
@@ -1188,23 +1183,8 @@ footer {
     white-space: nowrap;
 }
 
-.window-controls {
-    display: flex;
-    gap: 6px;
-}
-
-.window-controls .ctrl-btn {
-    width: 28px;
-    height: 28px;
-    border-radius: 6px;
-    border: none;
-    background: transparent;
-    color: var(--text-light);
-    display: grid;
-    place-items: center;
-    cursor: pointer;
-    transition: var(--transition);
-}
+.window-controls { display: flex; gap: 6px; margin-left: auto; }
+.window-controls .ctrl-btn { width: 28px; height: 28px; }
 
 .window-controls .ctrl-btn:hover {
     background: var(--nav-active);
@@ -1325,11 +1305,38 @@ body::before { content: none; }
 .link-btn:hover { background: var(--nav-active); }
 .link-btn.danger { color: #e74c3c; }
 
-/* Header soft glow across pages */
+/* Right-side settings drawer */
+.settings-drawer {
+    position: fixed;
+    top: 70px;
+    right: 16px;
+    width: 320px;
+    background: var(--card-bg);
+    border: var(--border);
+    border-radius: 12px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+    padding: 12px;
+    display: none;
+    z-index: 20;
+}
+.settings-drawer.active { display: block; }
+.settings-drawer .row { display: flex; align-items: center; gap: 10px; margin: 8px 0; flex-wrap: wrap; }
+.settings-drawer label { color: var(--text-light); font-size: 0.9rem; min-width: 88px; }
+.settings-drawer input[type="color"] { width: 44px; height: 44px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.15); padding: 0; }
+.settings-drawer input[type="text"],
+.settings-drawer input[type="number"] { padding: 10px 12px; border: var(--border); border-radius: 8px; background: var(--bg); color: var(--text); flex: 1; }
+.settings-drawer .primary-btn.small { padding: 8px 12px; }
+
+/* Header soft glow: extend slightly more and place under content */
+header { position: relative; z-index: 10; }
 header::after {
     content: "";
     position: absolute;
-    left: 0; right: 0; top: 0; height: 110px;
+    left: 0; right: 0; top: 0; height: 120px; /* +10px */
     pointer-events: none;
-    background: radial-gradient(120% 60% at 50% 0%, rgba(108,92,231,0.08), rgba(0,0,0,0) 60%);
+    background: radial-gradient(120% 70% at 50% 0%, rgba(108,92,231,0.10), rgba(0,0,0,0) 65%);
+    z-index: 0;
 }
+
+/* Ensure section headers are above page background and readable */
+.section-header { position: relative; z-index: 5; }
