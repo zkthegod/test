@@ -37,467 +37,111 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-// ====================================
-// Enhanced Chat Embedder Functionality
-// ====================================
-
-// Ultra-Smooth Chat Embedder
-class ChatEmbedder {
-    constructor() {
-        this.chats = [];
-        this.currentZIndex = 10;
-        this.initElements();
-        this.initEvents();
-        this.loadChats();
-    }
-
-    initElements() {
-        this.container = document.getElementById('floatingChatsContainer');
-        this.newChatBtn = document.getElementById('newChatBtn');
-        this.clearChatsBtn = document.getElementById('clearChatsBtn');
-        this.creationPanel = document.getElementById('chatCreationPanel');
-        this.chatNameInput = document.getElementById('chatNameInput');
-        this.createChatBtn = document.getElementById('createChatBtn');
-    }
-
-    initEvents() {
-        this.newChatBtn.addEventListener('click', () => this.toggleCreationPanel());
-        this.clearChatsBtn.addEventListener('click', () => this.clearAllChats());
-        this.createChatBtn.addEventListener('click', () => this.createChat());
-        this.chatNameInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') this.createChat();
-        });
-    }
-
-    toggleCreationPanel() {
-        this.creationPanel.classList.toggle('active');
-        if (this.creationPanel.classList.contains('active')) {
-            this.chatNameInput.focus();
-        }
-    }
-
-    createChat() {
-        const name = this.chatNameInput.value.trim();
-        if (!name) {
-            this.showToast('Please enter a chat name');
-            return;
-        }
-
-        const chat = document.createElement('div');
-        chat.className = 'chat-window';
-        chat.innerHTML = `
-            <div class="chat-header">
-                <span class="chat-title">${name}</span>
-                <div class="chat-actions">
-                    <button class="chat-action-btn refresh-btn"><i class="fas fa-sync-alt"></i></button>
-                    <button class="chat-action-btn danger close-btn"><i class="fas fa-times"></i></button>
-                </div>
-            </div>
-            <iframe src="https://xat.com/embed/chat.php#gn=${encodeURIComponent(name)}" 
-                    width="100%" height="100%" 
-                    frameborder="0" scrolling="no"></iframe>
-            <div class="resize-handle"></div>
-        `;
-
-        // Position new chat in center of viewport
-        const centerX = window.innerWidth / 2 - 350;
-        const centerY = window.innerHeight / 2 - 250;
-        chat.style.left = `${Math.max(20, centerX)}px`;
-        chat.style.top = `${Math.max(20, centerY)}px`;
-
-        this.container.appendChild(chat);
-        this.setupChatInteractions(chat, name);
-        this.chats.push({ element: chat, name });
-
-        // Reset creation panel
-        this.chatNameInput.value = '';
-        this.creationPanel.classList.remove('active');
-        
-        this.saveChats();
-    }
-
-    setupChatInteractions(chat, name) {
-        let posX = 0, posY = 0, mouseX = 0, mouseY = 0;
-        let isDragging = false;
-
-        // Bring to front when clicked
-        chat.addEventListener('mousedown', () => {
-            this.bringToFront(chat);
-        });
-
-        // Drag handling
-        chat.addEventListener('pointerdown', (e) => {
-            if (e.target.classList.contains('chat-action-btn')) return;
-            
-            isDragging = true;
-            posX = e.clientX - chat.getBoundingClientRect().left;
-            posY = e.clientY - chat.getBoundingClientRect().top;
-            chat.style.cursor = 'grabbing';
-            chat.style.transition = 'none';
-            e.preventDefault();
-        });
-
-        document.addEventListener('pointermove', (e) => {
-            if (!isDragging) return;
-            
-            chat.style.left = `${e.clientX - posX}px`;
-            chat.style.top = `${e.clientY - posY}px`;
-        });
-
-        document.addEventListener('pointerup', () => {
-            if (isDragging) {
-                isDragging = false;
-                chat.style.cursor = '';
-                chat.style.transition = '';
-                this.saveChats();
-            }
-        });
-
-        // Resize handling
-        const resizeHandle = chat.querySelector('.resize-handle');
-        resizeHandle.addEventListener('pointerdown', (e) => {
-            e.stopPropagation();
-            const startWidth = chat.offsetWidth;
-            const startHeight = chat.offsetHeight;
-            const startX = e.clientX;
-            const startY = e.clientY;
-
-            function onResizeMove(e) {
-                const newWidth = startWidth + (e.clientX - startX);
-                const newHeight = startHeight + (e.clientY - startY);
-                chat.style.width = `${Math.max(300, newWidth)}px`;
-                chat.style.height = `${Math.max(400, newHeight)}px`;
-            }
-
-            function onResizeEnd() {
-                document.removeEventListener('pointermove', onResizeMove);
-                document.removeEventListener('pointerup', onResizeEnd);
-                this.saveChats();
-            }
-
-            document.addEventListener('pointermove', onResizeMove);
-            document.addEventListener('pointerup', onResizeEnd.bind(this));
-        });
-
-        // Button actions
-        chat.querySelector('.refresh-btn').addEventListener('click', () => {
-            const iframe = chat.querySelector('iframe');
-            iframe.src = iframe.src;
-        });
-
-        chat.querySelector('.close-btn').addEventListener('click', () => {
-            chat.remove();
-            this.chats = this.chats.filter(c => c.element !== chat);
-            this.saveChats();
-        });
-    }
-
-    bringToFront(chat) {
-        this.currentZIndex++;
-        chat.style.zIndex = this.currentZIndex;
-    }
-
-    loadChats() {
-        const savedChats = JSON.parse(localStorage.getItem('savedChats')) || [];
-        savedChats.forEach(savedChat => {
-            const chat = document.createElement('div');
-            chat.className = 'chat-window';
-            chat.style.width = `${savedChat.width}px`;
-            chat.style.height = `${savedChat.height}px`;
-            chat.style.left = `${savedChat.x}px`;
-            chat.style.top = `${savedChat.y}px`;
-            chat.innerHTML = `
-                <div class="chat-header">
-                    <span class="chat-title">${savedChat.name}</span>
-                    <div class="chat-actions">
-                        <button class="chat-action-btn refresh-btn"><i class="fas fa-sync-alt"></i></button>
-                        <button class="chat-action-btn danger close-btn"><i class="fas fa-times"></i></button>
-                    </div>
-                </div>
-                <iframe src="https://xat.com/embed/chat.php#gn=${encodeURIComponent(savedChat.name)}" 
-                        width="100%" height="100%" 
-                        frameborder="0" scrolling="no"></iframe>
-                <div class="resize-handle"></div>
-            `;
-
-            this.container.appendChild(chat);
-            this.setupChatInteractions(chat, savedChat.name);
-            this.chats.push({ element: chat, name: savedChat.name });
-        });
-    }
-
-    saveChats() {
-        const chatsToSave = this.chats.map(chat => ({
-            name: chat.name,
-            width: chat.element.offsetWidth,
-            height: chat.element.offsetHeight,
-            x: chat.element.offsetLeft,
-            y: chat.element.offsetTop
-        }));
-        localStorage.setItem('savedChats', JSON.stringify(chatsToSave));
-    }
-
-    clearAllChats() {
-        if (this.chats.length === 0) return;
-        
-        this.container.innerHTML = '';
-        this.chats = [];
-        localStorage.removeItem('savedChats');
-        this.showToast('All chats cleared');
-    }
-
-    showToast(message) {
-        const toast = document.createElement('div');
-        toast.className = 'toast';
-        toast.textContent = message;
-        document.body.appendChild(toast);
-        
-        setTimeout(() => toast.classList.add('show'), 10);
-        setTimeout(() => {
-            toast.classList.remove('show');
-            setTimeout(() => toast.remove(), 300);
-        }, 3000);
-    }
-}
-
-// Initialize when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    new ChatEmbedder();
+    // Chat embedder functionality
+    const embedChatBtn = document.getElementById('embedChat');
+    const chatNameInput = document.getElementById('chatName');
+    const chatContainer = document.getElementById('chatContainer');
+    const settingsBtn = document.getElementById('settingsBtn');
+    const settingsPanel = document.getElementById('settingsPanel');
+    const saveSettingsBtn = document.getElementById('saveSettings');
+    const chatWidthInput = document.getElementById('chatWidth');
+    const chatHeightInput = document.getElementById('chatHeight');
+    const scrollLeftBtn = document.getElementById('scrollLeft');
+    const scrollRightBtn = document.getElementById('scrollRight');
     
-    // Add toast styles
-    const style = document.createElement('style');
-    style.textContent = `
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--primary);
-            color: white;
-            padding: 12px 24px;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            z-index: 2000;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        .toast.show {
-            opacity: 1;
-        }
-    `;
-    document.head.appendChild(style);
-});
-
-// Make elements draggable
-function makeDraggable(element) {
-    const header = element.querySelector('.chat-header');
-    let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-    
-    header.onmousedown = dragMouseDown;
-    
-    function dragMouseDown(e) {
-        e = e || window.event;
-        e.preventDefault();
-        pos3 = e.clientX;
-        pos4 = e.clientY;
-        document.onmouseup = closeDragElement;
-        document.onmousemove = elementDrag;
-        element.classList.add('dragging');
-    }
-    
-    function elementDrag(e) {
-        e = e || window.event;
-        e.preventDefault();
-        pos1 = pos3 - e.clientX;
-        pos2 = pos4 - e.clientY;
-        pos3 = e.clientX;
-        pos4 = e.clientY;
-        
-        // Set new position
-        const rect = chatViewport.getBoundingClientRect();
-        let newTop = (element.offsetTop - pos2);
-        let newLeft = (element.offsetLeft - pos1);
-        
-        // Constrain to viewport
-        newTop = Math.max(20, Math.min(newTop, rect.height - element.offsetHeight));
-        newLeft = Math.max(20, Math.min(newLeft, chatViewport.scrollWidth - element.offsetWidth));
-        
-        element.style.top = newTop + "px";
-        element.style.left = newLeft + "px";
-    }
-    
-    function closeDragElement() {
-        document.onmouseup = null;
-        document.onmousemove = null;
-        element.classList.remove('dragging');
-        saveChatsToStorage();
-    }
-}
-
-// Remove chat
-function removeChat(chatId) {
-    const chat = document.getElementById(`chat-${chatId}`);
-    if (chat) chat.remove();
-    saveChatsToStorage();
-}
-
-// Clear all chats
-function clearAllChats() {
-    if (confirm('Are you sure you want to remove all embedded chats?')) {
-        chatContainer.innerHTML = '';
-        localStorage.removeItem('savedChats');
-    }
-}
-
-// Save chats to localStorage
-function saveChatsToStorage() {
-    const chats = [];
-    document.querySelectorAll('.embedded-chat').forEach(chat => {
-        const chatId = chat.id.replace('chat-', '');
-        const name = chat.querySelector('.chat-header h4').textContent;
-        const rect = chat.getBoundingClientRect();
-        const viewportRect = chatViewport.getBoundingClientRect();
-        
-        chats.push({
-            id: chatId,
-            name: name,
-            width: chat.offsetWidth,
-            height: chat.offsetHeight,
-            theme: defaultThemeSelect.value,
-            x: rect.left - viewportRect.left + chatViewport.scrollLeft,
-            y: rect.top - viewportRect.top + chatViewport.scrollTop
-        });
-    });
-    
-    localStorage.setItem('savedChats', JSON.stringify(chats));
-}
-
-// Event Listeners
-settingsBtn.addEventListener('click', function() {
-    settingsPanel.classList.toggle('active');
-});
-
-saveSettingsBtn.addEventListener('click', function() {
-    const newSettings = {
-        width: parseInt(chatWidthInput.value) || 700,
-        height: parseInt(chatHeightInput.value) || 500,
-        theme: defaultThemeSelect.value
+    // Load saved settings or set defaults
+    const savedSettings = JSON.parse(localStorage.getItem('chatSettings')) || {
+        width: 650,
+        height: 486
     };
     
-    localStorage.setItem('chatSettings', JSON.stringify(newSettings));
-    settingsPanel.classList.remove('active');
+    chatWidthInput.value = savedSettings.width;
+    chatHeightInput.value = savedSettings.height;
     
-    showToast('Settings saved!');
-});
-
-embedChatBtn.addEventListener('click', embedChat);
-chatNameInput.addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') embedChat();
-});
-
-clearAllBtn.addEventListener('click', clearAllChats);
-
-scrollLeftBtn.addEventListener('click', function() {
-    chatViewport.scrollBy({
-        left: -300,
-        behavior: 'smooth'
+    settingsBtn.addEventListener('click', function() {
+        settingsPanel.classList.toggle('active');
     });
-});
-
-scrollRightBtn.addEventListener('click', function() {
-    chatViewport.scrollBy({
-        left: 300,
-        behavior: 'smooth'
+    
+    saveSettingsBtn.addEventListener('click', function() {
+        const newSettings = {
+            width: parseInt(chatWidthInput.value) || 650,
+            height: parseInt(chatHeightInput.value) || 486
+        };
+        
+        localStorage.setItem('chatSettings', JSON.stringify(newSettings));
+        settingsPanel.classList.remove('active');
+        
+        document.querySelectorAll('.embedded-chat iframe').forEach(iframe => {
+            iframe.width = newSettings.width;
+            iframe.height = newSettings.height;
+        });
+        
+        const originalText = saveSettingsBtn.innerHTML;
+        saveSettingsBtn.innerHTML = '<i class="fas fa-check"></i> Saved!';
+        setTimeout(() => {
+            saveSettingsBtn.innerHTML = originalText;
+        }, 2000);
     });
-});
-
-zoomInBtn.addEventListener('click', function() {
-    chatContainer.style.transform = chatContainer.style.transform 
-        ? `scale(${parseFloat(chatContainer.style.transform.replace('scale(', '')) + 0.1})` 
-        : 'scale(1.1)';
-});
-
-zoomOutBtn.addEventListener('click', function() {
-    const currentScale = chatContainer.style.transform 
-        ? parseFloat(chatContainer.style.transform.replace('scale(', '')) 
-        : 1;
-    if (currentScale > 0.5) {
-        chatContainer.style.transform = `scale(${currentScale - 0.1})`;
+    
+    embedChatBtn.addEventListener('click', embedChat);
+    chatNameInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            embedChat();
+        }
+    });
+    
+    function embedChat() {
+        const chatName = chatNameInput.value.trim();
+        if (!chatName) {
+            chatNameInput.focus();
+            return;
+        }
+        
+        const settings = JSON.parse(localStorage.getItem('chatSettings')) || {
+            width: 650,
+            height: 486
+        };
+        
+        const chatId = Date.now();
+        const chatWrapper = document.createElement('div');
+        chatWrapper.className = 'embedded-chat';
+        chatWrapper.id = `chat-${chatId}`;
+        
+        chatWrapper.innerHTML = `
+            <button class="remove-chat" data-chat-id="${chatId}">×</button>
+            <iframe src="https://xat.com/embed/chat.php#gn=${encodeURIComponent(chatName)}" 
+                    width="${settings.width}" height="${settings.height}" 
+                    frameborder="0" scrolling="no"></iframe>
+        `;
+        
+        chatContainer.appendChild(chatWrapper);
+        chatNameInput.value = '';
+        
+        setTimeout(() => {
+            chatContainer.scrollTo({
+                left: chatContainer.scrollWidth,
+                behavior: 'smooth'
+            });
+        }, 100);
+        
+        chatWrapper.querySelector('.remove-chat').addEventListener('click', function() {
+            document.getElementById(`chat-${this.getAttribute('data-chat-id')}`).remove();
+        });
     }
-});
-
-resetViewBtn.addEventListener('click', function() {
-    chatContainer.style.transform = '';
-});
-
-function embedChat() {
-    const chatName = chatNameInput.value.trim();
-    if (!chatName) {
-        chatNameInput.focus();
-        showToast('Please enter a chat name');
-        return;
-    }
     
-    createChatWindow(
-        chatName, 
-        savedSettings.width, 
-        savedSettings.height, 
-        savedSettings.theme
-    );
-    
-    chatNameInput.value = '';
-    
-    setTimeout(() => {
-        chatViewport.scrollTo({
-            left: chatViewport.scrollWidth,
+    scrollLeftBtn.addEventListener('click', function() {
+        chatContainer.scrollBy({
+            left: -300,
             behavior: 'smooth'
         });
-    }, 100);
-}
-
-function showToast(message) {
-    const toast = document.createElement('div');
-    toast.className = 'toast';
-    toast.textContent = message;
-    document.body.appendChild(toast);
+    });
     
-    setTimeout(() => {
-        toast.classList.add('show');
-    }, 10);
-    
-    setTimeout(() => {
-        toast.classList.remove('show');
-        setTimeout(() => {
-            toast.remove();
-        }, 300);
-    }, 3000);
-}
-
-// Initialize on load
-initChatEmbedder();
-
-// Add toast styles
-const style = document.createElement('style');
-style.textContent = `
-    .toast {
-        position: fixed;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        background-color: var(--primary);
-        color: white;
-        padding: 12px 24px;
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-        z-index: 1000;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-    .toast.show {
-        opacity: 1;
-    }
-`;
-document.head.appendChild(style);
+    scrollRightBtn.addEventListener('click', function() {
+        chatContainer.scrollBy({
+            left: 300,
+            behavior: 'smooth'
+        });
+    });
     
     // Status monitoring
     const services = [
