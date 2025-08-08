@@ -41,298 +41,252 @@ document.addEventListener('DOMContentLoaded', function() {
 // Enhanced Chat Embedder Functionality
 // ====================================
 
-const embedChatBtn = document.getElementById('embedChat');
-const chatNameInput = document.getElementById('chatName');
-const chatMasterContainer = document.getElementById('chatMasterContainer');
-const settingsBtn = document.getElementById('settingsBtn');
-const settingsPanel = document.getElementById('settingsPanel');
-const saveSettingsBtn = document.getElementById('saveSettings');
-const chatWidthInput = document.getElementById('chatWidth');
-const chatHeightInput = document.getElementById('chatHeight');
-const clearAllBtn = document.getElementById('clearAllBtn');
-const zoomInBtn = document.getElementById('zoomInBtn');
-const zoomOutBtn = document.getElementById('zoomOutBtn');
-const resetZoomBtn = document.getElementById('resetZoomBtn');
-
-// Load saved settings or set defaults
-const savedSettings = JSON.parse(localStorage.getItem('chatSettings')) || {
-    width: 700,
-    height: 500
-};
-
-// Load saved chats
-const savedChats = JSON.parse(localStorage.getItem('savedChats')) || [];
-
-chatWidthInput.value = savedSettings.width;
-chatHeightInput.value = savedSettings.height;
-
-// Initialize
-function initChatEmbedder() {
-    // Load saved chats
-    savedChats.forEach(chat => {
-        createChatWindow(chat.name, chat.width, chat.height, chat.x, chat.y);
-    });
-}
-
-// Create a new chat window
-function createChatWindow(name, width, height, x, y) {
-    const chatId = Date.now();
-    const chatWrapper = document.createElement('div');
-    chatWrapper.className = 'embedded-chat';
-    chatWrapper.id = `chat-${chatId}`;
-    chatWrapper.style.width = `${width}px`;
-    chatWrapper.style.height = `${height}px`;
-    
-    // Set position if provided
-    if (x && y) {
-        chatWrapper.style.left = `${x}px`;
-        chatWrapper.style.top = `${y}px`;
-    } else {
-        // Default position (centered)
-        const centerX = window.innerWidth / 2 - width / 2;
-        const centerY = window.innerHeight / 2 - height / 2;
-        chatWrapper.style.left = `${centerX}px`;
-        chatWrapper.style.top = `${centerY}px`;
+// Ultra-Smooth Chat Embedder
+class ChatEmbedder {
+    constructor() {
+        this.chats = [];
+        this.currentZIndex = 10;
+        this.initElements();
+        this.initEvents();
+        this.loadChats();
     }
-    
-    chatWrapper.innerHTML = `
-        <div class="chat-header">
-            <h4>${name}</h4>
-            <div class="chat-actions">
-                <button class="chat-action-btn refresh-chat" title="Refresh"><i class="fas fa-sync-alt"></i></button>
-                <button class="chat-action-btn remove-chat" title="Remove" data-chat-id="${chatId}"><i class="fas fa-times"></i></button>
-            </div>
-        </div>
-        <iframe src="https://xat.com/embed/chat.php#gn=${encodeURIComponent(name)}" 
-                width="100%" height="100%" 
-                frameborder="0" scrolling="no"></iframe>
-        <div class="resize-handle"></div>
-    `;
-    
-    chatMasterContainer.appendChild(chatWrapper);
-    
-    // Make draggable
-    makeDraggable(chatWrapper);
-    
-    // Add event listeners
-    chatWrapper.querySelector('.remove-chat').addEventListener('click', function(e) {
-        e.stopPropagation();
-        removeChat(this.getAttribute('data-chat-id'));
-    });
-    
-    chatWrapper.querySelector('.refresh-chat').addEventListener('click', function(e) {
-        e.stopPropagation();
-        const iframe = chatWrapper.querySelector('iframe');
-        iframe.src = iframe.src;
-    });
-    
-    // Save to localStorage
-    saveChatsToStorage();
-}
 
-// Make elements draggable with perfect smoothness
-function makeDraggable(element) {
-    let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-    const header = element.querySelector('.chat-header');
-    
-    header.onmousedown = dragMouseDown;
-    
-    function dragMouseDown(e) {
-        e = e || window.event;
-        e.preventDefault();
-        pos3 = e.clientX;
-        pos4 = e.clientY;
-        document.onmouseup = closeDragElement;
-        document.onmousemove = elementDrag;
-        element.classList.add('dragging');
+    initElements() {
+        this.container = document.getElementById('floatingChatsContainer');
+        this.newChatBtn = document.getElementById('newChatBtn');
+        this.clearChatsBtn = document.getElementById('clearChatsBtn');
+        this.creationPanel = document.getElementById('chatCreationPanel');
+        this.chatNameInput = document.getElementById('chatNameInput');
+        this.createChatBtn = document.getElementById('createChatBtn');
     }
-    
-    function elementDrag(e) {
-        e = e || window.event;
-        e.preventDefault();
-        pos1 = pos3 - e.clientX;
-        pos2 = pos4 - e.clientY;
-        pos3 = e.clientX;
-        pos4 = e.clientY;
-        
-        // Calculate new position
-        let newTop = element.offsetTop - pos2;
-        let newLeft = element.offsetLeft - pos1;
-        
-        // Apply new position
-        element.style.top = newTop + "px";
-        element.style.left = newLeft + "px";
-    }
-    
-    function closeDragElement() {
-        document.onmouseup = null;
-        document.onmousemove = null;
-        element.classList.remove('dragging');
-        saveChatsToStorage();
-    }
-    
-    // Make resizable
-    const resizeHandle = element.querySelector('.resize-handle');
-    resizeHandle.onmousedown = function(e) {
-        e.preventDefault();
-        document.onmouseup = closeResizeElement;
-        document.onmousemove = elementResize;
-    };
-    
-    function elementResize(e) {
-        e.preventDefault();
-        const newWidth = e.clientX - element.offsetLeft;
-        const newHeight = e.clientY - element.offsetTop;
-        
-        // Minimum size constraints
-        if (newWidth > 300) element.style.width = newWidth + "px";
-        if (newHeight > 400) element.style.height = newHeight + "px";
-    }
-    
-    function closeResizeElement() {
-        document.onmouseup = null;
-        document.onmousemove = null;
-        saveChatsToStorage();
-    }
-}
 
-// Remove chat
-function removeChat(chatId) {
-    const chat = document.getElementById(`chat-${chatId}`);
-    if (chat) chat.remove();
-    saveChatsToStorage();
-}
-
-// Clear all chats
-function clearAllChats() {
-    chatMasterContainer.innerHTML = '';
-    localStorage.removeItem('savedChats');
-}
-
-// Save chats to localStorage
-function saveChatsToStorage() {
-    const chats = [];
-    document.querySelectorAll('.embedded-chat').forEach(chat => {
-        chats.push({
-            id: chat.id.replace('chat-', ''),
-            name: chat.querySelector('.chat-header h4').textContent,
-            width: chat.offsetWidth,
-            height: chat.offsetHeight,
-            x: chat.offsetLeft,
-            y: chat.offsetTop
+    initEvents() {
+        this.newChatBtn.addEventListener('click', () => this.toggleCreationPanel());
+        this.clearChatsBtn.addEventListener('click', () => this.clearAllChats());
+        this.createChatBtn.addEventListener('click', () => this.createChat());
+        this.chatNameInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') this.createChat();
         });
-    });
-    
-    localStorage.setItem('savedChats', JSON.stringify(chats));
-}
+    }
 
-// Event Listeners
-settingsBtn.addEventListener('click', function() {
-    settingsPanel.classList.toggle('active');
-});
-
-saveSettingsBtn.addEventListener('click', function() {
-    const newSettings = {
-        width: parseInt(chatWidthInput.value) || 700,
-        height: parseInt(chatHeightInput.value) || 500
-    };
-    
-    localStorage.setItem('chatSettings', JSON.stringify(newSettings));
-    settingsPanel.classList.remove('active');
-    
-    showToast('Settings saved!');
-});
-
-embedChatBtn.addEventListener('click', embedChat);
-chatNameInput.addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') embedChat();
-});
-
-clearAllBtn.addEventListener('click', clearAllChats);
-
-zoomInBtn.addEventListener('click', function() {
-    document.querySelectorAll('.embedded-chat').forEach(chat => {
-        const currentWidth = chat.offsetWidth;
-        chat.style.width = (currentWidth * 1.1) + 'px';
-    });
-});
-
-zoomOutBtn.addEventListener('click', function() {
-    document.querySelectorAll('.embedded-chat').forEach(chat => {
-        const currentWidth = chat.offsetWidth;
-        if (currentWidth > 300) {
-            chat.style.width = (currentWidth * 0.9) + 'px';
+    toggleCreationPanel() {
+        this.creationPanel.classList.toggle('active');
+        if (this.creationPanel.classList.contains('active')) {
+            this.chatNameInput.focus();
         }
-    });
-});
-
-resetZoomBtn.addEventListener('click', function() {
-    document.querySelectorAll('.embedded-chat').forEach(chat => {
-        chat.style.width = savedSettings.width + 'px';
-        chat.style.height = savedSettings.height + 'px';
-    });
-});
-
-function embedChat() {
-    const chatName = chatNameInput.value.trim();
-    if (!chatName) {
-        chatNameInput.focus();
-        showToast('Please enter a chat name');
-        return;
     }
-    
-    createChatWindow(
-        chatName, 
-        savedSettings.width, 
-        savedSettings.height
-    );
-    
-    chatNameInput.value = '';
-}
 
-function showToast(message) {
-    const toast = document.createElement('div');
-    toast.className = 'toast';
-    toast.textContent = message;
-    document.body.appendChild(toast);
-    
-    setTimeout(() => {
-        toast.classList.add('show');
-    }, 10);
-    
-    setTimeout(() => {
-        toast.classList.remove('show');
+    createChat() {
+        const name = this.chatNameInput.value.trim();
+        if (!name) {
+            this.showToast('Please enter a chat name');
+            return;
+        }
+
+        const chat = document.createElement('div');
+        chat.className = 'chat-window';
+        chat.innerHTML = `
+            <div class="chat-header">
+                <span class="chat-title">${name}</span>
+                <div class="chat-actions">
+                    <button class="chat-action-btn refresh-btn"><i class="fas fa-sync-alt"></i></button>
+                    <button class="chat-action-btn danger close-btn"><i class="fas fa-times"></i></button>
+                </div>
+            </div>
+            <iframe src="https://xat.com/embed/chat.php#gn=${encodeURIComponent(name)}" 
+                    width="100%" height="100%" 
+                    frameborder="0" scrolling="no"></iframe>
+            <div class="resize-handle"></div>
+        `;
+
+        // Position new chat in center of viewport
+        const centerX = window.innerWidth / 2 - 350;
+        const centerY = window.innerHeight / 2 - 250;
+        chat.style.left = `${Math.max(20, centerX)}px`;
+        chat.style.top = `${Math.max(20, centerY)}px`;
+
+        this.container.appendChild(chat);
+        this.setupChatInteractions(chat, name);
+        this.chats.push({ element: chat, name });
+
+        // Reset creation panel
+        this.chatNameInput.value = '';
+        this.creationPanel.classList.remove('active');
+        
+        this.saveChats();
+    }
+
+    setupChatInteractions(chat, name) {
+        let posX = 0, posY = 0, mouseX = 0, mouseY = 0;
+        let isDragging = false;
+
+        // Bring to front when clicked
+        chat.addEventListener('mousedown', () => {
+            this.bringToFront(chat);
+        });
+
+        // Drag handling
+        chat.addEventListener('pointerdown', (e) => {
+            if (e.target.classList.contains('chat-action-btn')) return;
+            
+            isDragging = true;
+            posX = e.clientX - chat.getBoundingClientRect().left;
+            posY = e.clientY - chat.getBoundingClientRect().top;
+            chat.style.cursor = 'grabbing';
+            chat.style.transition = 'none';
+            e.preventDefault();
+        });
+
+        document.addEventListener('pointermove', (e) => {
+            if (!isDragging) return;
+            
+            chat.style.left = `${e.clientX - posX}px`;
+            chat.style.top = `${e.clientY - posY}px`;
+        });
+
+        document.addEventListener('pointerup', () => {
+            if (isDragging) {
+                isDragging = false;
+                chat.style.cursor = '';
+                chat.style.transition = '';
+                this.saveChats();
+            }
+        });
+
+        // Resize handling
+        const resizeHandle = chat.querySelector('.resize-handle');
+        resizeHandle.addEventListener('pointerdown', (e) => {
+            e.stopPropagation();
+            const startWidth = chat.offsetWidth;
+            const startHeight = chat.offsetHeight;
+            const startX = e.clientX;
+            const startY = e.clientY;
+
+            function onResizeMove(e) {
+                const newWidth = startWidth + (e.clientX - startX);
+                const newHeight = startHeight + (e.clientY - startY);
+                chat.style.width = `${Math.max(300, newWidth)}px`;
+                chat.style.height = `${Math.max(400, newHeight)}px`;
+            }
+
+            function onResizeEnd() {
+                document.removeEventListener('pointermove', onResizeMove);
+                document.removeEventListener('pointerup', onResizeEnd);
+                this.saveChats();
+            }
+
+            document.addEventListener('pointermove', onResizeMove);
+            document.addEventListener('pointerup', onResizeEnd.bind(this));
+        });
+
+        // Button actions
+        chat.querySelector('.refresh-btn').addEventListener('click', () => {
+            const iframe = chat.querySelector('iframe');
+            iframe.src = iframe.src;
+        });
+
+        chat.querySelector('.close-btn').addEventListener('click', () => {
+            chat.remove();
+            this.chats = this.chats.filter(c => c.element !== chat);
+            this.saveChats();
+        });
+    }
+
+    bringToFront(chat) {
+        this.currentZIndex++;
+        chat.style.zIndex = this.currentZIndex;
+    }
+
+    loadChats() {
+        const savedChats = JSON.parse(localStorage.getItem('savedChats')) || [];
+        savedChats.forEach(savedChat => {
+            const chat = document.createElement('div');
+            chat.className = 'chat-window';
+            chat.style.width = `${savedChat.width}px`;
+            chat.style.height = `${savedChat.height}px`;
+            chat.style.left = `${savedChat.x}px`;
+            chat.style.top = `${savedChat.y}px`;
+            chat.innerHTML = `
+                <div class="chat-header">
+                    <span class="chat-title">${savedChat.name}</span>
+                    <div class="chat-actions">
+                        <button class="chat-action-btn refresh-btn"><i class="fas fa-sync-alt"></i></button>
+                        <button class="chat-action-btn danger close-btn"><i class="fas fa-times"></i></button>
+                    </div>
+                </div>
+                <iframe src="https://xat.com/embed/chat.php#gn=${encodeURIComponent(savedChat.name)}" 
+                        width="100%" height="100%" 
+                        frameborder="0" scrolling="no"></iframe>
+                <div class="resize-handle"></div>
+            `;
+
+            this.container.appendChild(chat);
+            this.setupChatInteractions(chat, savedChat.name);
+            this.chats.push({ element: chat, name: savedChat.name });
+        });
+    }
+
+    saveChats() {
+        const chatsToSave = this.chats.map(chat => ({
+            name: chat.name,
+            width: chat.element.offsetWidth,
+            height: chat.element.offsetHeight,
+            x: chat.element.offsetLeft,
+            y: chat.element.offsetTop
+        }));
+        localStorage.setItem('savedChats', JSON.stringify(chatsToSave));
+    }
+
+    clearAllChats() {
+        if (this.chats.length === 0) return;
+        
+        this.container.innerHTML = '';
+        this.chats = [];
+        localStorage.removeItem('savedChats');
+        this.showToast('All chats cleared');
+    }
+
+    showToast(message) {
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => toast.classList.add('show'), 10);
         setTimeout(() => {
-            toast.remove();
-        }, 300);
-    }, 3000);
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
 }
 
-// Initialize on load
-initChatEmbedder();
-
-// Add toast styles
-const toastStyle = document.createElement('style');
-toastStyle.textContent = `
-    .toast {
-        position: fixed;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        background-color: var(--primary);
-        color: white;
-        padding: 12px 24px;
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-        z-index: 1000;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-    .toast.show {
-        opacity: 1;
-    }
-`;
-document.head.appendChild(toastStyle);
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    new ChatEmbedder();
+    
+    // Add toast styles
+    const style = document.createElement('style');
+    style.textContent = `
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary);
+            color: white;
+            padding: 12px 24px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .toast.show {
+            opacity: 1;
+        }
+    `;
+    document.head.appendChild(style);
+});
 
 // Make elements draggable
 function makeDraggable(element) {
