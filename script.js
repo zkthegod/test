@@ -41,13 +41,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const embedChatBtn = document.getElementById('embedChat');
     const chatNameInput = document.getElementById('chatName');
     const chatContainer = document.getElementById('chatContainer');
-    const settingsBtn = document.getElementById('settingsBtn');
     const settingsPanel = document.getElementById('settingsPanel');
     const saveSettingsBtn = document.getElementById('saveSettings');
     const chatWidthInput = document.getElementById('chatWidth');
     const chatHeightInput = document.getElementById('chatHeight');
-    const widgetLayer = document.getElementById('widgetLayer'); // unused for mounting; kept for structure
-    const widgetMount = document.body;
+    const widgetLayer = document.getElementById('widgetLayer');
+    const widgetMount = widgetLayer;
     const snapToggle = document.getElementById('snapToggle');
     const gridSizeInput = document.getElementById('gridSize');
     const autoArrangeBtn = document.getElementById('autoArrange');

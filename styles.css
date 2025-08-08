@@ -1116,10 +1116,10 @@ footer {
 
 /* Floating Chat Widgets Layer */
 #widgetLayer {
-    position: fixed;
-    inset: 0;
-    z-index: 5000;
-    pointer-events: none; /* allow clicks through unless on a widget */
+    position: relative;
+    z-index: 1;
+    pointer-events: auto; /* widgets inside are interactive */
+    min-height: 300px;
 }
 
 .chat-widget {
