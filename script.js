@@ -41,16 +41,17 @@ document.addEventListener('DOMContentLoaded', function() {
     const embedChatBtn = document.getElementById('embedChat');
     const chatNameInput = document.getElementById('chatName');
     const chatContainer = document.getElementById('chatContainer');
-    const settingsPanel = document.getElementById('settingsPanel');
-    const saveSettingsBtn = document.getElementById('saveSettings');
-    const chatWidthInput = document.getElementById('chatWidth');
-    const chatHeightInput = document.getElementById('chatHeight');
+    // Removed global settings panel; defaults are applied from localStorage only
+    const settingsPanel = null;
+    const saveSettingsBtn = null;
+    const chatWidthInput = null;
+    const chatHeightInput = null;
     const widgetLayer = document.getElementById('widgetLayer');
     const widgetMount = widgetLayer;
-    const snapToggle = document.getElementById('snapToggle');
-    const gridSizeInput = document.getElementById('gridSize');
-    const autoArrangeBtn = document.getElementById('autoArrange');
-    const resetLayoutBtn = document.getElementById('resetLayout');
+    const snapToggle = null;
+    const gridSizeInput = null;
+    const autoArrangeBtn = null;
+    const resetLayoutBtn = null;
     const toggleLayoutBtn = document.getElementById('toggleLayout');
     const inspectorEl = document.getElementById('widgetInspector');
     const inspMode = document.getElementById('inspectorSizeMode');
@@ -74,32 +75,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (snapToggle) snapToggle.checked = !!savedSettings.snap;
     if (gridSizeInput) gridSizeInput.value = savedSettings.grid || 16;
     
-    saveSettingsBtn.addEventListener('click', function() {
-        const newSettings = {
-            width: parseInt(chatWidthInput.value) || 728,
-            height: parseInt(chatHeightInput.value) || 486,
-            snap: !!snapToggle?.checked,
-            grid: Math.max(4, Math.min(128, parseInt(gridSizeInput?.value) || 16))
-        };
-
-        localStorage.setItem('chatSettings', JSON.stringify(newSettings));
-        settingsPanel.classList.remove('active');
-
-        // Apply to all current widgets with size mode = fixed
-        document.querySelectorAll('.chat-widget').forEach(widget => {
-            const state = getWidgetState(widget.id);
-            if (!state) return;
-            if (state.sizeMode === 'fixed') {
-                widget.style.width = `${newSettings.width}px`;
-                widget.style.height = `${newSettings.height}px`;
-                persistWidget(widget);
-            }
-        });
-
-        const originalText = saveSettingsBtn.innerHTML;
-        saveSettingsBtn.innerHTML = '<i class="fas fa-check"></i> Saved!';
-        setTimeout(() => { saveSettingsBtn.innerHTML = originalText; }, 1400);
-    });
+    // No global settings panel events; inspector handles per-widget settings
     
     embedChatBtn.addEventListener('click', embedChat);
     chatNameInput.addEventListener('keypress', function(e) {
