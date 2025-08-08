@@ -68,6 +68,7 @@
             <section id="chat-embedder" class="page">
                 <div class="section-header">
                     <h2>Chat Embedder</h2>
+                    <button id="settingsBtn" class="icon-btn"><i class="fas fa-cog"></i> Settings</button>
                 </div>
                 
                 <div class="embed-controls">
@@ -77,44 +78,23 @@
                     </div>
                 </div>
                 
-                <div id="widgetInspector" class="inspector" aria-live="polite" aria-label="Selected chat settings" style="display:none;">
-                    <div class="inspector-row">
-                        <div class="inspector-group">
-                            <label>Mode</label>
-                            <select id="inspectorSizeMode">
-                                <option value="fixed">Fixed</option>
-                                <option value="free">Free</option>
-                            </select>
-                        </div>
-                        <div class="inspector-group">
-                            <label>Style</label>
-                            <select id="inspectorStyle">
-                                <option value="default">Default</option>
-                                <option value="glass">Glass</option>
-                                <option value="dark">Dark</option>
-                            </select>
-                        </div>
-                        <div class="inspector-group">
-                            <label>Snap</label>
-                            <input type="checkbox" id="inspectorSnap">
-                        </div>
-                        <div class="inspector-group">
-                            <label>Grid</label>
-                            <input type="number" id="inspectorGrid" min="4" max="128" value="16">
-                        </div>
-                        <div class="inspector-actions">
-                            <button id="inspectorApply" class="primary-btn small"><i class="fas fa-check"></i> Apply</button>
-                            <button id="inspectorClose" class="icon-btn" title="Close"><i class="fas fa-times"></i></button>
-                        </div>
+                <div class="settings-panel" id="settingsPanel">
+                    <div class="setting">
+                        <label for="chatWidth">Width:</label>
+                        <input type="number" id="chatWidth" min="300" max="1200" value="700">
                     </div>
+                    <div class="setting">
+                        <label for="chatHeight">Height:</label>
+                        <input type="number" id="chatHeight" min="300" max="1200" value="500">
+                    </div>
+                    <button id="saveSettings" class="primary-btn"><i class="fas fa-save"></i> Save</button>
                 </div>
                 
                 <div class="chat-viewport">
+                    <button class="scroll-btn left" id="scrollLeft"><i class="fas fa-chevron-left"></i></button>
                     <div class="chat-container" id="chatContainer"></div>
+                    <button class="scroll-btn right" id="scrollRight"><i class="fas fa-chevron-right"></i></button>
                 </div>
-
-                <div id="widgetLayer" aria-live="polite" aria-label="Floating chat widgets layer"></div>
-                <div id="gridOverlay" class="grid-overlay" aria-hidden="true"></div>
             </section>
 
             <section id="name-effects" class="page">
