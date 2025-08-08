@@ -70,7 +70,8 @@ document.addEventListener('DOMContentLoaded', function() {
         width: 728,
         height: 486,
         bgColor: getComputedStyle(document.documentElement).getPropertyValue('--bg')?.trim() || '#0e0f12',
-        bgImage: ''
+        bgImage: '',
+        applyBackground: false
     };
 
     function loadDesktopSettings() {
@@ -83,22 +84,33 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function saveDesktopSettings() {
+        const themeBg = getComputedStyle(document.documentElement).getPropertyValue('--bg')?.trim();
+        const color = desktopBgColor.value || themeBg || defaultDesktopSettings.bgColor;
+        const image = desktopBgImage.value || '';
+        const shouldApply = !!image || (color && color !== themeBg);
         const newSettings = {
             width: clamp(parseInt(chatWidthInput.value) || defaultDesktopSettings.width, 280, 1600),
             height: clamp(parseInt(chatHeightInput.value) || defaultDesktopSettings.height, 220, 1400),
-            bgColor: desktopBgColor.value || defaultDesktopSettings.bgColor,
-            bgImage: desktopBgImage.value || ''
+            bgColor: color,
+            bgImage: image,
+            applyBackground: shouldApply
         };
         localStorage.setItem('desktopSettings', JSON.stringify(newSettings));
         applyDesktopSettings(newSettings);
-        // Apply size to all windows on request via resizeAll
     }
 
     function applyDesktopSettings(settings) {
-        // Apply wallpaper to the whole page
-        document.body.style.backgroundColor = settings.bgColor || defaultDesktopSettings.bgColor;
-        if (settings.bgImage) document.body.style.backgroundImage = `url('${settings.bgImage}')`;
-        else document.body.style.backgroundImage = 'none';
+        const chatPage = document.getElementById('chat-embedder');
+        if (!chatPage) return;
+        if (settings.applyBackground) {
+            chatPage.classList.add('has-wallpaper');
+            chatPage.style.backgroundColor = settings.bgColor || '';
+            chatPage.style.backgroundImage = settings.bgImage ? `url('${settings.bgImage}')` : 'none';
+        } else {
+            chatPage.classList.remove('has-wallpaper');
+            chatPage.style.backgroundImage = 'none';
+            chatPage.style.backgroundColor = '';
+        }
     }
 
     function clamp(value, min, max) {
@@ -208,9 +220,8 @@ document.addEventListener('DOMContentLoaded', function() {
         el.addEventListener('pointerdown', () => bringToFront(el));
 
         // Titlebar drag
-        const titlebar = el.querySelector('[data-drag-handle]');
-        const title = el.querySelector('.window-titlebar .title');
-        enableDrag(el, title || titlebar);
+        const titlebar = el.querySelector('.window-titlebar');
+        enableDrag(el, titlebar);
 
         // Resize handles
         Array.from(el.querySelectorAll('[data-resize]')).forEach(handle => enableResize(el, handle));

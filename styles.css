@@ -1191,6 +1191,25 @@ footer {
     color: var(--primary);
 }
 
+/* Titlebar control buttons */
+.window-controls .ctrl-btn {
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--text-light);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transition: var(--transition);
+}
+.window-controls .ctrl-btn[data-action="close"] { color: #e74c3c; }
+.window-controls .ctrl-btn[data-action="toggle"] { color: var(--primary); }
+.window-controls .ctrl-btn:active { transform: scale(0.96); }
+
+/* Drag handle */
+.window-titlebar { -webkit-user-select: none; user-select: none; touch-action: none; padding: 0 10px; background: linear-gradient(180deg, rgba(0,0,0,0.04), rgba(0,0,0,0.02)); height: 36px; }
+.window-titlebar .title { pointer-events: none; }
+
 .chat-content {
     position: absolute;
     inset: 36px 0 0 0;
