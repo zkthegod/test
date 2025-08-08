@@ -38,110 +38,592 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Chat embedder functionality
-    const embedChatBtn = document.getElementById('embedChat');
-    const chatNameInput = document.getElementById('chatName');
-    const chatContainer = document.getElementById('chatContainer');
-    const settingsBtn = document.getElementById('settingsBtn');
-    const settingsPanel = document.getElementById('settingsPanel');
-    const saveSettingsBtn = document.getElementById('saveSettings');
-    const chatWidthInput = document.getElementById('chatWidth');
-    const chatHeightInput = document.getElementById('chatHeight');
-    const scrollLeftBtn = document.getElementById('scrollLeft');
-    const scrollRightBtn = document.getElementById('scrollRight');
+// Chat Widget System
+class ChatWidgetSystem {
+    constructor() {
+        this.widgets = [];
+        this.snapDistance = 20;
+        this.defaultWidth = 400;
+        this.defaultHeight = 500;
+        this.draggedWidget = null;
+        this.dragOffset = { x: 0, y: 0 };
+        this.isResizing = false;
+        this.resizeStartSize = { width: 0, height: 0 };
+        this.resizeStartPos = { x: 0, y: 0 };
+        
+        this.initElements();
+        this.loadSettings();
+        this.setupEventListeners();
+    }
     
-    // Load saved settings or set defaults
-    const savedSettings = JSON.parse(localStorage.getItem('chatSettings')) || {
-        width: 650,
-        height: 486
-    };
+    initElements() {
+        this.widgetContainer = document.getElementById('widgetContainer');
+        this.chatNameInput = document.getElementById('chatName');
+        this.embedChatBtn = document.getElementById('embedChat');
+        this.settingsBtn = document.getElementById('settingsBtn');
+        this.settingsPanel = document.getElementById('settingsPanel');
+        this.saveSettingsBtn = document.getElementById('saveSettings');
+        this.defaultWidthInput = document.getElementById('defaultWidth');
+        this.defaultHeightInput = document.getElementById('defaultHeight');
+        this.snapDistanceInput = document.getElementById('snapDistance');
+        this.layoutBtn = document.getElementById('layoutBtn');
+        this.layoutPanel = document.getElementById('layoutPanel');
+    }
     
-    chatWidthInput.value = savedSettings.width;
-    chatHeightInput.value = savedSettings.height;
-    
-    settingsBtn.addEventListener('click', function() {
-        settingsPanel.classList.toggle('active');
-    });
-    
-    saveSettingsBtn.addEventListener('click', function() {
-        const newSettings = {
-            width: parseInt(chatWidthInput.value) || 650,
-            height: parseInt(chatHeightInput.value) || 486
+    loadSettings() {
+        const savedSettings = JSON.parse(localStorage.getItem('chatWidgetSettings')) || {
+            defaultWidth: 400,
+            defaultHeight: 500,
+            snapDistance: 20
         };
         
-        localStorage.setItem('chatSettings', JSON.stringify(newSettings));
-        settingsPanel.classList.remove('active');
+        this.defaultWidth = savedSettings.defaultWidth;
+        this.defaultHeight = savedSettings.defaultHeight;
+        this.snapDistance = savedSettings.snapDistance;
         
-        document.querySelectorAll('.embedded-chat iframe').forEach(iframe => {
-            iframe.width = newSettings.width;
-            iframe.height = newSettings.height;
-        });
+        this.defaultWidthInput.value = this.defaultWidth;
+        this.defaultHeightInput.value = this.defaultHeight;
+        this.snapDistanceInput.value = this.snapDistance;
         
-        const originalText = saveSettingsBtn.innerHTML;
-        saveSettingsBtn.innerHTML = '<i class="fas fa-check"></i> Saved!';
-        setTimeout(() => {
-            saveSettingsBtn.innerHTML = originalText;
-        }, 2000);
-    });
-    
-    embedChatBtn.addEventListener('click', embedChat);
-    chatNameInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            embedChat();
-        }
-    });
-    
-    function embedChat() {
-        const chatName = chatNameInput.value.trim();
-        if (!chatName) {
-            chatNameInput.focus();
-            return;
-        }
-        
-        const settings = JSON.parse(localStorage.getItem('chatSettings')) || {
-            width: 650,
-            height: 486
-        };
-        
-        const chatId = Date.now();
-        const chatWrapper = document.createElement('div');
-        chatWrapper.className = 'embedded-chat';
-        chatWrapper.id = `chat-${chatId}`;
-        
-        chatWrapper.innerHTML = `
-            <button class="remove-chat" data-chat-id="${chatId}">×</button>
-            <iframe src="https://xat.com/embed/chat.php#gn=${encodeURIComponent(chatName)}" 
-                    width="${settings.width}" height="${settings.height}" 
-                    frameborder="0" scrolling="no"></iframe>
-        `;
-        
-        chatContainer.appendChild(chatWrapper);
-        chatNameInput.value = '';
-        
-        setTimeout(() => {
-            chatContainer.scrollTo({
-                left: chatContainer.scrollWidth,
-                behavior: 'smooth'
-            });
-        }, 100);
-        
-        chatWrapper.querySelector('.remove-chat').addEventListener('click', function() {
-            document.getElementById(`chat-${this.getAttribute('data-chat-id')}`).remove();
+        // Load saved widgets
+        const savedWidgets = JSON.parse(localStorage.getItem('chatWidgets')) || [];
+        savedWidgets.forEach(widget => {
+            this.createWidget(widget.name, widget.left, widget.top, widget.width, widget.height);
         });
     }
     
-    scrollLeftBtn.addEventListener('click', function() {
-        chatContainer.scrollBy({
-            left: -300,
-            behavior: 'smooth'
+    setupEventListeners() {
+        // Embed new chat
+        this.embedChatBtn.addEventListener('click', () => this.embedChat());
+        this.chatNameInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') this.embedChat();
         });
-    });
+        
+        // Settings panel
+        this.settingsBtn.addEventListener('click', () => {
+            this.settingsPanel.classList.toggle('active');
+            this.layoutPanel.classList.remove('active');
+        });
+        
+        this.saveSettingsBtn.addEventListener('click', () => {
+            this.defaultWidth = parseInt(this.defaultWidthInput.value) || 400;
+            this.defaultHeight = parseInt(this.defaultHeightInput.value) || 500;
+            this.snapDistance = parseInt(this.snapDistanceInput.value) || 20;
+            
+            const settings = {
+                defaultWidth: this.defaultWidth,
+                defaultHeight: this.defaultHeight,
+                snapDistance: this.snapDistance
+            };
+            
+            localStorage.setItem('chatWidgetSettings', JSON.stringify(settings));
+            
+            this.showFeedback(this.saveSettingsBtn, 'Saved!');
+            this.settingsPanel.classList.remove('active');
+        });
+        
+        // Layout controls
+        this.layoutBtn.addEventListener('click', () => {
+            this.layoutPanel.classList.toggle('active');
+            this.settingsPanel.classList.remove('active');
+        });
+        
+        document.querySelectorAll('.layout-option').forEach(option => {
+            option.addEventListener('click', () => {
+                const layout = option.dataset.layout;
+                this.applyLayout(layout);
+                this.layoutPanel.classList.remove('active');
+            });
+        });
+        
+        // Document-wide mouse events for dragging/resizing
+        document.addEventListener('mousedown', this.handleMouseDown.bind(this));
+        document.addEventListener('mousemove', this.handleMouseMove.bind(this));
+        document.addEventListener('mouseup', this.handleMouseUp.bind(this));
+        
+        // Touch events for mobile
+        document.addEventListener('touchstart', this.handleTouchStart.bind(this), { passive: false });
+        document.addEventListener('touchmove', this.handleTouchMove.bind(this), { passive: false });
+        document.addEventListener('touchend', this.handleTouchEnd.bind(this));
+        
+        // Save widget positions when window is resized or closed
+        window.addEventListener('resize', this.saveWidgets.bind(this));
+        window.addEventListener('beforeunload', this.saveWidgets.bind(this));
+    }
     
-    scrollRightBtn.addEventListener('click', function() {
-        chatContainer.scrollBy({
-            left: 300,
-            behavior: 'smooth'
+    embedChat() {
+        const chatName = this.chatNameInput.value.trim();
+        if (!chatName) {
+            this.chatNameInput.focus();
+            return;
+        }
+        
+        // Create widget at center of screen
+        const left = (window.innerWidth - this.defaultWidth) / 2;
+        const top = (window.innerHeight - this.defaultHeight) / 2;
+        
+        this.createWidget(chatName, left, top, this.defaultWidth, this.defaultHeight);
+        this.chatNameInput.value = '';
+    }
+    
+    createWidget(name, left, top, width, height) {
+        const widget = document.createElement('div');
+        widget.className = 'chat-widget';
+        widget.style.width = `${width}px`;
+        widget.style.height = `${height}px`;
+        widget.style.left = `${left}px`;
+        widget.style.top = `${top}px`;
+        
+        widget.innerHTML = `
+            <div class="chat-widget-header">
+                <div class="chat-widget-title">${name}</div>
+                <div class="chat-widget-actions">
+                    <button class="chat-widget-btn settings-btn" title="Settings"><i class="fas fa-cog"></i></button>
+                    <button class="chat-widget-btn close-btn" title="Close"><i class="fas fa-times"></i></button>
+                </div>
+            </div>
+            <div class="chat-widget-content">
+                <iframe src="https://xat.com/embed/chat.php#gn=${encodeURIComponent(name)}" 
+                        width="100%" height="100%" frameborder="0"></iframe>
+            </div>
+        `;
+        
+        this.widgetContainer.appendChild(widget);
+        
+        // Add to widgets array
+        const widgetObj = {
+            element: widget,
+            name: name,
+            left: left,
+            top: top,
+            width: width,
+            height: height
+        };
+        
+        this.widgets.push(widgetObj);
+        
+        // Add event listeners to buttons
+        widget.querySelector('.close-btn').addEventListener('click', () => {
+            this.removeWidget(widgetObj);
         });
-    });
+        
+        widget.querySelector('.settings-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.showWidgetSettings(widgetObj);
+        });
+        
+        return widgetObj;
+    }
+    
+    removeWidget(widget) {
+        const index = this.widgets.indexOf(widget);
+        if (index > -1) {
+            this.widgets.splice(index, 1);
+            widget.element.remove();
+            this.saveWidgets();
+        }
+    }
+    
+    showWidgetSettings(widget) {
+        // In a real implementation, this would show a settings panel for the specific widget
+        alert(`Settings for ${widget.name}\n\nCustomize appearance and behavior here.`);
+    }
+    
+    handleMouseDown(e) {
+        // Check if we're clicking on a widget header
+        const header = e.target.closest('.chat-widget-header');
+        if (header) {
+            const widgetElement = header.parentElement;
+            this.draggedWidget = this.widgets.find(w => w.element === widgetElement);
+            
+            if (this.draggedWidget) {
+                e.preventDefault();
+                this.dragOffset = {
+                    x: e.clientX - widgetElement.getBoundingClientRect().left,
+                    y: e.clientY - widgetElement.getBoundingClientRect().top
+                };
+                
+                // Bring to front
+                this.bringToFront(widgetElement);
+            }
+        }
+        
+        // Check if we're clicking on the resize handle
+        if (e.target.classList.contains('chat-widget') && 
+            e.offsetX > e.target.offsetWidth - 15 && 
+            e.offsetY > e.target.offsetHeight - 15) {
+            const widgetElement = e.target;
+            this.draggedWidget = this.widgets.find(w => w.element === widgetElement);
+            
+            if (this.draggedWidget) {
+                e.preventDefault();
+                this.isResizing = true;
+                this.resizeStartSize = {
+                    width: widgetElement.offsetWidth,
+                    height: widgetElement.offsetHeight
+                };
+                this.resizeStartPos = {
+                    x: e.clientX,
+                    y: e.clientY
+                };
+                
+                // Bring to front
+                this.bringToFront(widgetElement);
+            }
+        }
+    }
+    
+    handleMouseMove(e) {
+        if (this.draggedWidget && !this.isResizing) {
+            e.preventDefault();
+            
+            let left = e.clientX - this.dragOffset.x;
+            let top = e.clientY - this.dragOffset.y;
+            
+            // Constrain to viewport
+            left = Math.max(0, Math.min(left, window.innerWidth - this.draggedWidget.element.offsetWidth));
+            top = Math.max(0, Math.min(top, window.innerHeight - this.draggedWidget.element.offsetHeight));
+            
+            // Apply position
+            this.draggedWidget.element.style.left = `${left}px`;
+            this.draggedWidget.element.style.top = `${top}px`;
+            
+            // Snap to other widgets and edges
+            this.handleSnapping(this.draggedWidget);
+        }
+        
+        if (this.draggedWidget && this.isResizing) {
+            e.preventDefault();
+            
+            const width = this.resizeStartSize.width + (e.clientX - this.resizeStartPos.x);
+            const height = this.resizeStartSize.height + (e.clientY - this.resizeStartPos.y);
+            
+            // Apply minimum size constraints
+            const newWidth = Math.max(300, width);
+            const newHeight = Math.max(300, height);
+            
+            this.draggedWidget.element.style.width = `${newWidth}px`;
+            this.draggedWidget.element.style.height = `${newHeight}px`;
+            
+            // Update iframe size
+            const iframe = this.draggedWidget.element.querySelector('iframe');
+            if (iframe) {
+                iframe.style.width = '100%';
+                iframe.style.height = '100%';
+            }
+        }
+    }
+    
+    handleMouseUp() {
+        if (this.draggedWidget) {
+            // Save final position/size
+            this.draggedWidget.left = parseInt(this.draggedWidget.element.style.left);
+            this.draggedWidget.top = parseInt(this.draggedWidget.element.style.top);
+            this.draggedWidget.width = this.draggedWidget.element.offsetWidth;
+            this.draggedWidget.height = this.draggedWidget.element.offsetHeight;
+            
+            this.saveWidgets();
+        }
+        
+        this.draggedWidget = null;
+        this.isResizing = false;
+    }
+    
+    // Touch event handlers (similar to mouse handlers)
+    handleTouchStart(e) {
+        if (e.touches.length === 1) {
+            const touch = e.touches[0];
+            const target = document.elementFromPoint(touch.clientX, touch.clientY);
+            
+            // Check for widget header
+            const header = target.closest('.chat-widget-header');
+            if (header) {
+                const widgetElement = header.parentElement;
+                this.draggedWidget = this.widgets.find(w => w.element === widgetElement);
+                
+                if (this.draggedWidget) {
+                    e.preventDefault();
+                    this.dragOffset = {
+                        x: touch.clientX - widgetElement.getBoundingClientRect().left,
+                        y: touch.clientY - widgetElement.getBoundingClientRect().top
+                    };
+                    
+                    this.bringToFront(widgetElement);
+                }
+            }
+            
+            // Check for resize handle
+            if (target.classList.contains('chat-widget')) {
+                const rect = target.getBoundingClientRect();
+                if (touch.clientX > rect.right - 30 && touch.clientY > rect.bottom - 30) {
+                    this.draggedWidget = this.widgets.find(w => w.element === target);
+                    
+                    if (this.draggedWidget) {
+                        e.preventDefault();
+                        this.isResizing = true;
+                        this.resizeStartSize = {
+                            width: target.offsetWidth,
+                            height: target.offsetHeight
+                        };
+                        this.resizeStartPos = {
+                            x: touch.clientX,
+                            y: touch.clientY
+                        };
+                        
+                        this.bringToFront(target);
+                    }
+                }
+            }
+        }
+    }
+    
+    handleTouchMove(e) {
+        if (e.touches.length === 1 && this.draggedWidget) {
+            const touch = e.touches[0];
+            e.preventDefault();
+            
+            if (!this.isResizing) {
+                let left = touch.clientX - this.dragOffset.x;
+                let top = touch.clientY - this.dragOffset.y;
+                
+                // Constrain to viewport
+                left = Math.max(0, Math.min(left, window.innerWidth - this.draggedWidget.element.offsetWidth));
+                top = Math.max(0, Math.min(top, window.innerHeight - this.draggedWidget.element.offsetHeight));
+                
+                this.draggedWidget.element.style.left = `${left}px`;
+                this.draggedWidget.element.style.top = `${top}px`;
+                
+                this.handleSnapping(this.draggedWidget);
+            } else {
+                const width = this.resizeStartSize.width + (touch.clientX - this.resizeStartPos.x);
+                const height = this.resizeStartSize.height + (touch.clientY - this.resizeStartPos.y);
+                
+                const newWidth = Math.max(300, width);
+                const newHeight = Math.max(300, height);
+                
+                this.draggedWidget.element.style.width = `${newWidth}px`;
+                this.draggedWidget.element.style.height = `${newHeight}px`;
+                
+                const iframe = this.draggedWidget.element.querySelector('iframe');
+                if (iframe) {
+                    iframe.style.width = '100%';
+                    iframe.style.height = '100%';
+                }
+            }
+        }
+    }
+    
+    handleTouchEnd() {
+        if (this.draggedWidget) {
+            this.draggedWidget.left = parseInt(this.draggedWidget.element.style.left);
+            this.draggedWidget.top = parseInt(this.draggedWidget.element.style.top);
+            this.draggedWidget.width = this.draggedWidget.element.offsetWidth;
+            this.draggedWidget.height = this.draggedWidget.element.offsetHeight;
+            
+            this.saveWidgets();
+        }
+        
+        this.draggedWidget = null;
+        this.isResizing = false;
+    }
+    
+    handleSnapping(widget) {
+        const widgetRect = widget.element.getBoundingClientRect();
+        const snapLines = [];
+        
+        // Snap to edges
+        if (widgetRect.left < this.snapDistance) {
+            widget.element.style.left = '0px';
+            snapLines.push({ type: 'vertical', position: 0 });
+        }
+        
+        if (window.innerWidth - widgetRect.right < this.snapDistance) {
+            widget.element.style.left = `${window.innerWidth - widgetRect.width}px`;
+            snapLines.push({ type: 'vertical', position: window.innerWidth });
+        }
+        
+        if (widgetRect.top < this.snapDistance) {
+            widget.element.style.top = '0px';
+            snapLines.push({ type: 'horizontal', position: 0 });
+        }
+        
+        if (window.innerHeight - widgetRect.bottom < this.snapDistance) {
+            widget.element.style.top = `${window.innerHeight - widgetRect.height}px`;
+            snapLines.push({ type: 'horizontal', position: window.innerHeight });
+        }
+        
+        // Snap to other widgets
+        this.widgets.forEach(otherWidget => {
+            if (otherWidget !== widget) {
+                const otherRect = otherWidget.element.getBoundingClientRect();
+                
+                // Left edge to left edge
+                if (Math.abs(widgetRect.left - otherRect.left) < this.snapDistance) {
+                    widget.element.style.left = `${otherRect.left}px`;
+                    snapLines.push({ type: 'vertical', position: otherRect.left });
+                }
+                
+                // Right edge to right edge
+                if (Math.abs(widgetRect.right - otherRect.right) < this.snapDistance) {
+                    widget.element.style.left = `${otherRect.right - widgetRect.width}px`;
+                    snapLines.push({ type: 'vertical', position: otherRect.right });
+                }
+                
+                // Top edge to top edge
+                if (Math.abs(widgetRect.top - otherRect.top) < this.snapDistance) {
+                    widget.element.style.top = `${otherRect.top}px`;
+                    snapLines.push({ type: 'horizontal', position: otherRect.top });
+                }
+                
+                // Bottom edge to bottom edge
+                if (Math.abs(widgetRect.bottom - otherRect.bottom) < this.snapDistance) {
+                    widget.element.style.top = `${otherRect.bottom - widgetRect.height}px`;
+                    snapLines.push({ type: 'horizontal', position: otherRect.bottom });
+                }
+            }
+        });
+        
+        // Show snap lines (temporarily)
+        this.showSnapLines(snapLines);
+    }
+    
+    showSnapLines(lines) {
+        // Remove existing snap lines
+        document.querySelectorAll('.snap-line').forEach(line => line.remove());
+        
+        // Add new snap lines
+        lines.forEach(line => {
+            const snapLine = document.createElement('div');
+            snapLine.className = `snap-line ${line.type}`;
+            
+            if (line.type === 'horizontal') {
+                snapLine.style.top = `${line.position}px`;
+                snapLine.style.left = '0';
+            } else {
+                snapLine.style.left = `${line.position}px`;
+                snapLine.style.top = '0';
+            }
+            
+            document.body.appendChild(snapLine);
+            
+            // Fade out after a short time
+            setTimeout(() => {
+                snapLine.style.transition = 'opacity 0.3s ease';
+                snapLine.style.opacity = '0';
+                setTimeout(() => snapLine.remove(), 300);
+            }, 300);
+        });
+    }
+    
+    bringToFront(element) {
+        // Bring to front by setting highest z-index
+        let maxZ = 100;
+        this.widgets.forEach(w => {
+            const z = parseInt(w.element.style.zIndex) || 100;
+            if (z > maxZ) maxZ = z;
+        });
+        
+        element.style.zIndex = maxZ + 1;
+    }
+    
+    applyLayout(layout) {
+        if (layout === 'reset') {
+            this.widgets.forEach(widget => {
+                widget.element.style.left = `${widget.left}px`;
+                widget.element.style.top = `${widget.top}px`;
+            });
+            return;
+        }
+        
+        const containerWidth = window.innerWidth;
+        const containerHeight = window.innerHeight;
+        const widgetCount = this.widgets.length;
+        
+        if (widgetCount === 0) return;
+        
+        if (layout === 'vertical') {
+            // Stack vertically on the right side
+            const widgetWidth = Math.min(400, containerWidth * 0.4);
+            const widgetHeight = Math.min(500, containerHeight * 0.7);
+            const startTop = (containerHeight - (widgetHeight * widgetCount)) / 2;
+            
+            this.widgets.forEach((widget, i) => {
+                widget.element.style.width = `${widgetWidth}px`;
+                widget.element.style.height = `${widgetHeight}px`;
+                widget.element.style.left = `${containerWidth - widgetWidth - 20}px`;
+                widget.element.style.top = `${startTop + (i * widgetHeight)}px`;
+            });
+        } 
+        else if (layout === 'horizontal') {
+            // Arrange horizontally at the bottom
+            const widgetWidth = Math.min(400, containerWidth / widgetCount - 20);
+            const widgetHeight = Math.min(500, containerHeight * 0.7);
+            const startLeft = (containerWidth - (widgetWidth * widgetCount)) / 2;
+            
+            this.widgets.forEach((widget, i) => {
+                widget.element.style.width = `${widgetWidth}px`;
+                widget.element.style.height = `${widgetHeight}px`;
+                widget.element.style.left = `${startLeft + (i * widgetWidth)}px`;
+                widget.element.style.top = `${containerHeight - widgetHeight - 20}px`;
+            });
+        }
+        else if (layout === 'grid') {
+            // Arrange in a grid
+            const cols = Math.ceil(Math.sqrt(widgetCount));
+            const rows = Math.ceil(widgetCount / cols);
+            const widgetWidth = Math.min(400, containerWidth / cols - 20);
+            const widgetHeight = Math.min(400, containerHeight / rows - 20);
+            
+            this.widgets.forEach((widget, i) => {
+                const col = i % cols;
+                const row = Math.floor(i / cols);
+                
+                widget.element.style.width = `${widgetWidth}px`;
+                widget.element.style.height = `${widgetHeight}px`;
+                widget.element.style.left = `${20 + (col * (widgetWidth + 10))}px`;
+                widget.element.style.top = `${20 + (row * (widgetHeight + 10))}px`;
+            });
+        }
+        
+        this.saveWidgets();
+    }
+    
+    saveWidgets() {
+        // Update all widget positions/sizes before saving
+        this.widgets.forEach(widget => {
+            widget.left = parseInt(widget.element.style.left);
+            widget.top = parseInt(widget.element.style.top);
+            widget.width = widget.element.offsetWidth;
+            widget.height = widget.element.offsetHeight;
+        });
+        
+        localStorage.setItem('chatWidgets', JSON.stringify(this.widgets.map(w => ({
+            name: w.name,
+            left: w.left,
+            top: w.top,
+            width: w.width,
+            height: w.height
+        }))));
+    }
+    
+    showFeedback(element, message) {
+        const originalText = element.innerHTML;
+        element.innerHTML = `<i class="fas fa-check"></i> ${message}`;
+        setTimeout(() => {
+            element.innerHTML = originalText;
+        }, 2000);
+    }
+}
+
+// Initialize the chat widget system when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // ... (keep existing theme and navigation code)
+    
+    // Replace old chat embedder code with:
+    new ChatWidgetSystem();
+    
+    // ... (keep rest of existing code)
+});
     
     // Status monitoring
     const services = [
