@@ -133,6 +133,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const resizeSE = widget.querySelector('.resize-handle.se');
         const resizeE = widget.querySelector('.resize-handle.e');
         const resizeS = widget.querySelector('.resize-handle.s');
+        const bodyEl = widget.querySelector('.widget-body');
 
         const global = getGlobalSettings();
         const state = {
@@ -168,9 +169,14 @@ document.addEventListener('DOMContentLoaded', function() {
             const isOpen = menu.classList.contains('active');
             menu.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
             widget.classList.toggle('menu-open', isOpen);
+            bodyEl.querySelector('iframe').style.pointerEvents = isOpen ? 'none' : 'auto';
         });
         document.addEventListener('click', (ev) => {
-            if (!widget.contains(ev.target)) { menu.classList.remove('active'); widget.classList.remove('menu-open'); }
+            if (!widget.contains(ev.target)) { 
+                menu.classList.remove('active'); 
+                widget.classList.remove('menu-open'); 
+                bodyEl.querySelector('iframe').style.pointerEvents = 'auto';
+            }
         });
 
         // Style quick cycle
@@ -208,6 +214,8 @@ document.addEventListener('DOMContentLoaded', function() {
             if (state.snap) snapToGrid(widget, state);
             persistWidget(widget, state);
             menu.classList.remove('active');
+            widget.classList.remove('menu-open');
+            bodyEl.querySelector('iframe').style.pointerEvents = 'auto';
         });
 
         // Dragging
@@ -255,6 +263,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 state.w = newW; state.h = newH;
                 widget.style.width = `${state.w}px`;
                 widget.style.height = `${state.h}px`;
+                // fit body
+                const headerH = header.getBoundingClientRect().height;
+                bodyEl.style.height = `${state.h - headerH}px`;
             };
             const onEnd = () => {
                 document.removeEventListener('pointermove', onMove);
@@ -274,6 +285,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Ensure body fits widget size exactly
         widget.style.width = `${state.w}px`;
         widget.style.height = `${state.h}px`;
+        const headerH = header.getBoundingClientRect().height;
+        bodyEl.style.height = `${state.h - headerH}px`;
 
         // Expose for persistence
         widget._state = state;
@@ -295,6 +308,8 @@ document.addEventListener('DOMContentLoaded', function() {
         widget.style.top = `${state.y}px`;
         widget.style.width = `${state.w}px`;
         widget.style.height = `${state.h}px`;
+        const headerH = widget.querySelector('.widget-header').getBoundingClientRect().height;
+        widget.querySelector('.widget-body').style.height = `${state.h - headerH}px`;
     }
 
     // Persistence
