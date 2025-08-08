@@ -37,111 +37,472 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Chat embedder functionality
+    // Chat embedder functionality (revamped)
     const embedChatBtn = document.getElementById('embedChat');
     const chatNameInput = document.getElementById('chatName');
-    const chatContainer = document.getElementById('chatContainer');
     const settingsBtn = document.getElementById('settingsBtn');
     const settingsPanel = document.getElementById('settingsPanel');
-    const saveSettingsBtn = document.getElementById('saveSettings');
+
+    const chatDesktop = document.getElementById('chatDesktop');
+
+    // Global/desktop settings controls
+    const saveSettingsBtn = document.getElementById('applyDesktopSettings');
     const chatWidthInput = document.getElementById('chatWidth');
     const chatHeightInput = document.getElementById('chatHeight');
-    const scrollLeftBtn = document.getElementById('scrollLeft');
-    const scrollRightBtn = document.getElementById('scrollRight');
-    
-    // Load saved settings or set defaults
-    const savedSettings = JSON.parse(localStorage.getItem('chatSettings')) || {
-        width: 650,
-        height: 486
+    const snapToggle = document.getElementById('snapToggle');
+    const gridToggle = document.getElementById('gridToggle');
+    const gridSizeInput = document.getElementById('gridSize');
+    const desktopBgColor = document.getElementById('desktopBgColor');
+    const desktopBgImage = document.getElementById('desktopBgImage');
+    const clearAllBtn = document.getElementById('clearAllChats');
+
+    // State
+    let zCounter = 10;
+
+    const defaultDesktopSettings = {
+        width: 700,
+        height: 500,
+        snap: true,
+        grid: true,
+        gridSize: 16,
+        bgColor: '#0e0f12',
+        bgImage: ''
     };
-    
-    chatWidthInput.value = savedSettings.width;
-    chatHeightInput.value = savedSettings.height;
-    
-    settingsBtn.addEventListener('click', function() {
-        settingsPanel.classList.toggle('active');
-    });
-    
-    saveSettingsBtn.addEventListener('click', function() {
+
+    function loadDesktopSettings() {
+        const saved = JSON.parse(localStorage.getItem('desktopSettings')) || defaultDesktopSettings;
+        chatWidthInput.value = saved.width;
+        chatHeightInput.value = saved.height;
+        snapToggle.checked = saved.snap;
+        gridToggle.checked = saved.grid;
+        gridSizeInput.value = saved.gridSize;
+        desktopBgColor.value = saved.bgColor || defaultDesktopSettings.bgColor;
+        desktopBgImage.value = saved.bgImage || '';
+        applyDesktopSettings(saved);
+    }
+
+    function saveDesktopSettings() {
         const newSettings = {
-            width: parseInt(chatWidthInput.value) || 650,
-            height: parseInt(chatHeightInput.value) || 486
+            width: clamp(parseInt(chatWidthInput.value) || defaultDesktopSettings.width, 300, 1600),
+            height: clamp(parseInt(chatHeightInput.value) || defaultDesktopSettings.height, 250, 1400),
+            snap: !!snapToggle.checked,
+            grid: !!gridToggle.checked,
+            gridSize: clamp(parseInt(gridSizeInput.value) || 16, 4, 64),
+            bgColor: desktopBgColor.value || defaultDesktopSettings.bgColor,
+            bgImage: desktopBgImage.value || ''
         };
-        
-        localStorage.setItem('chatSettings', JSON.stringify(newSettings));
-        settingsPanel.classList.remove('active');
-        
-        document.querySelectorAll('.embedded-chat iframe').forEach(iframe => {
-            iframe.width = newSettings.width;
-            iframe.height = newSettings.height;
-        });
-        
+        localStorage.setItem('desktopSettings', JSON.stringify(newSettings));
+        applyDesktopSettings(newSettings);
+    }
+
+    function applyDesktopSettings(settings) {
+        chatDesktop.style.backgroundColor = settings.bgColor || defaultDesktopSettings.bgColor;
+        chatDesktop.style.setProperty('--grid-size', `${settings.gridSize}px`);
+        chatDesktop.classList.toggle('show-grid', !!settings.grid);
+        chatDesktop.style.setProperty('--grid-color', getComputedStyle(document.documentElement).getPropertyValue('--text-light') || 'rgba(255,255,255,0.08)');
+        if (settings.bgImage) {
+            chatDesktop.style.backgroundImage = `url('${settings.bgImage}')`;
+        } else {
+            chatDesktop.style.backgroundImage = 'none';
+        }
+    }
+
+    function clamp(value, min, max) {
+        return Math.min(Math.max(value, min), max);
+    }
+
+    settingsBtn.addEventListener('click', () => settingsPanel.classList.toggle('active'));
+    saveSettingsBtn.addEventListener('click', () => {
+        saveDesktopSettings();
         const originalText = saveSettingsBtn.innerHTML;
-        saveSettingsBtn.innerHTML = '<i class="fas fa-check"></i> Saved!';
-        setTimeout(() => {
-            saveSettingsBtn.innerHTML = originalText;
-        }, 2000);
+        saveSettingsBtn.innerHTML = '<i class="fas fa-check"></i> Applied';
+        setTimeout(() => { saveSettingsBtn.innerHTML = originalText; }, 1500);
     });
-    
-    embedChatBtn.addEventListener('click', embedChat);
-    chatNameInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            embedChat();
-        }
+
+    clearAllBtn.addEventListener('click', () => {
+        if (!confirm('Remove all embedded chats?')) return;
+        localStorage.removeItem('chatWindows');
+        Array.from(chatDesktop.querySelectorAll('.chat-window')).forEach(el => el.remove());
     });
-    
-    function embedChat() {
-        const chatName = chatNameInput.value.trim();
-        if (!chatName) {
-            chatNameInput.focus();
-            return;
-        }
-        
-        const settings = JSON.parse(localStorage.getItem('chatSettings')) || {
-            width: 650,
-            height: 486
+
+    // Persistence for windows
+    function getWindowsState() {
+        return JSON.parse(localStorage.getItem('chatWindows')) || [];
+    }
+
+    function setWindowsState(windows) {
+        localStorage.setItem('chatWindows', JSON.stringify(windows));
+    }
+
+    function upsertWindowState(state) {
+        const windows = getWindowsState();
+        const idx = windows.findIndex(w => w.id === state.id);
+        if (idx >= 0) windows[idx] = state; else windows.push(state);
+        setWindowsState(windows);
+    }
+
+    function deleteWindowState(id) {
+        const windows = getWindowsState().filter(w => w.id !== id);
+        setWindowsState(windows);
+    }
+
+    // Create chat window
+    embedChatBtn.addEventListener('click', addChatFromInput);
+    chatNameInput.addEventListener('keypress', e => { if (e.key === 'Enter') addChatFromInput(); });
+
+    function addChatFromInput() {
+        const name = (chatNameInput.value || '').trim();
+        if (!name) { chatNameInput.focus(); return; }
+        const desktop = JSON.parse(localStorage.getItem('desktopSettings')) || defaultDesktopSettings;
+        const id = Date.now();
+        const initialState = {
+            id,
+            name,
+            x: 20 + (getWindowsState().length * 24) % Math.max(40, chatDesktop.clientWidth - desktop.width - 40),
+            y: 20 + (getWindowsState().length * 24) % Math.max(40, chatDesktop.clientHeight - desktop.height - 40),
+            width: desktop.width,
+            height: desktop.height,
+            z: ++zCounter,
+            style: { radius: 12, opacity: 1, shadow: 1, theme: 'default', alwaysOnTop: false },
+            collapsed: false
         };
-        
-        const chatId = Date.now();
-        const chatWrapper = document.createElement('div');
-        chatWrapper.className = 'embedded-chat';
-        chatWrapper.id = `chat-${chatId}`;
-        
-        chatWrapper.innerHTML = `
-            <button class="remove-chat" data-chat-id="${chatId}">×</button>
-            <iframe src="https://xat.com/embed/chat.php#gn=${encodeURIComponent(chatName)}" 
-                    width="${settings.width}" height="${settings.height}" 
-                    frameborder="0" scrolling="no"></iframe>
-        `;
-        
-        chatContainer.appendChild(chatWrapper);
+        createChatWindow(initialState);
+        upsertWindowState(initialState);
         chatNameInput.value = '';
-        
-        setTimeout(() => {
-            chatContainer.scrollTo({
-                left: chatContainer.scrollWidth,
-                behavior: 'smooth'
-            });
-        }, 100);
-        
-        chatWrapper.querySelector('.remove-chat').addEventListener('click', function() {
-            document.getElementById(`chat-${this.getAttribute('data-chat-id')}`).remove();
+    }
+
+    function createChatWindow(state) {
+        const el = document.createElement('div');
+        el.className = 'chat-window';
+        el.dataset.id = String(state.id);
+        el.style.left = `${state.x}px`;
+        el.style.top = `${state.y}px`;
+        el.style.width = `${state.width}px`;
+        el.style.height = `${state.height}px`;
+        el.style.zIndex = state.z || 10;
+        el.style.borderRadius = `${state.style?.radius ?? 12}px`;
+        el.style.opacity = `${state.style?.opacity ?? 1}`;
+        if (state.style?.theme === 'glass') el.classList.add('theme-glass');
+        if (state.style?.alwaysOnTop) el.classList.add('always-on-top');
+        if (state.collapsed) el.classList.add('hidden-content');
+
+        el.innerHTML = `
+            <div class="window-titlebar" data-drag-handle>
+                <div class="title"><i class="fas fa-comment-dots" style="margin-right:6px;color:var(--primary)"></i>${escapeHtml(state.name)}</div>
+                <div class="window-controls">
+                    <button class="ctrl-btn" data-action="layer-up" title="Bring to front"><i class="fas fa-arrow-up"></i></button>
+                    <button class="ctrl-btn" data-action="layer-down" title="Send to back"><i class="fas fa-arrow-down"></i></button>
+                    <button class="ctrl-btn" data-action="toggle" title="Show/Hide content"><i class="fas fa-minus"></i></button>
+                    <button class="ctrl-btn" data-action="settings" title="Settings"><i class="fas fa-gear"></i></button>
+                    <button class="ctrl-btn" data-action="close" title="Close"><i class="fas fa-times"></i></button>
+                </div>
+            </div>
+            <div class="chat-content">
+                <iframe src="https://xat.com/embed/chat.php#gn=${encodeURIComponent(state.name)}" frameborder="0" scrolling="no"></iframe>
+            </div>
+            <div class="resize-handle ne" data-resize="ne"></div>
+            <div class="resize-handle nw" data-resize="nw"></div>
+            <div class="resize-handle se" data-resize="se"></div>
+            <div class="resize-handle sw" data-resize="sw"></div>
+            <div class="resize-handle n" data-resize="n"></div>
+            <div class="resize-handle s" data-resize="s"></div>
+            <div class="resize-handle e" data-resize="e"></div>
+            <div class="resize-handle w" data-resize="w"></div>
+            <div class="window-settings">
+                <div class="setting"><label>Opacity</label><input type="range" min="0.3" max="1" step="0.05" data-setting="opacity" value="${state.style?.opacity ?? 1}"></div>
+                <div class="setting"><label>Radius</label><input type="range" min="0" max="24" step="1" data-setting="radius" value="${state.style?.radius ?? 12}"></div>
+                <div class="setting"><label>Theme</label>
+                    <select data-setting="theme">
+                        <option value="default" ${state.style?.theme==='default'?'selected':''}>Default</option>
+                        <option value="glass" ${state.style?.theme==='glass'?'selected':''}>Glass</option>
+                    </select>
+                </div>
+                <div class="setting"><label>Always on top</label><input type="checkbox" data-setting="alwaysOnTop" ${state.style?.alwaysOnTop?'checked':''}></div>
+            </div>
+        `;
+
+        chatDesktop.appendChild(el);
+
+        // Layering
+        el.addEventListener('pointerdown', () => bringToFront(el));
+
+        // Titlebar drag
+        const titlebar = el.querySelector('[data-drag-handle]');
+        enableDrag(el, titlebar);
+
+        // Resize handles
+        Array.from(el.querySelectorAll('[data-resize]')).forEach(handle => enableResize(el, handle));
+
+        // Controls
+        el.querySelector('.window-controls').addEventListener('click', (e) => {
+            const btn = e.target.closest('button');
+            if (!btn) return;
+            const action = btn.dataset.action;
+            if (action === 'close') {
+                el.remove();
+                deleteWindowState(state.id);
+            } else if (action === 'settings') {
+                const panel = el.querySelector('.window-settings');
+                panel.classList.toggle('active');
+            } else if (action === 'toggle') {
+                el.classList.toggle('hidden-content');
+                state.collapsed = el.classList.contains('hidden-content');
+                persistFromElement(el, state.id);
+            } else if (action === 'layer-up') {
+                bringToFront(el);
+                persistFromElement(el, state.id);
+            } else if (action === 'layer-down') {
+                el.style.zIndex = 1;
+                persistFromElement(el, state.id);
+            }
+        });
+
+        // Settings changes
+        el.querySelector('.window-settings').addEventListener('input', (e) => {
+            const target = e.target;
+            const key = target.dataset.setting;
+            const windows = getWindowsState();
+            const idx = windows.findIndex(w => w.id === state.id);
+            if (idx < 0) return;
+            const st = windows[idx];
+            if (key === 'opacity') {
+                el.style.opacity = target.value;
+                st.style.opacity = parseFloat(target.value);
+            } else if (key === 'radius') {
+                el.style.borderRadius = `${parseInt(target.value)}px`;
+                st.style.radius = parseInt(target.value);
+            } else if (key === 'theme') {
+                el.classList.toggle('theme-glass', target.value === 'glass');
+                st.style.theme = target.value;
+            } else if (key === 'alwaysOnTop') {
+                const checked = target.checked;
+                el.classList.toggle('always-on-top', checked);
+                if (checked) el.style.zIndex = 9999; else bringToFront(el);
+                st.style.alwaysOnTop = checked;
+            }
+            setWindowsState(windows);
         });
     }
-    
-    scrollLeftBtn.addEventListener('click', function() {
-        chatContainer.scrollBy({
-            left: -300,
-            behavior: 'smooth'
+
+    function bringToFront(el) {
+        const currentTop = ++zCounter;
+        el.style.zIndex = String(currentTop);
+    }
+
+    function enableDrag(el, handle) {
+        let startX = 0, startY = 0, originLeft = 0, originTop = 0;
+        let rafId = null;
+        let dx = 0, dy = 0;
+        let dragging = false;
+
+        const iframe = el.querySelector('iframe');
+
+        function onPointerDown(e) {
+            dragging = true;
+            el.classList.add('dragging');
+            bringToFront(el);
+            startX = e.clientX;
+            startY = e.clientY;
+            originLeft = parseFloat(el.style.left) || 0;
+            originTop = parseFloat(el.style.top) || 0;
+            iframe.style.pointerEvents = 'none';
+            handle.setPointerCapture(e.pointerId);
+            e.preventDefault();
+            tick();
+        }
+        function onPointerMove(e) {
+            if (!dragging) return;
+            dx = e.clientX - startX;
+            dy = e.clientY - startY;
+        }
+        function onPointerUp(e) {
+            if (!dragging) return;
+            dragging = false;
+            cancelAnimationFrame(rafId);
+            el.classList.remove('dragging');
+            iframe.style.pointerEvents = '';
+
+            const settings = JSON.parse(localStorage.getItem('desktopSettings')) || defaultDesktopSettings;
+            let newLeft = originLeft + dx;
+            let newTop = originTop + dy;
+
+            const bounds = getBoundsWithinDesktop(el);
+            newLeft = clamp(newLeft, bounds.minX, bounds.maxX);
+            newTop = clamp(newTop, bounds.minY, bounds.maxY);
+
+            // Snap to grid/edges
+            if (settings.snap) {
+                const g = settings.gridSize || 16;
+                newLeft = Math.round(newLeft / g) * g;
+                newTop = Math.round(newTop / g) * g;
+
+                // Snap to edges threshold
+                const threshold = g;
+                if (Math.abs(newLeft - bounds.minX) < threshold) newLeft = bounds.minX;
+                if (Math.abs((bounds.maxX) - newLeft) < threshold) newLeft = bounds.maxX;
+                if (Math.abs(newTop - bounds.minY) < threshold) newTop = bounds.minY;
+                if (Math.abs((bounds.maxY) - newTop) < threshold) newTop = bounds.maxY;
+            }
+
+            el.style.transform = '';
+            el.style.left = `${newLeft}px`;
+            el.style.top = `${newTop}px`;
+
+            persistFromElement(el);
+        }
+        function tick() {
+            rafId = requestAnimationFrame(() => {
+                const settings = JSON.parse(localStorage.getItem('desktopSettings')) || defaultDesktopSettings;
+                let tx = dx, ty = dy;
+                if (settings.snap) {
+                    const g = settings.gridSize || 16;
+                    tx = Math.round(dx / g) * g;
+                    ty = Math.round(dy / g) * g;
+                }
+                el.style.transform = `translate(${tx}px, ${ty}px)`;
+                if (dragging) tick();
+            });
+        }
+
+        handle.addEventListener('pointerdown', onPointerDown);
+        handle.addEventListener('pointermove', onPointerMove);
+        handle.addEventListener('pointerup', onPointerUp);
+        handle.addEventListener('pointercancel', onPointerUp);
+        handle.addEventListener('lostpointercapture', onPointerUp);
+    }
+
+    function enableResize(el, handle) {
+        const dir = handle.dataset.resize;
+        const iframe = el.querySelector('iframe');
+        let startX = 0, startY = 0, startW = 0, startH = 0, startL = 0, startT = 0;
+        let rafId = null;
+        let moving = false;
+        let dx = 0, dy = 0;
+
+        function onDown(e) {
+            moving = true;
+            bringToFront(el);
+            startX = e.clientX; startY = e.clientY;
+            startW = el.offsetWidth; startH = el.offsetHeight;
+            startL = parseFloat(el.style.left) || 0;
+            startT = parseFloat(el.style.top) || 0;
+            iframe.style.pointerEvents = 'none';
+            handle.setPointerCapture(e.pointerId);
+            e.preventDefault();
+            loop();
+        }
+        function onMove(e) { if (moving) { dx = e.clientX - startX; dy = e.clientY - startY; } }
+        function onUp(e) {
+            if (!moving) return;
+            moving = false;
+            cancelAnimationFrame(rafId);
+            iframe.style.pointerEvents = '';
+
+            applyResize(true);
+            persistFromElement(el);
+        }
+        function loop() {
+            rafId = requestAnimationFrame(() => { applyResize(false); if (moving) loop(); });
+        }
+        function applyResize(finalize) {
+            const settings = JSON.parse(localStorage.getItem('desktopSettings')) || defaultDesktopSettings;
+            const minW = 300, minH = 250, maxW = 1600, maxH = 1400;
+
+            let newW = startW, newH = startH, newL = startL, newT = startT;
+            if (dir.includes('e')) newW = clamp(startW + dx, minW, maxW);
+            if (dir.includes('s')) newH = clamp(startH + dy, minH, maxH);
+            if (dir.includes('w')) { newW = clamp(startW - dx, minW, maxW); newL = startL + dx; }
+            if (dir.includes('n')) { newH = clamp(startH - dy, minH, maxH); newT = startT + dy; }
+
+            // Keep within desktop
+            const bounds = getBoundsWithinDesktopForSize(newW, newH);
+            newL = clamp(newL, bounds.minX, bounds.maxX);
+            newT = clamp(newT, bounds.minY, bounds.maxY);
+
+            if (settings.snap) {
+                const g = settings.gridSize || 16;
+                newW = Math.round(newW / g) * g;
+                newH = Math.round(newH / g) * g;
+                newL = Math.round(newL / g) * g;
+                newT = Math.round(newT / g) * g;
+            }
+
+            el.style.width = `${newW}px`;
+            el.style.height = `${newH}px`;
+            el.style.left = `${newL}px`;
+            el.style.top = `${newT}px`;
+        }
+
+        handle.addEventListener('pointerdown', onDown);
+        handle.addEventListener('pointermove', onMove);
+        handle.addEventListener('pointerup', onUp);
+        handle.addEventListener('pointercancel', onUp);
+        handle.addEventListener('lostpointercapture', onUp);
+    }
+
+    function getBoundsWithinDesktop(el) {
+        const desktopRect = chatDesktop.getBoundingClientRect();
+        const width = el.offsetWidth; const height = el.offsetHeight;
+        return {
+            minX: 0,
+            minY: 0,
+            maxX: Math.max(0, desktopRect.width - width),
+            maxY: Math.max(0, desktopRect.height - height)
+        };
+    }
+
+    function getBoundsWithinDesktopForSize(w, h) {
+        const desktopRect = chatDesktop.getBoundingClientRect();
+        return {
+            minX: 0,
+            minY: 0,
+            maxX: Math.max(0, desktopRect.width - w),
+            maxY: Math.max(0, desktopRect.height - h)
+        };
+    }
+
+    function persistFromElement(el, forcedId) {
+        const id = forcedId || parseInt(el.dataset.id);
+        const rect = {
+            x: parseFloat(el.style.left) || 0,
+            y: parseFloat(el.style.top) || 0,
+            width: el.offsetWidth,
+            height: el.offsetHeight,
+            z: parseInt(el.style.zIndex) || 10,
+            collapsed: el.classList.contains('hidden-content')
+        };
+        const style = {
+            opacity: parseFloat(el.style.opacity) || 1,
+            radius: parseInt(el.style.borderRadius) || 12,
+            theme: el.classList.contains('theme-glass') ? 'glass' : 'default',
+            alwaysOnTop: el.classList.contains('always-on-top')
+        };
+        const windows = getWindowsState();
+        const idx = windows.findIndex(w => w.id === id);
+        if (idx >= 0) {
+            windows[idx] = { ...windows[idx], ...rect, style };
+            setWindowsState(windows);
+        }
+    }
+
+    function restoreWindows() {
+        const windows = getWindowsState();
+        if (!Array.isArray(windows)) return;
+        // Set zCounter to the max existing z
+        const maxZ = windows.reduce((m, w) => Math.max(m, w.z || 10), 10);
+        zCounter = maxZ + 1;
+        windows.forEach(w => createChatWindow(w));
+    }
+
+    function escapeHtml(str) {
+        return str.replace(/[&<>"]+/g, function(s) {
+            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' };
+            return map[s];
         });
-    });
-    
-    scrollRightBtn.addEventListener('click', function() {
-        chatContainer.scrollBy({
-            left: 300,
-            behavior: 'smooth'
-        });
-    });
+    }
+
+    loadDesktopSettings();
+    restoreWindows();
     
     // Status monitoring
     const services = [

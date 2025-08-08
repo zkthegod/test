@@ -1096,3 +1096,157 @@ footer {
     font-size: 0.9rem;
     color: var(--text-light);
 }
+
+/* --- Floating Chat Desktop & Windows --- */
+.chat-desktop {
+    position: relative;
+    height: 70vh;
+    min-height: 420px;
+    border: var(--border);
+    border-radius: var(--radius);
+    background-color: #0e0f12;
+    background-size: cover;
+    background-position: center;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+}
+
+.chat-desktop.show-grid::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+        linear-gradient(var(--grid-color, rgba(255,255,255,0.06)) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-color, rgba(255,255,255,0.06)) 1px, transparent 1px);
+    background-size: var(--grid-size, 16px) var(--grid-size, 16px);
+}
+
+.chat-window {
+    position: absolute;
+    background: var(--card-bg);
+    color: var(--text);
+    border: var(--border);
+    border-radius: 12px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+    overflow: hidden;
+    width: 700px;
+    height: 500px;
+    transform: translate3d(0,0,0);
+    will-change: transform;
+    contain: layout paint style;
+}
+
+.chat-window.dragging {
+    box-shadow: 0 16px 40px rgba(0,0,0,0.35);
+}
+
+.window-titlebar {
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
+    background: linear-gradient(180deg, rgba(0,0,0,0.06), rgba(0,0,0,0.02));
+    border-bottom: var(--border);
+    cursor: grab;
+    user-select: none;
+}
+
+.window-titlebar .title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.window-controls {
+    display: flex;
+    gap: 6px;
+}
+
+.window-controls .ctrl-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--text-light);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.window-controls .ctrl-btn:hover {
+    background: var(--nav-active);
+    color: var(--primary);
+}
+
+.chat-content {
+    position: absolute;
+    inset: 36px 0 0 0;
+}
+
+.chat-content iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+}
+
+/* Resize handles */
+.resize-handle {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: rgba(108,92,231,0.8);
+    border-radius: 50%;
+    z-index: 2;
+    opacity: 0;
+    transition: opacity .2s ease;
+}
+
+.chat-window:hover .resize-handle { opacity: 1; }
+
+.resize-handle.ne { top: -6px; right: -6px; cursor: nesw-resize; }
+.resize-handle.nw { top: -6px; left: -6px; cursor: nwse-resize; }
+.resize-handle.se { bottom: -6px; right: -6px; cursor: nwse-resize; }
+.resize-handle.sw { bottom: -6px; left: -6px; cursor: nesw-resize; }
+.resize-handle.n { top: -6px; left: calc(50% - 6px); cursor: ns-resize; }
+.resize-handle.s { bottom: -6px; left: calc(50% - 6px); cursor: ns-resize; }
+.resize-handle.e { right: -6px; top: calc(50% - 6px); cursor: ew-resize; }
+.resize-handle.w { left: -6px; top: calc(50% - 6px); cursor: ew-resize; }
+
+/* Per-window settings menu */
+.window-settings {
+    position: absolute;
+    top: 40px;
+    right: 8px;
+    width: 240px;
+    background: var(--card-bg);
+    border: var(--border);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    padding: 10px;
+    display: none;
+    z-index: 3;
+}
+
+.window-settings.active { display: block; }
+
+.window-settings .setting { margin-bottom: 10px; }
+.window-settings .setting label { width: 120px; font-size: 0.85rem; }
+.window-settings input[type="range"] { width: 100%; }
+
+/* Visual themes */
+.chat-window.theme-glass { backdrop-filter: blur(8px); background: rgba(255,255,255,0.65); }
+[data-theme="dark"] .chat-window.theme-glass { background: rgba(45,52,54,0.6); }
+
+.chat-window.hidden-content .chat-content { display: none; }
+.chat-window.hidden-content { height: 36px !important; }
+
+/* Always-on-top hint */
+.chat-window.always-on-top { outline: 2px solid var(--primary); }
