@@ -65,37 +65,47 @@
                 </div>
             </section>
 
-            <section id="chat-embedder" class="page">
-                <div class="section-header">
-                    <h2>Chat Embedder</h2>
-                    <button id="settingsBtn" class="icon-btn"><i class="fas fa-cog"></i> Settings</button>
-                </div>
-                
-                <div class="embed-controls">
-                    <div class="input-group">
-                        <input type="text" id="chatName" placeholder="Enter chat name">
-                        <button id="embedChat" class="primary-btn"><i class="fas fa-plus"></i> Embed</button>
-                    </div>
-                </div>
-                
-                <div class="settings-panel" id="settingsPanel">
-                    <div class="setting">
-                        <label for="chatWidth">Width:</label>
-                        <input type="number" id="chatWidth" min="300" max="1200" value="700">
-                    </div>
-                    <div class="setting">
-                        <label for="chatHeight">Height:</label>
-                        <input type="number" id="chatHeight" min="300" max="1200" value="500">
-                    </div>
-                    <button id="saveSettings" class="primary-btn"><i class="fas fa-save"></i> Save</button>
-                </div>
-                
-                <div class="chat-viewport">
-                    <button class="scroll-btn left" id="scrollLeft"><i class="fas fa-chevron-left"></i></button>
-                    <div class="chat-container" id="chatContainer"></div>
-                    <button class="scroll-btn right" id="scrollRight"><i class="fas fa-chevron-right"></i></button>
-                </div>
-            </section>
+<section id="chat-embedder" class="page">
+    <div class="section-header">
+        <h2>Chat Embedder</h2>
+        <div class="header-actions">
+            <button id="layoutBtn" class="primary-btn"><i class="fas fa-th"></i> Layout</button>
+            <button id="settingsBtn" class="primary-btn"><i class="fas fa-cog"></i> Global Settings</button>
+        </div>
+    </div>
+    
+    <div class="embed-controls">
+        <div class="input-group">
+            <input type="text" id="chatName" placeholder="Enter chat name">
+            <button id="embedChat" class="primary-btn"><i class="fas fa-plus"></i> Add Chat</button>
+        </div>
+    </div>
+    
+    <div class="settings-panel" id="settingsPanel">
+        <div class="setting">
+            <label for="defaultWidth">Default Width:</label>
+            <input type="number" id="defaultWidth" min="300" max="1200" value="400">
+        </div>
+        <div class="setting">
+            <label for="defaultHeight">Default Height:</label>
+            <input type="number" id="defaultHeight" min="300" max="1200" value="500">
+        </div>
+        <div class="setting">
+            <label for="snapDistance">Snap Distance:</label>
+            <input type="number" id="snapDistance" min="0" max="100" value="20">
+        </div>
+        <button id="saveSettings" class="primary-btn"><i class="fas fa-save"></i> Save</button>
+    </div>
+    
+    <div class="layout-panel" id="layoutPanel">
+        <button class="layout-option" data-layout="vertical"><i class="fas fa-align-left"></i> Vertical Stack</button>
+        <button class="layout-option" data-layout="horizontal"><i class="fas fa-align-justify"></i> Horizontal</button>
+        <button class="layout-option" data-layout="grid"><i class="fas fa-th"></i> Grid</button>
+        <button class="layout-option" data-layout="reset"><i class="fas fa-undo"></i> Reset Positions</button>
+    </div>
+    
+    <div class="widget-container" id="widgetContainer"></div>
+</section>
 
             <section id="name-effects" class="page">
                 <div class="section-header">
