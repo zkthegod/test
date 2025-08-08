@@ -36,537 +36,113 @@ document.addEventListener('DOMContentLoaded', function() {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
     });
-
-    // Chat Widget System
-    class ChatWidgetSystem {
-        constructor() {
-            this.widgets = [];
-            this.snapDistance = 20;
-            this.defaultWidth = 400;
-            this.defaultHeight = 500;
-            this.draggedWidget = null;
-            this.dragOffset = { x: 0, y: 0 };
-            this.isResizing = false;
-            this.resizeStartSize = { width: 0, height: 0 };
-            this.resizeStartPos = { x: 0, y: 0 };
-            
-            this.initElements();
-            this.loadSettings();
-            this.setupEventListeners();
+    
+    // Chat embedder functionality
+    const embedChatBtn = document.getElementById('embedChat');
+    const chatNameInput = document.getElementById('chatName');
+    const chatContainer = document.getElementById('chatContainer');
+    const settingsBtn = document.getElementById('settingsBtn');
+    const settingsPanel = document.getElementById('settingsPanel');
+    const saveSettingsBtn = document.getElementById('saveSettings');
+    const chatWidthInput = document.getElementById('chatWidth');
+    const chatHeightInput = document.getElementById('chatHeight');
+    const scrollLeftBtn = document.getElementById('scrollLeft');
+    const scrollRightBtn = document.getElementById('scrollRight');
+    
+    // Load saved settings or set defaults
+    const savedSettings = JSON.parse(localStorage.getItem('chatSettings')) || {
+        width: 650,
+        height: 486
+    };
+    
+    chatWidthInput.value = savedSettings.width;
+    chatHeightInput.value = savedSettings.height;
+    
+    settingsBtn.addEventListener('click', function() {
+        settingsPanel.classList.toggle('active');
+    });
+    
+    saveSettingsBtn.addEventListener('click', function() {
+        const newSettings = {
+            width: parseInt(chatWidthInput.value) || 650,
+            height: parseInt(chatHeightInput.value) || 486
+        };
+        
+        localStorage.setItem('chatSettings', JSON.stringify(newSettings));
+        settingsPanel.classList.remove('active');
+        
+        document.querySelectorAll('.embedded-chat iframe').forEach(iframe => {
+            iframe.width = newSettings.width;
+            iframe.height = newSettings.height;
+        });
+        
+        const originalText = saveSettingsBtn.innerHTML;
+        saveSettingsBtn.innerHTML = '<i class="fas fa-check"></i> Saved!';
+        setTimeout(() => {
+            saveSettingsBtn.innerHTML = originalText;
+        }, 2000);
+    });
+    
+    embedChatBtn.addEventListener('click', embedChat);
+    chatNameInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            embedChat();
+        }
+    });
+    
+    function embedChat() {
+        const chatName = chatNameInput.value.trim();
+        if (!chatName) {
+            chatNameInput.focus();
+            return;
         }
         
-        initElements() {
-            this.widgetContainer = document.getElementById('widgetContainer');
-            this.chatNameInput = document.getElementById('chatName');
-            this.embedChatBtn = document.getElementById('embedChat');
-            this.settingsBtn = document.getElementById('settingsBtn');
-            this.settingsPanel = document.getElementById('settingsPanel');
-            this.saveSettingsBtn = document.getElementById('saveSettings');
-            this.defaultWidthInput = document.getElementById('defaultWidth');
-            this.defaultHeightInput = document.getElementById('defaultHeight');
-            this.snapDistanceInput = document.getElementById('snapDistance');
-            this.layoutBtn = document.getElementById('layoutBtn');
-            this.layoutPanel = document.getElementById('layoutPanel');
-        }
+        const settings = JSON.parse(localStorage.getItem('chatSettings')) || {
+            width: 650,
+            height: 486
+        };
         
-        loadSettings() {
-            const savedSettings = JSON.parse(localStorage.getItem('chatWidgetSettings')) || {
-                defaultWidth: 400,
-                defaultHeight: 500,
-                snapDistance: 20
-            };
-            
-            this.defaultWidth = savedSettings.defaultWidth;
-            this.defaultHeight = savedSettings.defaultHeight;
-            this.snapDistance = savedSettings.snapDistance;
-            
-            this.defaultWidthInput.value = this.defaultWidth;
-            this.defaultHeightInput.value = this.defaultHeight;
-            this.snapDistanceInput.value = this.snapDistance;
-            
-            const savedWidgets = JSON.parse(localStorage.getItem('chatWidgets')) || [];
-            savedWidgets.forEach(widget => {
-                this.createWidget(widget.name, widget.left, widget.top, widget.width, widget.height);
+        const chatId = Date.now();
+        const chatWrapper = document.createElement('div');
+        chatWrapper.className = 'embedded-chat';
+        chatWrapper.id = `chat-${chatId}`;
+        
+        chatWrapper.innerHTML = `
+            <button class="remove-chat" data-chat-id="${chatId}">×</button>
+            <iframe src="https://xat.com/embed/chat.php#gn=${encodeURIComponent(chatName)}" 
+                    width="${settings.width}" height="${settings.height}" 
+                    frameborder="0" scrolling="no"></iframe>
+        `;
+        
+        chatContainer.appendChild(chatWrapper);
+        chatNameInput.value = '';
+        
+        setTimeout(() => {
+            chatContainer.scrollTo({
+                left: chatContainer.scrollWidth,
+                behavior: 'smooth'
             });
-        }
+        }, 100);
         
-        setupEventListeners() {
-            this.embedChatBtn.addEventListener('click', () => this.embedChat());
-            this.chatNameInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') this.embedChat();
-            });
-            
-            this.settingsBtn.addEventListener('click', () => {
-                this.settingsPanel.classList.toggle('active');
-                this.layoutPanel.classList.remove('active');
-            });
-            
-            this.saveSettingsBtn.addEventListener('click', () => {
-                this.defaultWidth = parseInt(this.defaultWidthInput.value) || 400;
-                this.defaultHeight = parseInt(this.defaultHeightInput.value) || 500;
-                this.snapDistance = parseInt(this.snapDistanceInput.value) || 20;
-                
-                const settings = {
-                    defaultWidth: this.defaultWidth,
-                    defaultHeight: this.defaultHeight,
-                    snapDistance: this.snapDistance
-                };
-                
-                localStorage.setItem('chatWidgetSettings', JSON.stringify(settings));
-                this.showFeedback(this.saveSettingsBtn, 'Saved!');
-                this.settingsPanel.classList.remove('active');
-            });
-            
-            this.layoutBtn.addEventListener('click', () => {
-                this.layoutPanel.classList.toggle('active');
-                this.settingsPanel.classList.remove('active');
-            });
-            
-            document.querySelectorAll('.layout-option').forEach(option => {
-                option.addEventListener('click', () => {
-                    const layout = option.dataset.layout;
-                    this.applyLayout(layout);
-                    this.layoutPanel.classList.remove('active');
-                });
-            });
-            
-            document.addEventListener('mousedown', this.handleMouseDown.bind(this));
-            document.addEventListener('mousemove', this.handleMouseMove.bind(this));
-            document.addEventListener('mouseup', this.handleMouseUp.bind(this));
-            
-            document.addEventListener('touchstart', this.handleTouchStart.bind(this), { passive: false });
-            document.addEventListener('touchmove', this.handleTouchMove.bind(this), { passive: false });
-            document.addEventListener('touchend', this.handleTouchEnd.bind(this));
-            
-            window.addEventListener('resize', this.saveWidgets.bind(this));
-            window.addEventListener('beforeunload', this.saveWidgets.bind(this));
-        }
-        
-        embedChat() {
-            const chatName = this.chatNameInput.value.trim();
-            if (!chatName) {
-                this.chatNameInput.focus();
-                return;
-            }
-            
-            const left = (window.innerWidth - this.defaultWidth) / 2;
-            const top = (window.innerHeight - this.defaultHeight) / 2;
-            
-            this.createWidget(chatName, left, top, this.defaultWidth, this.defaultHeight);
-            this.chatNameInput.value = '';
-        }
-        
-        createWidget(name, left, top, width, height) {
-            const widget = document.createElement('div');
-            widget.className = 'chat-widget';
-            widget.style.width = `${width}px`;
-            widget.style.height = `${height}px`;
-            widget.style.left = `${left}px`;
-            widget.style.top = `${top}px`;
-            
-            widget.innerHTML = `
-                <div class="chat-widget-header">
-                    <div class="chat-widget-title">${name}</div>
-                    <div class="chat-widget-actions">
-                        <button class="chat-widget-btn settings-btn" title="Settings"><i class="fas fa-cog"></i></button>
-                        <button class="chat-widget-btn close-btn" title="Close"><i class="fas fa-times"></i></button>
-                    </div>
-                </div>
-                <div class="chat-widget-content">
-                    <iframe src="https://xat.com/embed/chat.php#gn=${encodeURIComponent(name)}" 
-                            width="100%" height="100%" frameborder="0"></iframe>
-                </div>
-            `;
-            
-            this.widgetContainer.appendChild(widget);
-            
-            const widgetObj = {
-                element: widget,
-                name: name,
-                left: left,
-                top: top,
-                width: width,
-                height: height
-            };
-            
-            this.widgets.push(widgetObj);
-            
-            widget.querySelector('.close-btn').addEventListener('click', () => {
-                this.removeWidget(widgetObj);
-            });
-            
-            widget.querySelector('.settings-btn').addEventListener('click', (e) => {
-                e.stopPropagation();
-                this.showWidgetSettings(widgetObj);
-            });
-            
-            return widgetObj;
-        }
-        
-        removeWidget(widget) {
-            const index = this.widgets.indexOf(widget);
-            if (index > -1) {
-                this.widgets.splice(index, 1);
-                widget.element.remove();
-                this.saveWidgets();
-            }
-        }
-        
-        showWidgetSettings(widget) {
-            alert(`Settings for ${widget.name}\n\nCustomize appearance and behavior here.`);
-        }
-        
-        handleMouseDown(e) {
-            const header = e.target.closest('.chat-widget-header');
-            if (header) {
-                const widgetElement = header.parentElement;
-                this.draggedWidget = this.widgets.find(w => w.element === widgetElement);
-                
-                if (this.draggedWidget) {
-                    e.preventDefault();
-                    this.dragOffset = {
-                        x: e.clientX - widgetElement.getBoundingClientRect().left,
-                        y: e.clientY - widgetElement.getBoundingClientRect().top
-                    };
-                    this.bringToFront(widgetElement);
-                }
-            }
-            
-            if (e.target.classList.contains('chat-widget') && 
-                e.offsetX > e.target.offsetWidth - 15 && 
-                e.offsetY > e.target.offsetHeight - 15) {
-                const widgetElement = e.target;
-                this.draggedWidget = this.widgets.find(w => w.element === widgetElement);
-                
-                if (this.draggedWidget) {
-                    e.preventDefault();
-                    this.isResizing = true;
-                    this.resizeStartSize = {
-                        width: widgetElement.offsetWidth,
-                        height: widgetElement.offsetHeight
-                    };
-                    this.resizeStartPos = {
-                        x: e.clientX,
-                        y: e.clientY
-                    };
-                    this.bringToFront(widgetElement);
-                }
-            }
-        }
-        
-        handleMouseMove(e) {
-            if (this.draggedWidget && !this.isResizing) {
-                e.preventDefault();
-                
-                let left = e.clientX - this.dragOffset.x;
-                let top = e.clientY - this.dragOffset.y;
-                
-                left = Math.max(0, Math.min(left, window.innerWidth - this.draggedWidget.element.offsetWidth));
-                top = Math.max(0, Math.min(top, window.innerHeight - this.draggedWidget.element.offsetHeight));
-                
-                this.draggedWidget.element.style.left = `${left}px`;
-                this.draggedWidget.element.style.top = `${top}px`;
-                this.handleSnapping(this.draggedWidget);
-            }
-            
-            if (this.draggedWidget && this.isResizing) {
-                e.preventDefault();
-                
-                const width = this.resizeStartSize.width + (e.clientX - this.resizeStartPos.x);
-                const height = this.resizeStartSize.height + (e.clientY - this.resizeStartPos.y);
-                
-                const newWidth = Math.max(300, width);
-                const newHeight = Math.max(300, height);
-                
-                this.draggedWidget.element.style.width = `${newWidth}px`;
-                this.draggedWidget.element.style.height = `${newHeight}px`;
-                
-                const iframe = this.draggedWidget.element.querySelector('iframe');
-                if (iframe) {
-                    iframe.style.width = '100%';
-                    iframe.style.height = '100%';
-                }
-            }
-        }
-        
-        handleMouseUp() {
-            if (this.draggedWidget) {
-                this.draggedWidget.left = parseInt(this.draggedWidget.element.style.left);
-                this.draggedWidget.top = parseInt(this.draggedWidget.element.style.top);
-                this.draggedWidget.width = this.draggedWidget.element.offsetWidth;
-                this.draggedWidget.height = this.draggedWidget.element.offsetHeight;
-                this.saveWidgets();
-            }
-            
-            this.draggedWidget = null;
-            this.isResizing = false;
-        }
-        
-        handleTouchStart(e) {
-            if (e.touches.length === 1) {
-                const touch = e.touches[0];
-                const target = document.elementFromPoint(touch.clientX, touch.clientY);
-                
-                const header = target.closest('.chat-widget-header');
-                if (header) {
-                    const widgetElement = header.parentElement;
-                    this.draggedWidget = this.widgets.find(w => w.element === widgetElement);
-                    
-                    if (this.draggedWidget) {
-                        e.preventDefault();
-                        this.dragOffset = {
-                            x: touch.clientX - widgetElement.getBoundingClientRect().left,
-                            y: touch.clientY - widgetElement.getBoundingClientRect().top
-                        };
-                        this.bringToFront(widgetElement);
-                    }
-                }
-                
-                if (target.classList.contains('chat-widget')) {
-                    const rect = target.getBoundingClientRect();
-                    if (touch.clientX > rect.right - 30 && touch.clientY > rect.bottom - 30) {
-                        this.draggedWidget = this.widgets.find(w => w.element === target);
-                        
-                        if (this.draggedWidget) {
-                            e.preventDefault();
-                            this.isResizing = true;
-                            this.resizeStartSize = {
-                                width: target.offsetWidth,
-                                height: target.offsetHeight
-                            };
-                            this.resizeStartPos = {
-                                x: touch.clientX,
-                                y: touch.clientY
-                            };
-                            this.bringToFront(target);
-                        }
-                    }
-                }
-            }
-        }
-        
-        handleTouchMove(e) {
-            if (e.touches.length === 1 && this.draggedWidget) {
-                const touch = e.touches[0];
-                e.preventDefault();
-                
-                if (!this.isResizing) {
-                    let left = touch.clientX - this.dragOffset.x;
-                    let top = touch.clientY - this.dragOffset.y;
-                    
-                    left = Math.max(0, Math.min(left, window.innerWidth - this.draggedWidget.element.offsetWidth));
-                    top = Math.max(0, Math.min(top, window.innerHeight - this.draggedWidget.element.offsetHeight));
-                    
-                    this.draggedWidget.element.style.left = `${left}px`;
-                    this.draggedWidget.element.style.top = `${top}px`;
-                    this.handleSnapping(this.draggedWidget);
-                } else {
-                    const width = this.resizeStartSize.width + (touch.clientX - this.resizeStartPos.x);
-                    const height = this.resizeStartSize.height + (touch.clientY - this.resizeStartPos.y);
-                    
-                    const newWidth = Math.max(300, width);
-                    const newHeight = Math.max(300, height);
-                    
-                    this.draggedWidget.element.style.width = `${newWidth}px`;
-                    this.draggedWidget.element.style.height = `${newHeight}px`;
-                    
-                    const iframe = this.draggedWidget.element.querySelector('iframe');
-                    if (iframe) {
-                        iframe.style.width = '100%';
-                        iframe.style.height = '100%';
-                    }
-                }
-            }
-        }
-        
-        handleTouchEnd() {
-            if (this.draggedWidget) {
-                this.draggedWidget.left = parseInt(this.draggedWidget.element.style.left);
-                this.draggedWidget.top = parseInt(this.draggedWidget.element.style.top);
-                this.draggedWidget.width = this.draggedWidget.element.offsetWidth;
-                this.draggedWidget.height = this.draggedWidget.element.offsetHeight;
-                this.saveWidgets();
-            }
-            
-            this.draggedWidget = null;
-            this.isResizing = false;
-        }
-        
-        handleSnapping(widget) {
-            const widgetRect = widget.element.getBoundingClientRect();
-            const snapLines = [];
-            
-            if (widgetRect.left < this.snapDistance) {
-                widget.element.style.left = '0px';
-                snapLines.push({ type: 'vertical', position: 0 });
-            }
-            
-            if (window.innerWidth - widgetRect.right < this.snapDistance) {
-                widget.element.style.left = `${window.innerWidth - widgetRect.width}px`;
-                snapLines.push({ type: 'vertical', position: window.innerWidth });
-            }
-            
-            if (widgetRect.top < this.snapDistance) {
-                widget.element.style.top = '0px';
-                snapLines.push({ type: 'horizontal', position: 0 });
-            }
-            
-            if (window.innerHeight - widgetRect.bottom < this.snapDistance) {
-                widget.element.style.top = `${window.innerHeight - widgetRect.height}px`;
-                snapLines.push({ type: 'horizontal', position: window.innerHeight });
-            }
-            
-            this.widgets.forEach(otherWidget => {
-                if (otherWidget !== widget) {
-                    const otherRect = otherWidget.element.getBoundingClientRect();
-                    
-                    if (Math.abs(widgetRect.left - otherRect.left) < this.snapDistance) {
-                        widget.element.style.left = `${otherRect.left}px`;
-                        snapLines.push({ type: 'vertical', position: otherRect.left });
-                    }
-                    
-                    if (Math.abs(widgetRect.right - otherRect.right) < this.snapDistance) {
-                        widget.element.style.left = `${otherRect.right - widgetRect.width}px`;
-                        snapLines.push({ type: 'vertical', position: otherRect.right });
-                    }
-                    
-                    if (Math.abs(widgetRect.top - otherRect.top) < this.snapDistance) {
-                        widget.element.style.top = `${otherRect.top}px`;
-                        snapLines.push({ type: 'horizontal', position: otherRect.top });
-                    }
-                    
-                    if (Math.abs(widgetRect.bottom - otherRect.bottom) < this.snapDistance) {
-                        widget.element.style.top = `${otherRect.bottom - widgetRect.height}px`;
-                        snapLines.push({ type: 'horizontal', position: otherRect.bottom });
-                    }
-                }
-            });
-            
-            this.showSnapLines(snapLines);
-        }
-        
-        showSnapLines(lines) {
-            document.querySelectorAll('.snap-line').forEach(line => line.remove());
-            
-            lines.forEach(line => {
-                const snapLine = document.createElement('div');
-                snapLine.className = `snap-line ${line.type}`;
-                
-                if (line.type === 'horizontal') {
-                    snapLine.style.top = `${line.position}px`;
-                    snapLine.style.left = '0';
-                } else {
-                    snapLine.style.left = `${line.position}px`;
-                    snapLine.style.top = '0';
-                }
-                
-                document.body.appendChild(snapLine);
-                
-                setTimeout(() => {
-                    snapLine.style.transition = 'opacity 0.3s ease';
-                    snapLine.style.opacity = '0';
-                    setTimeout(() => snapLine.remove(), 300);
-                }, 300);
-            });
-        }
-        
-        bringToFront(element) {
-            let maxZ = 100;
-            this.widgets.forEach(w => {
-                const z = parseInt(w.element.style.zIndex) || 100;
-                if (z > maxZ) maxZ = z;
-            });
-            element.style.zIndex = maxZ + 1;
-        }
-        
-        applyLayout(layout) {
-            if (layout === 'reset') {
-                this.widgets.forEach(widget => {
-                    widget.element.style.left = `${widget.left}px`;
-                    widget.element.style.top = `${widget.top}px`;
-                });
-                return;
-            }
-            
-            const containerWidth = window.innerWidth;
-            const containerHeight = window.innerHeight;
-            const widgetCount = this.widgets.length;
-            
-            if (widgetCount === 0) return;
-            
-            if (layout === 'vertical') {
-                const widgetWidth = Math.min(400, containerWidth * 0.4);
-                const widgetHeight = Math.min(500, containerHeight * 0.7);
-                const startTop = (containerHeight - (widgetHeight * widgetCount)) / 2;
-                
-                this.widgets.forEach((widget, i) => {
-                    widget.element.style.width = `${widgetWidth}px`;
-                    widget.element.style.height = `${widgetHeight}px`;
-                    widget.element.style.left = `${containerWidth - widgetWidth - 20}px`;
-                    widget.element.style.top = `${startTop + (i * widgetHeight)}px`;
-                });
-            } 
-            else if (layout === 'horizontal') {
-                const widgetWidth = Math.min(400, containerWidth / widgetCount - 20);
-                const widgetHeight = Math.min(500, containerHeight * 0.7);
-                const startLeft = (containerWidth - (widgetWidth * widgetCount)) / 2;
-                
-                this.widgets.forEach((widget, i) => {
-                    widget.element.style.width = `${widgetWidth}px`;
-                    widget.element.style.height = `${widgetHeight}px`;
-                    widget.element.style.left = `${startLeft + (i * widgetWidth)}px`;
-                    widget.element.style.top = `${containerHeight - widgetHeight - 20}px`;
-                });
-            }
-            else if (layout === 'grid') {
-                const cols = Math.ceil(Math.sqrt(widgetCount));
-                const rows = Math.ceil(widgetCount / cols);
-                const widgetWidth = Math.min(400, containerWidth / cols - 20);
-                const widgetHeight = Math.min(400, containerHeight / rows - 20);
-                
-                this.widgets.forEach((widget, i) => {
-                    const col = i % cols;
-                    const row = Math.floor(i / cols);
-                    
-                    widget.element.style.width = `${widgetWidth}px`;
-                    widget.element.style.height = `${widgetHeight}px`;
-                    widget.element.style.left = `${20 + (col * (widgetWidth + 10))}px`;
-                    widget.element.style.top = `${20 + (row * (widgetHeight + 10))}px`;
-                });
-            }
-            
-            this.saveWidgets();
-        }
-        
-        saveWidgets() {
-            this.widgets.forEach(widget => {
-                widget.left = parseInt(widget.element.style.left);
-                widget.top = parseInt(widget.element.style.top);
-                widget.width = widget.element.offsetWidth;
-                widget.height = widget.element.offsetHeight;
-            });
-            
-            localStorage.setItem('chatWidgets', JSON.stringify(this.widgets.map(w => ({
-                name: w.name,
-                left: w.left,
-                top: w.top,
-                width: w.width,
-                height: w.height
-            })));
-        }
-        
-        showFeedback(element, message) {
-            const originalText = element.innerHTML;
-            element.innerHTML = `<i class="fas fa-check"></i> ${message}`;
-            setTimeout(() => {
-                element.innerHTML = originalText;
-            }, 2000);
-        }
+        chatWrapper.querySelector('.remove-chat').addEventListener('click', function() {
+            document.getElementById(`chat-${this.getAttribute('data-chat-id')}`).remove();
+        });
     }
-
-    // Initialize the chat widget system
-    new ChatWidgetSystem();
-
+    
+    scrollLeftBtn.addEventListener('click', function() {
+        chatContainer.scrollBy({
+            left: -300,
+            behavior: 'smooth'
+        });
+    });
+    
+    scrollRightBtn.addEventListener('click', function() {
+        chatContainer.scrollBy({
+            left: 300,
+            behavior: 'smooth'
+        });
+    });
+    
     // Status monitoring
     const services = [
         { name: 'xat', url: 'https://xat.com', element: document.getElementById('xatStatus') },
@@ -621,6 +197,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const randomPresetBtn = document.getElementById('randomPreset');
     const boldToggle = document.getElementById('boldToggle');
     
+    // Color presets
     const colorPresets = [
         ['#ff0000', '#0000ff'],
         ['#ff00ff', '#00ffff'],
@@ -632,6 +209,7 @@ document.addEventListener('DOMContentLoaded', function() {
         ['#ff00ff', '#00ffff', '#ffff00', '#ff0000']
     ];
     
+    // Initialize with 2 colors
     function initColorInputs() {
         gradColorsContainer.innerHTML = '';
         addColorInput('#ff0000');
@@ -739,6 +317,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const glow = glowColor.value;
         const speed = waveSpeed.value;
 
+        // Apply gradient effect
         if (colors.length > 1) {
             const totalColors = colors.length;
             const gradientStops = [];
@@ -1308,17 +887,17 @@ document.addEventListener('DOMContentLoaded', function() {
             ? avatarData 
             : avatarData.filter(avatar => avatar.category === category);
         
-        filteredAvatars.forEach(avatar => {
-            const avatarItem = document.createElement('div');
-            avatarItem.className = 'avatar-item loading';
-            avatarItem.dataset.category = avatar.category;
-            avatarItem.innerHTML = `
-                <div class="avatar-img-container">
-                    <img src="avatars/${avatar.file}" alt="${avatar.name}" class="avatar-img" loading="lazy">
-                </div>
-                <span class="avatar-name">${avatar.name}</span>
-                <div class="copy-icon" title="Copy URL"><i class="fas fa-copy"></i></div>
-            `;
+filteredAvatars.forEach(avatar => {
+    const avatarItem = document.createElement('div');
+    avatarItem.className = 'avatar-item loading';
+    avatarItem.dataset.category = avatar.category;
+    avatarItem.innerHTML = `
+        <div class="avatar-img-container">  <!-- New container -->
+            <img src="avatars/${avatar.file}" alt="${avatar.name}" class="avatar-img" loading="lazy">
+        </div>
+        <span class="avatar-name">${avatar.name}</span>
+        <div class="copy-icon" title="Copy URL"><i class="fas fa-copy"></i></div>
+    `;
             
             const img = avatarItem.querySelector('img');
             img.onload = () => {
@@ -1330,6 +909,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 img.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="%236c5ce7"><text x="12" y="16" text-anchor="middle" font-size="12" fill="white">?</text></svg>';
             };
             
+            // Add copy functionality
             const copyIcon = avatarItem.querySelector('.copy-icon');
             copyIcon.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -1349,6 +929,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
+    // Category selection
     avatarCategories.forEach(categoryBtn => {
         categoryBtn.addEventListener('click', function() {
             document.querySelector('.avatar-category.active').classList.remove('active');
@@ -1357,6 +938,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
+    // Search functionality
     avatarSearch.addEventListener('input', function() {
         const searchTerm = this.value.toLowerCase();
         const currentCategory = document.querySelector('.avatar-category.active').dataset.category;
