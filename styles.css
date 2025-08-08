@@ -1339,7 +1339,11 @@ body::before { content: none; }
     z-index: 20;
 }
 .settings-drawer.active { display: block; }
-.settings-drawer .row { display: flex; align-items: center; gap: 10px; margin: 8px 0; flex-wrap: wrap; }
+.settings-drawer .row { display: flex; align-items: center; gap: 8px; }
+.settings-drawer .row:first-child input[type="color"] { flex: 0 0 44px; }
+.settings-drawer .row:first-child input[type="text"] { flex: 1 1 auto; min-width: 140px; }
+.settings-drawer .row.actions { justify-content: flex-start; flex-wrap: wrap; gap: 6px 10px; }
+.settings-drawer .row:nth-child(2) input[type="number"] { width: 120px; }
 .settings-drawer label { color: var(--text-light); font-size: 0.9rem; min-width: 88px; }
 .settings-drawer input[type="color"] { width: 44px; height: 44px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.15); padding: 0; }
 .settings-drawer input[type="text"],

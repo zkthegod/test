@@ -278,7 +278,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         function onPointerDown(e) {
             dragging = true;
-            altResize = e.altKey === true;
+            altResize = false;
             el.classList.add('dragging');
             bringToFront(el);
             startX = e.clientX;
@@ -298,16 +298,7 @@ document.addEventListener('DOMContentLoaded', function() {
             el.classList.remove('dragging');
             iframe.style.pointerEvents = '';
 
-            if (altResize) {
-                // Alt + drag: resize from bottom-right while anchored at top-left
-                const minW = 280, minH = 220, maxW = 2000, maxH = 1600;
-                const newW = clamp(el.offsetWidth + dx, minW, maxW);
-                const newH = clamp(el.offsetHeight + dy, minH, maxH);
-                el.style.width = `${newW}px`;
-                el.style.height = `${newH}px`;
-                persistFromElement(el);
-                return;
-            }
+            // no alt-resize path; use handles for resizing
 
             let newLeft = originLeft + dx;
             let newTop = originTop + dy;
@@ -327,15 +318,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         function tick() {
             rafId = requestAnimationFrame(() => {
-                if (altResize) {
-                    const minW = 280, minH = 220, maxW = 2000, maxH = 1600;
-                    const newW = clamp(el.offsetWidth + dx, minW, maxW);
-                    const newH = clamp(el.offsetHeight + dy, minH, maxH);
-                    el.style.width = `${newW}px`;
-                    el.style.height = `${newH}px`;
-                } else {
-                    el.style.transform = `translate(${dx}px, ${dy}px)`;
-                }
+                el.style.transform = `translate(${dx}px, ${dy}px)`;
                 if (dragging) tick();
             });
         }
