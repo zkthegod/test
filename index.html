@@ -70,7 +70,7 @@
         <h2>Chat Embedder</h2>
         <div class="header-actions">
             <button id="settingsBtn" class="icon-btn"><i class="fas fa-cog"></i> Settings</button>
-            <button id="clearAllBtn" class="icon-btn"><i class="fas fa-trash"></i> Clear All</button>
+            <button id="clearAllBtn" class="icon-btn"><i class="fas fa-trash"></i> Clear Chats</button>
         </div>
     </div>
     
@@ -82,7 +82,6 @@
     </div>
     
     <div class="settings-panel" id="settingsPanel">
-        <h3>Default Chat Settings</h3>
         <div class="setting">
             <label for="chatWidth">Width:</label>
             <input type="number" id="chatWidth" min="300" max="1200" value="700">
@@ -91,33 +90,18 @@
             <label for="chatHeight">Height:</label>
             <input type="number" id="chatHeight" min="300" max="1200" value="500">
         </div>
-        <div class="setting">
-            <label for="defaultTheme">Theme:</label>
-            <div class="custom-select">
-                <select id="defaultTheme">
-                    <option value="light">Light</option>
-                    <option value="dark">Dark</option>
-                </select>
-                <div class="select-arrow"></div>
-            </div>
-        </div>
         <button id="saveSettings" class="primary-btn"><i class="fas fa-save"></i> Save Defaults</button>
     </div>
     
-    <div class="chat-viewport-container">
-        <button class="scroll-btn left" id="scrollLeft"><i class="fas fa-chevron-left"></i></button>
-        <div class="chat-viewport" id="chatViewport">
-            <div class="chat-container" id="chatContainer"></div>
-        </div>
-        <button class="scroll-btn right" id="scrollRight"><i class="fas fa-chevron-right"></i></button>
-    </div>
-    
     <div class="viewport-controls">
-        <button id="zoomIn" class="icon-btn"><i class="fas fa-search-plus"></i> Zoom In</button>
-        <button id="zoomOut" class="icon-btn"><i class="fas fa-search-minus"></i> Zoom Out</button>
-        <button id="resetView" class="icon-btn"><i class="fas fa-expand"></i> Reset View</button>
+        <button id="zoomInBtn" class="icon-btn"><i class="fas fa-search-plus"></i> Zoom In</button>
+        <button id="zoomOutBtn" class="icon-btn"><i class="fas fa-search-minus"></i> Zoom Out</button>
+        <button id="resetZoomBtn" class="icon-btn"><i class="fas fa-expand"></i> Reset Zoom</button>
     </div>
 </section>
+
+<!-- Chats will be appended to the body for full freedom of movement -->
+<div id="chatMasterContainer"></div>
 
             <section id="name-effects" class="page">
                 <div class="section-header">
