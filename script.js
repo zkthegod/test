@@ -197,8 +197,9 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!dragData) return;
             const dx = e.clientX - dragData.startX;
             const dy = e.clientY - dragData.startY;
-            state.x = Math.max(0, Math.min(window.innerWidth - state.w, dragData.startLeft + dx));
-            state.y = Math.max(0, Math.min(window.innerHeight - state.h, dragData.startTop + dy));
+            // Allow full free movement (no viewport clamp)
+            state.x = dragData.startLeft + dx;
+            state.y = dragData.startTop + dy;
             widget.style.left = `${state.x}px`;
             widget.style.top = `${state.y}px`;
         }
@@ -273,8 +274,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function snapToGrid(widget, state) {
         const grid = state.grid || 16;
-        state.x = Math.max(0, Math.min(window.innerWidth - state.w, Math.round(state.x / grid) * grid));
-        state.y = Math.max(0, Math.min(window.innerHeight - state.h, Math.round(state.y / grid) * grid));
+        state.x = Math.round(state.x / grid) * grid;
+        state.y = Math.round(state.y / grid) * grid;
         state.w = Math.max(320, Math.round(state.w / grid) * grid);
         state.h = Math.max(260, Math.round(state.h / grid) * grid);
         widget.style.left = `${state.x}px`;
@@ -1227,7 +1228,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (selectedWidget && selectedWidget.id === widget.id) openInspector(widget);
     }
 
-    inspApply?.addEventListener('click', () => {
+    if (inspApply) inspApply.addEventListener('click', () => {
         if (!selectedWidget) return;
         const s = selectedWidget._state;
         s.name = inspTitle.value.trim() || s.name;
@@ -1241,8 +1242,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (s.snap) snapToGrid(selectedWidget, s);
         persistWidget(selectedWidget, s);
     });
-    inspClose?.addEventListener('click', () => { inspectorEl.style.display = 'none'; });
-    toggleLayoutBtn?.addEventListener('click', () => {
+    if (inspClose) inspClose.addEventListener('click', () => { inspectorEl.style.display = 'none'; });
+    if (toggleLayoutBtn) toggleLayoutBtn.addEventListener('click', () => {
         const isOpen = settingsPanel.style.display !== 'none';
         settingsPanel.style.display = isOpen ? 'none' : 'block';
         toggleLayoutBtn.setAttribute('aria-expanded', (!isOpen).toString());

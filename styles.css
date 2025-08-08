@@ -1118,7 +1118,7 @@ footer {
 #widgetLayer {
     position: relative;
     z-index: 1;
-    pointer-events: auto; /* widgets inside are interactive */
+    pointer-events: none; /* click-through by default */
     min-height: 300px;
 }
 
@@ -1216,8 +1216,8 @@ footer {
 }
 
 .resize-handle.se {
-    width: 14px;
-    height: 14px;
+    width: 18px;
+    height: 18px;
     right: 0;
     bottom: 0;
     cursor: nwse-resize;
@@ -1226,7 +1226,7 @@ footer {
 .resize-handle.e {
     top: 0;
     right: 0;
-    width: 8px;
+    width: 12px;
     height: 100%;
     cursor: ew-resize;
 }
@@ -1234,7 +1234,7 @@ footer {
 .resize-handle.s {
     left: 0;
     bottom: 0;
-    height: 8px;
+    height: 12px;
     width: 100%;
     cursor: ns-resize;
 }
@@ -1412,6 +1412,9 @@ input[type="number"] { -moz-appearance: textfield; }
     box-shadow: var(--shadow);
     padding: 10px;
     margin: 10px 0 14px;
+    position: sticky;
+    top: 6px;
+    z-index: 3000;
 }
 .inspector-row {
     display: flex;
