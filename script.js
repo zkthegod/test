@@ -46,7 +46,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const saveSettingsBtn = document.getElementById('saveSettings');
     const chatWidthInput = document.getElementById('chatWidth');
     const chatHeightInput = document.getElementById('chatHeight');
-    const widgetLayer = document.getElementById('widgetLayer');
+    const widgetLayer = document.getElementById('widgetLayer'); // unused for mounting; kept for structure
+    const widgetMount = document.body;
     const snapToggle = document.getElementById('snapToggle');
     const gridSizeInput = document.getElementById('gridSize');
     const autoArrangeBtn = document.getElementById('autoArrange');
@@ -64,8 +65,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Load saved settings or set defaults
     const savedSettings = JSON.parse(localStorage.getItem('chatSettings')) || {
-        width: 911,
-        height: 610,
+        width: 728,
+        height: 486,
         snap: false,
         grid: 16
     };
@@ -77,8 +78,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     saveSettingsBtn.addEventListener('click', function() {
         const newSettings = {
-            width: parseInt(chatWidthInput.value) || 911,
-            height: parseInt(chatHeightInput.value) || 610,
+            width: parseInt(chatWidthInput.value) || 728,
+            height: parseInt(chatHeightInput.value) || 486,
             snap: !!snapToggle?.checked,
             grid: Math.max(4, Math.min(128, parseInt(gridSizeInput?.value) || 16))
         };
@@ -116,7 +117,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function getGlobalSettings() {
         const s = JSON.parse(localStorage.getItem('chatSettings')) || {};
-        return { width: s.width || 911, height: s.height || 610, snap: !!s.snap, grid: s.grid || 16 };
+        return { width: s.width || 728, height: s.height || 486, snap: !!s.snap, grid: s.grid || 16 };
     }
 
     // Drag/Resize/Snap
@@ -345,7 +346,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="resize-handle e" aria-hidden="true"></div>
                     <div class="resize-handle s" aria-hidden="true"></div>
                 </div>`;
-            widgetLayer.appendChild(widget);
+            widgetMount.appendChild(widget);
             initWidget(widget, { name: s.name, snap: s.snap, grid: s.grid });
             // Restore additional state
             if (s.sizeMode) widget._state.sizeMode = s.sizeMode;
@@ -1143,7 +1144,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const chatName = chatNameInput.value.trim();
         if (!chatName) { chatNameInput.focus(); return; }
 
-        const settings = JSON.parse(localStorage.getItem('chatSettings')) || { width: 911, height: 610, snap: false, grid: 16 };
+        const settings = JSON.parse(localStorage.getItem('chatSettings')) || { width: 728, height: 486, snap: false, grid: 16 };
         const widgetId = `widget-${Date.now()}`;
         const widget = document.createElement('div');
         widget.className = 'chat-widget';
@@ -1174,7 +1175,7 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         `;
 
-        widgetLayer.appendChild(widget);
+        widgetMount.appendChild(widget);
         chatNameInput.value = '';
 
         initWidget(widget, { name: chatName, snap: settings.snap, grid: settings.grid });
