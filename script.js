@@ -48,6 +48,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const chatHeightInput = document.getElementById('chatHeight');
     const scrollLeftBtn = document.getElementById('scrollLeft');
     const scrollRightBtn = document.getElementById('scrollRight');
+    const widgetLayer = document.getElementById('widgetLayer');
+    const snapToggle = document.getElementById('snapToggle');
+    const gridSizeInput = document.getElementById('gridSize');
+    const autoArrangeBtn = document.getElementById('autoArrange');
+    const resetLayoutBtn = document.getElementById('resetLayout');
     
     // Load saved settings or set defaults
     const savedSettings = JSON.parse(localStorage.getItem('chatSettings')) || {
@@ -57,6 +62,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     chatWidthInput.value = savedSettings.width;
     chatHeightInput.value = savedSettings.height;
+    if (snapToggle) snapToggle.checked = !!savedSettings.snap;
+    if (gridSizeInput) gridSizeInput.value = savedSettings.grid || 16;
     
     settingsBtn.addEventListener('click', function() {
         settingsPanel.classList.toggle('active');
@@ -65,22 +72,28 @@ document.addEventListener('DOMContentLoaded', function() {
     saveSettingsBtn.addEventListener('click', function() {
         const newSettings = {
             width: parseInt(chatWidthInput.value) || 650,
-            height: parseInt(chatHeightInput.value) || 486
+            height: parseInt(chatHeightInput.value) || 486,
+            snap: !!snapToggle?.checked,
+            grid: Math.max(4, Math.min(128, parseInt(gridSizeInput?.value) || 16))
         };
-        
+
         localStorage.setItem('chatSettings', JSON.stringify(newSettings));
         settingsPanel.classList.remove('active');
-        
-        document.querySelectorAll('.embedded-chat iframe').forEach(iframe => {
-            iframe.width = newSettings.width;
-            iframe.height = newSettings.height;
+
+        // Apply to all current widgets with size mode = fixed
+        document.querySelectorAll('.chat-widget').forEach(widget => {
+            const state = getWidgetState(widget.id);
+            if (!state) return;
+            if (state.sizeMode === 'fixed') {
+                widget.style.width = `${newSettings.width}px`;
+                widget.style.height = `${newSettings.height}px`;
+                persistWidget(widget);
+            }
         });
-        
+
         const originalText = saveSettingsBtn.innerHTML;
         saveSettingsBtn.innerHTML = '<i class="fas fa-check"></i> Saved!';
-        setTimeout(() => {
-            saveSettingsBtn.innerHTML = originalText;
-        }, 2000);
+        setTimeout(() => { saveSettingsBtn.innerHTML = originalText; }, 1400);
     });
     
     embedChatBtn.addEventListener('click', embedChat);
@@ -89,45 +102,292 @@ document.addEventListener('DOMContentLoaded', function() {
             embedChat();
         }
     });
-    
-    function embedChat() {
-        const chatName = chatNameInput.value.trim();
-        if (!chatName) {
-            chatNameInput.focus();
-            return;
-        }
-        
-        const settings = JSON.parse(localStorage.getItem('chatSettings')) || {
-            width: 650,
-            height: 486
+
+    // Utilities
+    function escapeHtml(str) {
+        return str.replace(/[&<>"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]));
+    }
+
+    function getGlobalSettings() {
+        const s = JSON.parse(localStorage.getItem('chatSettings')) || {};
+        return { width: s.width || 650, height: s.height || 486, snap: !!s.snap, grid: s.grid || 16 };
+    }
+
+    // Drag/Resize/Snap
+    function initWidget(widget, opts) {
+        const header = widget.querySelector('.widget-header');
+        const titleEl = widget.querySelector('.title-text');
+        const closeBtn = widget.querySelector('.widget-close');
+        const menuBtn = widget.querySelector('.widget-menu-toggle');
+        const styleBtn = widget.querySelector('.widget-style');
+        const snapBtn = widget.querySelector('.widget-snap');
+        const menu = widget.querySelector('.widget-menu');
+        const menuTitle = widget.querySelector('.menu-title');
+        const menuApply = widget.querySelector('.menu-apply');
+        const menuSizeMode = widget.querySelector('.menu-size-mode');
+        const menuSnap = widget.querySelector('.menu-snap');
+        const menuGrid = widget.querySelector('.menu-grid');
+        const menuStyle = widget.querySelector('.menu-style');
+        const resizeSE = widget.querySelector('.resize-handle.se');
+        const resizeE = widget.querySelector('.resize-handle.e');
+        const resizeS = widget.querySelector('.resize-handle.s');
+
+        const global = getGlobalSettings();
+        const state = {
+            id: widget.id,
+            name: opts?.name || titleEl.textContent.trim(),
+            x: parseInt(widget.style.left) || 100,
+            y: parseInt(widget.style.top) || 100,
+            w: parseInt(widget.style.width) || global.width,
+            h: parseInt(widget.style.height) || global.height,
+            snap: opts?.snap ?? global.snap,
+            grid: opts?.grid || global.grid,
+            sizeMode: 'fixed',
+            style: 'default',
         };
-        
-        const chatId = Date.now();
-        const chatWrapper = document.createElement('div');
-        chatWrapper.className = 'embedded-chat';
-        chatWrapper.id = `chat-${chatId}`;
-        
-        chatWrapper.innerHTML = `
-            <button class="remove-chat" data-chat-id="${chatId}">×</button>
-            <iframe src="https://xat.com/embed/chat.php#gn=${encodeURIComponent(chatName)}" 
-                    width="${settings.width}" height="${settings.height}" 
-                    frameborder="0" scrolling="no"></iframe>
-        `;
-        
-        chatContainer.appendChild(chatWrapper);
-        chatNameInput.value = '';
-        
-        setTimeout(() => {
-            chatContainer.scrollTo({
-                left: chatContainer.scrollWidth,
-                behavior: 'smooth'
-            });
-        }, 100);
-        
-        chatWrapper.querySelector('.remove-chat').addEventListener('click', function() {
-            document.getElementById(`chat-${this.getAttribute('data-chat-id')}`).remove();
+
+        // Initialize menu values
+        menuTitle.value = state.name;
+        menuSnap.checked = !!state.snap;
+        menuGrid.value = state.grid;
+        menuStyle.value = state.style;
+        menuSizeMode.value = state.sizeMode;
+
+        // Close
+        closeBtn.addEventListener('click', () => { widget.remove(); removeWidgetState(state.id); });
+
+        // Menu toggle
+        menuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            menu.classList.toggle('active');
+            menu.setAttribute('aria-hidden', menu.classList.contains('active') ? 'false' : 'true');
+        });
+        document.addEventListener('click', (ev) => {
+            if (!widget.contains(ev.target)) menu.classList.remove('active');
+        });
+
+        // Style quick cycle
+        styleBtn.addEventListener('click', () => {
+            const styles = ['default','glass','dark'];
+            const next = styles[(styles.indexOf(state.style)+1)%styles.length];
+            applyStyle(widget, next);
+            state.style = next;
+            menuStyle.value = next;
+            persistWidget(widget, state);
+        });
+
+        // Snap quick toggle
+        snapBtn.addEventListener('click', () => {
+            state.snap = !state.snap; 
+            menuSnap.checked = state.snap;
+            if (state.snap) snapToGrid(widget, state);
+            persistWidget(widget, state);
+        });
+
+        // Menu apply
+        menuApply.addEventListener('click', () => {
+            state.name = menuTitle.value.trim() || state.name;
+            titleEl.textContent = state.name;
+            state.snap = !!menuSnap.checked;
+            state.grid = Math.max(4, Math.min(128, parseInt(menuGrid.value) || state.grid));
+            state.sizeMode = menuSizeMode.value;
+            const nextStyle = menuStyle.value;
+            applyStyle(widget, nextStyle);
+            state.style = nextStyle;
+            if (state.snap) snapToGrid(widget, state);
+            persistWidget(widget, state);
+            menu.classList.remove('active');
+        });
+
+        // Dragging
+        let dragData = null;
+        header.addEventListener('pointerdown', (e) => {
+            if ((e.target.closest('.widget-actions'))) return; // don't start drag from buttons
+            widget.classList.add('dragging');
+            document.body.classList.add('dragging');
+            header.setPointerCapture(e.pointerId);
+            dragData = { startX: e.clientX, startY: e.clientY, startLeft: state.x, startTop: state.y };
+            e.preventDefault();
+        });
+        header.addEventListener('pointermove', (e) => {
+            if (!dragData) return;
+            const dx = e.clientX - dragData.startX;
+            const dy = e.clientY - dragData.startY;
+            state.x = Math.max(0, Math.min(window.innerWidth - state.w, dragData.startLeft + dx));
+            state.y = Math.max(0, Math.min(window.innerHeight - state.h, dragData.startTop + dy));
+            widget.style.left = `${state.x}px`;
+            widget.style.top = `${state.y}px`;
+        });
+        function endDrag(ev) {
+            if (!dragData) return;
+            try { header.releasePointerCapture?.(ev.pointerId); } catch (_) {}
+            widget.classList.remove('dragging');
+            document.body.classList.remove('dragging');
+            if (state.snap) snapToGrid(widget, state);
+            persistWidget(widget, state);
+            dragData = null;
+        }
+        header.addEventListener('pointerup', endDrag);
+        header.addEventListener('pointercancel', endDrag);
+
+        // Resizing
+        function startResize(e, edge) {
+            e.stopPropagation();
+            const start = { x: e.clientX, y: e.clientY, w: state.w, h: state.h };
+            const onMove = (ev) => {
+                const dw = ev.clientX - start.x;
+                const dh = ev.clientY - start.y;
+                let newW = start.w + (edge.includes('e') ? dw : 0);
+                let newH = start.h + (edge.includes('s') ? dh : 0);
+                newW = Math.max(320, Math.min(window.innerWidth - state.x, newW));
+                newH = Math.max(260, Math.min(window.innerHeight - state.y, newH));
+                state.w = newW; state.h = newH;
+                widget.style.width = `${state.w}px`;
+                widget.style.height = `${state.h}px`;
+            };
+            const onEnd = () => {
+                document.removeEventListener('pointermove', onMove);
+                document.removeEventListener('pointerup', onEnd);
+                if (state.snap) snapToGrid(widget, state);
+                persistWidget(widget, state);
+            };
+            document.addEventListener('pointermove', onMove);
+            document.addEventListener('pointerup', onEnd, { once: true });
+        }
+        resizeSE.addEventListener('pointerdown', (e) => startResize(e, 'se'));
+        resizeE.addEventListener('pointerdown', (e) => startResize(e, 'e'));
+        resizeS.addEventListener('pointerdown', (e) => startResize(e, 's'));
+
+        // Initial style
+        applyStyle(widget, state.style);
+
+        // Expose for persistence
+        widget._state = state;
+    }
+
+    function applyStyle(widget, styleKey) {
+        widget.classList.remove('style-glass','style-dark');
+        if (styleKey === 'glass') widget.classList.add('style-glass');
+        if (styleKey === 'dark') widget.classList.add('style-dark');
+    }
+
+    function snapToGrid(widget, state) {
+        const grid = state.grid || 16;
+        state.x = Math.max(0, Math.min(window.innerWidth - state.w, Math.round(state.x / grid) * grid));
+        state.y = Math.max(0, Math.min(window.innerHeight - state.h, Math.round(state.y / grid) * grid));
+        state.w = Math.max(320, Math.round(state.w / grid) * grid);
+        state.h = Math.max(260, Math.round(state.h / grid) * grid);
+        widget.style.left = `${state.x}px`;
+        widget.style.top = `${state.y}px`;
+        widget.style.width = `${state.w}px`;
+        widget.style.height = `${state.h}px`;
+    }
+
+    // Persistence
+    function loadAllWidgets() {
+        const list = JSON.parse(localStorage.getItem('chatWidgets') || '[]');
+        list.forEach(s => {
+            const widget = document.createElement('div');
+            widget.className = 'chat-widget';
+            widget.id = s.id;
+            widget.style.left = `${s.x}px`;
+            widget.style.top = `${s.y}px`;
+            widget.style.width = `${s.w}px`;
+            widget.style.height = `${s.h}px`;
+            widget.setAttribute('role','dialog');
+            widget.setAttribute('aria-label', `Chat widget for ${s.name}`);
+            widget.innerHTML = `
+                <div class="widget-header" aria-grabbed="false">
+                    <div class="widget-title"><i class="fas fa-comments"></i> <span class="title-text">${escapeHtml(s.name)}</span></div>
+                    <div class="widget-actions">
+                        <button class="widget-btn widget-snap" title="Snap to grid"><i class="fas fa-border-all"></i></button>
+                        <button class="widget-btn widget-style" title="Style"><i class="fas fa-brush"></i></button>
+                        <button class="widget-btn widget-menu-toggle" title="Settings"><i class="fas fa-sliders-h"></i></button>
+                        <button class="widget-btn widget-close" title="Close"><i class="fas fa-times"></i></button>
+                    </div>
+                    <div class="widget-menu" aria-hidden="true">
+                        <div class="menu-row"><label>Title</label><input type="text" class="menu-title"></div>
+                        <div class="menu-row"><label>Size</label>
+                            <select class="menu-size-mode">
+                                <option value="fixed">Fixed</option>
+                                <option value="free">Free</option>
+                            </select>
+                        </div>
+                        <div class="menu-row"><label>Snap</label><input type="checkbox" class="menu-snap"></div>
+                        <div class="menu-row"><label>Grid</label><input type="number" class="menu-grid" min="4" max="128" value="${s.grid || 16}"></div>
+                        <div class="menu-row"><label>Style</label>
+                            <select class="menu-style">
+                                <option value="default">Default</option>
+                                <option value="glass">Glass</option>
+                                <option value="dark">Dark</option>
+                            </select>
+                        </div>
+                        <div class="menu-actions">
+                            <button class="primary-btn small menu-apply">Apply</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="widget-body">
+                    <iframe src="https://xat.com/embed/chat.php#gn=${encodeURIComponent(s.name)}" title="${escapeHtml(s.name)}"></iframe>
+                    <div class="resize-handle se" aria-hidden="true"></div>
+                    <div class="resize-handle e" aria-hidden="true"></div>
+                    <div class="resize-handle s" aria-hidden="true"></div>
+                </div>`;
+            widgetLayer.appendChild(widget);
+            initWidget(widget, { name: s.name, snap: s.snap, grid: s.grid });
+            // Restore additional state
+            if (s.sizeMode) widget._state.sizeMode = s.sizeMode;
+            if (s.style) { widget._state.style = s.style; applyStyle(widget, s.style); }
         });
     }
+
+    function getWidgetState(id) {
+        const list = JSON.parse(localStorage.getItem('chatWidgets') || '[]');
+        return list.find(x => x.id === id);
+    }
+    function removeWidgetState(id) {
+        const list = JSON.parse(localStorage.getItem('chatWidgets') || '[]');
+        const next = list.filter(x => x.id !== id);
+        localStorage.setItem('chatWidgets', JSON.stringify(next));
+    }
+    function persistWidget(widget, overrideState) {
+        const state = overrideState || widget._state;
+        if (!state) return;
+        const list = JSON.parse(localStorage.getItem('chatWidgets') || '[]');
+        const idx = list.findIndex(x => x.id === state.id);
+        const payload = { id: state.id, name: state.name, x: state.x, y: state.y, w: state.w, h: state.h, snap: !!state.snap, grid: state.grid, sizeMode: state.sizeMode, style: state.style };
+        if (idx >= 0) list[idx] = payload; else list.push(payload);
+        localStorage.setItem('chatWidgets', JSON.stringify(list));
+    }
+
+    // Auto arrange / Reset
+    function autoArrange() {
+        const widgets = Array.from(document.querySelectorAll('.chat-widget'));
+        if (!widgets.length) return;
+        const { grid } = getGlobalSettings();
+        const columns = Math.max(1, Math.floor(window.innerWidth / (widgets[0]._state.w + grid)));
+        let x = grid, y = grid, col = 0;
+        widgets.forEach(w => {
+            const s = w._state;
+            s.x = x; s.y = y;
+            w.style.left = `${s.x}px`;
+            w.style.top = `${s.y}px`;
+            if (s.snap) snapToGrid(w, s);
+            persistWidget(w, s);
+            col += 1;
+            if (col >= columns) { col = 0; x = grid; y += s.h + grid; }
+            else { x += s.w + grid; }
+        });
+    }
+    function resetLayout() {
+        localStorage.removeItem('chatWidgets');
+        document.querySelectorAll('.chat-widget').forEach(w => w.remove());
+    }
+    autoArrangeBtn?.addEventListener('click', autoArrange);
+    resetLayoutBtn?.addEventListener('click', resetLayout);
+
+    // Rehydrate widgets on load
+    loadAllWidgets();
     
     scrollLeftBtn.addEventListener('click', function() {
         chatContainer.scrollBy({
@@ -880,53 +1140,67 @@ document.addEventListener('DOMContentLoaded', function() {
 { name: "Thornton", file: "Thornton-icon.png", category: "shermans" }
     ];
 
-    function loadAvatars(category = 'all') {
-        avatarGrid.innerHTML = '';
-        
-        const filteredAvatars = category === 'all' 
-            ? avatarData 
-            : avatarData.filter(avatar => avatar.category === category);
-        
-filteredAvatars.forEach(avatar => {
-    const avatarItem = document.createElement('div');
-    avatarItem.className = 'avatar-item loading';
-    avatarItem.dataset.category = avatar.category;
-    avatarItem.innerHTML = `
-        <div class="avatar-img-container">  <!-- New container -->
-            <img src="avatars/${avatar.file}" alt="${avatar.name}" class="avatar-img" loading="lazy">
-        </div>
-        <span class="avatar-name">${avatar.name}</span>
-        <div class="copy-icon" title="Copy URL"><i class="fas fa-copy"></i></div>
-    `;
-            
-            const img = avatarItem.querySelector('img');
-            img.onload = () => {
-                avatarItem.classList.remove('loading');
-            };
-            
-            img.onerror = () => {
-                avatarItem.classList.remove('loading');
-                img.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="%236c5ce7"><text x="12" y="16" text-anchor="middle" font-size="12" fill="white">?</text></svg>';
-            };
-            
-            // Add copy functionality
-            const copyIcon = avatarItem.querySelector('.copy-icon');
-            copyIcon.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const avatarUrl = `https://zkthegod.github.io/test/avatars/${avatar.file}`;
-                navigator.clipboard.writeText(avatarUrl).then(() => {
-                    const originalIcon = copyIcon.innerHTML;
-                    copyIcon.innerHTML = '<i class="fas fa-check"></i>';
-                    copyIcon.style.backgroundColor = '#2ecc71';
-                    setTimeout(() => {
-                        copyIcon.innerHTML = originalIcon;
-                        copyIcon.style.backgroundColor = '';
-                    }, 2000);
-                });
-            });
-            
-            avatarGrid.appendChild(avatarItem);
-        });
+    function embedChat() {
+        const chatName = chatNameInput.value.trim();
+        if (!chatName) { chatNameInput.focus(); return; }
+
+        const settings = JSON.parse(localStorage.getItem('chatSettings')) || { width: 650, height: 486, snap: false, grid: 16 };
+        const widgetId = `widget-${Date.now()}`;
+        const widget = document.createElement('div');
+        widget.className = 'chat-widget';
+        widget.id = widgetId;
+        widget.setAttribute('role', 'dialog');
+        widget.setAttribute('aria-label', `Chat widget for ${chatName}`);
+
+        widget.style.width = `${settings.width}px`;
+        widget.style.height = `${settings.height}px`;
+        widget.style.left = `${Math.round(window.innerWidth/2 - settings.width/2)}px`;
+        widget.style.top = `${Math.round(120 + Math.random()*40)}px`;
+
+        widget.innerHTML = `
+            <div class="widget-header" aria-grabbed="false">
+                <div class="widget-title"><i class="fas fa-comments"></i> <span class="title-text">${escapeHtml(chatName)}</span></div>
+                <div class="widget-actions">
+                    <button class="widget-btn widget-snap" title="Snap to grid"><i class="fas fa-border-all"></i></button>
+                    <button class="widget-btn widget-style" title="Style"><i class="fas fa-brush"></i></button>
+                    <button class="widget-btn widget-menu-toggle" title="Settings"><i class="fas fa-sliders-h"></i></button>
+                    <button class="widget-btn widget-close" title="Close"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="widget-menu" aria-hidden="true">
+                    <div class="menu-row"><label>Title</label><input type="text" class="menu-title"></div>
+                    <div class="menu-row"><label>Size</label>
+                        <select class="menu-size-mode">
+                            <option value="fixed" selected>Fixed</option>
+                            <option value="free">Free</option>
+                        </select>
+                    </div>
+                    <div class="menu-row"><label>Snap</label><input type="checkbox" class="menu-snap"></div>
+                    <div class="menu-row"><label>Grid</label><input type="number" class="menu-grid" min="4" max="128" value="${settings.grid}"></div>
+                    <div class="menu-row"><label>Style</label>
+                        <select class="menu-style">
+                            <option value="default" selected>Default</option>
+                            <option value="glass">Glass</option>
+                            <option value="dark">Dark</option>
+                        </select>
+                    </div>
+                    <div class="menu-actions">
+                        <button class="primary-btn small menu-apply">Apply</button>
+                    </div>
+                </div>
+            </div>
+            <div class="widget-body">
+                <iframe src="https://xat.com/embed/chat.php#gn=${encodeURIComponent(chatName)}" title="${escapeHtml(chatName)}"></iframe>
+                <div class="resize-handle se" aria-hidden="true"></div>
+                <div class="resize-handle e" aria-hidden="true"></div>
+                <div class="resize-handle s" aria-hidden="true"></div>
+            </div>
+        `;
+
+        widgetLayer.appendChild(widget);
+        chatNameInput.value = '';
+
+        initWidget(widget, { name: chatName, snap: settings.snap, grid: settings.grid });
+        persistWidget(widget);
     }
     
     // Category selection

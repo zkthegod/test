@@ -1096,3 +1096,196 @@ footer {
     font-size: 0.9rem;
     color: var(--text-light);
 }
+
+/* Floating Chat Widgets Layer */
+#widgetLayer {
+    position: fixed;
+    inset: 0;
+    z-index: 5000;
+    pointer-events: none; /* allow clicks through the layer by default */
+}
+
+.chat-widget {
+    position: absolute;
+    top: 100px;
+    left: 100px;
+    width: 700px;
+    height: 500px;
+    background: var(--card-bg);
+    border: var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: box-shadow 120ms ease, transform 120ms ease, opacity 120ms ease;
+    pointer-events: auto; /* re-enable interactions inside */
+    contain: layout paint;
+}
+
+.chat-widget.dragging {
+    box-shadow: 0 14px 40px rgba(0,0,0,0.25);
+    cursor: grabbing;
+}
+
+.chat-widget.locked .widget-header {
+    cursor: default;
+}
+
+.widget-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 10px;
+    border-bottom: var(--border);
+    background: linear-gradient(0deg, rgba(0,0,0,0.02), transparent);
+    cursor: grab;
+    user-select: none;
+}
+
+.widget-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.widget-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.widget-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-light);
+    width: 28px;
+    height: 28px;
+    display: grid;
+    place-items: center;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 120ms ease, color 120ms ease, transform 120ms ease;
+}
+
+.widget-btn:hover {
+    background: var(--nav-active);
+    color: var(--primary);
+}
+
+.widget-body {
+    position: relative;
+    flex: 1;
+    background: var(--card-bg);
+}
+
+.widget-body iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+}
+
+/* Resize handles */
+.resize-handle {
+    position: absolute;
+    background: transparent;
+}
+
+.resize-handle.se {
+    width: 14px;
+    height: 14px;
+    right: 0;
+    bottom: 0;
+    cursor: nwse-resize;
+}
+
+.resize-handle.e {
+    top: 0;
+    right: 0;
+    width: 8px;
+    height: 100%;
+    cursor: ew-resize;
+}
+
+.resize-handle.s {
+    left: 0;
+    bottom: 0;
+    height: 8px;
+    width: 100%;
+    cursor: ns-resize;
+}
+
+/* Per-widget compact settings menu */
+.widget-menu {
+    position: absolute;
+    right: 8px;
+    top: 40px;
+    background: var(--card-bg);
+    border: var(--border);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    padding: 10px;
+    display: none;
+    min-width: 220px;
+    z-index: 10;
+}
+
+.widget-menu.active { display: block; }
+
+.widget-menu .menu-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin: 8px 0;
+}
+
+.widget-menu input[type="text"] {
+    flex: 1;
+    padding: 6px 8px;
+    border: var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+    color: var(--text);
+}
+
+.widget-menu select,
+.widget-menu input[type="range"],
+.widget-menu input[type="checkbox"] {
+    flex: 1;
+}
+
+.widget-menu .menu-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+/* Visual style variants */
+.chat-widget.style-glass {
+    background: rgba(255,255,255,0.6);
+    backdrop-filter: blur(10px);
+}
+[data-theme="dark"] .chat-widget.style-glass {
+    background: rgba(45,52,54,0.5);
+}
+
+.chat-widget.style-dark {
+    background: #1f2326;
+}
+
+/* Focus ring for accessibility */
+.chat-widget:focus-within {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+/* Dragging helpers */
+body.dragging {
+    user-select: none;
+    cursor: grabbing !important;
+}

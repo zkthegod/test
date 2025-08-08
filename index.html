@@ -87,6 +87,22 @@
                         <label for="chatHeight">Height:</label>
                         <input type="number" id="chatHeight" min="300" max="1200" value="500">
                     </div>
+
+                    <div class="setting" style="gap: 12px;">
+                        <label for="snapToggle">Snap:</label>
+                        <label class="switch" aria-label="Toggle snap to grid">
+                            <input type="checkbox" id="snapToggle">
+                            <span class="slider"></span>
+                        </label>
+                        <label for="gridSize" style="margin-left: 16px;">Grid:</label>
+                        <input type="number" id="gridSize" min="8" max="128" value="16" aria-label="Grid size in pixels" style="width: 80px;">
+                    </div>
+
+                    <div class="setting" style="gap: 12px;">
+                        <button id="autoArrange" class="primary-btn"><i class="fas fa-th-large"></i> Auto Arrange</button>
+                        <button id="resetLayout" class="primary-btn"><i class="fas fa-undo"></i> Reset Layout</button>
+                    </div>
+
                     <button id="saveSettings" class="primary-btn"><i class="fas fa-save"></i> Save</button>
                 </div>
                 
@@ -95,6 +111,8 @@
                     <div class="chat-container" id="chatContainer"></div>
                     <button class="scroll-btn right" id="scrollRight"><i class="fas fa-chevron-right"></i></button>
                 </div>
+
+                <div id="widgetLayer" aria-live="polite" aria-label="Floating chat widgets layer"></div>
             </section>
 
             <section id="name-effects" class="page">
