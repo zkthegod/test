@@ -1161,6 +1161,7 @@ footer {
     user-select: none;
     position: relative;
     z-index: 2;
+    touch-action: none;
 }
 
 .widget-title {

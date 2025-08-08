@@ -224,16 +224,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Dragging
         let dragData = null;
-        header.addEventListener('pointerdown', (e) => {
-            if ((e.target.closest('.widget-actions'))) return; // don't start drag from buttons
+        function onMouseDown(e){
+            if ((e.target.closest('.widget-actions'))) return;
             widget.classList.add('dragging');
             document.body.classList.add('dragging');
-            header.setPointerCapture(e.pointerId);
             dragData = { startX: e.clientX, startY: e.clientY, startLeft: state.x, startTop: state.y };
-            e.preventDefault();
             selectWidget(widget);
-        });
-        header.addEventListener('pointermove', (e) => {
+            e.preventDefault();
+            window.addEventListener('mousemove', onMouseMove, { passive: false });
+            window.addEventListener('mouseup', onMouseUp, { passive: true, once: true });
+        }
+        function onMouseMove(e){
             if (!dragData) return;
             const dx = e.clientX - dragData.startX;
             const dy = e.clientY - dragData.startY;
@@ -241,18 +242,16 @@ document.addEventListener('DOMContentLoaded', function() {
             state.y = Math.max(0, Math.min(window.innerHeight - state.h, dragData.startTop + dy));
             widget.style.left = `${state.x}px`;
             widget.style.top = `${state.y}px`;
-        });
-        function endDrag(ev) {
-            if (!dragData) return;
-            try { header.releasePointerCapture?.(ev.pointerId); } catch (_) {}
+        }
+        function onMouseUp(){
             widget.classList.remove('dragging');
             document.body.classList.remove('dragging');
             if (state.snap) snapToGrid(widget, state);
             persistWidget(widget, state);
             dragData = null;
+            window.removeEventListener('mousemove', onMouseMove);
         }
-        header.addEventListener('pointerup', endDrag);
-        header.addEventListener('pointercancel', endDrag);
+        header.addEventListener('mousedown', onMouseDown, { passive: false });
 
         // Resizing
         function startResize(e, edge) {
@@ -270,7 +269,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 widget.style.height = `${state.h}px`;
                 // fit body
                 const headerH = header.getBoundingClientRect().height;
-                bodyEl.style.height = `${state.h - headerH}px`;
+                const bodyH = Math.max(0, state.h - headerH);
+                bodyEl.style.height = `${bodyH}px`;
+                const iframe = bodyEl.querySelector('iframe');
+                iframe.style.height = `${bodyH}px`;
             };
             const onEnd = () => {
                 document.removeEventListener('pointermove', onMove);
@@ -291,7 +293,10 @@ document.addEventListener('DOMContentLoaded', function() {
         widget.style.width = `${state.w}px`;
         widget.style.height = `${state.h}px`;
         const headerH = header.getBoundingClientRect().height;
-        bodyEl.style.height = `${state.h - headerH}px`;
+        const bodyH = Math.max(0, state.h - headerH);
+        bodyEl.style.height = `${bodyH}px`;
+        const iframe = bodyEl.querySelector('iframe');
+        iframe.style.height = `${bodyH}px`;
 
         // Expose for persistence
         widget._state = state;
@@ -314,7 +319,11 @@ document.addEventListener('DOMContentLoaded', function() {
         widget.style.width = `${state.w}px`;
         widget.style.height = `${state.h}px`;
         const headerH = widget.querySelector('.widget-header').getBoundingClientRect().height;
-        widget.querySelector('.widget-body').style.height = `${state.h - headerH}px`;
+        const bodyH = Math.max(0, state.h - headerH);
+        const bodyEl = widget.querySelector('.widget-body');
+        bodyEl.style.height = `${bodyH}px`;
+        const iframe = bodyEl.querySelector('iframe');
+        iframe.style.height = `${bodyH}px`;
     }
 
     // Persistence
