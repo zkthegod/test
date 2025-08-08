@@ -131,8 +131,25 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => { saveSettingsBtn.innerHTML = originalText; }, 1200);
     });
 
+    // Reset background to theme defaults
+    const resetBackgroundBtn = document.getElementById('resetBackground');
+    if (resetBackgroundBtn) {
+        resetBackgroundBtn.addEventListener('click', () => {
+            const themeBg = getComputedStyle(document.documentElement).getPropertyValue('--bg')?.trim();
+            desktopBgColor.value = themeBg || '#0e0f12';
+            desktopBgImage.value = '';
+            const s = {
+                ...(JSON.parse(localStorage.getItem('desktopSettings')) || defaultDesktopSettings),
+                bgColor: themeBg || defaultDesktopSettings.bgColor,
+                bgImage: '',
+                applyBackground: false
+            };
+            localStorage.setItem('desktopSettings', JSON.stringify(s));
+            applyDesktopSettings(s);
+        });
+    }
+
     clearAllBtn.addEventListener('click', () => {
-        if (!confirm('Remove all embedded chats?')) return;
         localStorage.removeItem('chatWindows');
         Array.from(chatDesktop.querySelectorAll('.chat-window')).forEach(el => el.remove());
     });
@@ -255,11 +272,13 @@ document.addEventListener('DOMContentLoaded', function() {
         let rafId = null;
         let dx = 0, dy = 0;
         let dragging = false;
+        let altResize = false;
 
         const iframe = el.querySelector('iframe');
 
         function onPointerDown(e) {
             dragging = true;
+            altResize = e.altKey === true;
             el.classList.add('dragging');
             bringToFront(el);
             startX = e.clientX;
@@ -279,6 +298,17 @@ document.addEventListener('DOMContentLoaded', function() {
             el.classList.remove('dragging');
             iframe.style.pointerEvents = '';
 
+            if (altResize) {
+                // Alt + drag: resize from bottom-right while anchored at top-left
+                const minW = 280, minH = 220, maxW = 2000, maxH = 1600;
+                const newW = clamp(el.offsetWidth + dx, minW, maxW);
+                const newH = clamp(el.offsetHeight + dy, minH, maxH);
+                el.style.width = `${newW}px`;
+                el.style.height = `${newH}px`;
+                persistFromElement(el);
+                return;
+            }
+
             let newLeft = originLeft + dx;
             let newTop = originTop + dy;
 
@@ -297,7 +327,15 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         function tick() {
             rafId = requestAnimationFrame(() => {
-                el.style.transform = `translate(${dx}px, ${dy}px)`;
+                if (altResize) {
+                    const minW = 280, minH = 220, maxW = 2000, maxH = 1600;
+                    const newW = clamp(el.offsetWidth + dx, minW, maxW);
+                    const newH = clamp(el.offsetHeight + dy, minH, maxH);
+                    el.style.width = `${newW}px`;
+                    el.style.height = `${newH}px`;
+                } else {
+                    el.style.transform = `translate(${dx}px, ${dy}px)`;
+                }
                 if (dragging) tick();
             });
         }

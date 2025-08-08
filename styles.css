@@ -1345,6 +1345,8 @@ body::before { content: none; }
 .settings-drawer input[type="text"],
 .settings-drawer input[type="number"] { padding: 10px 12px; border: var(--border); border-radius: 8px; background: var(--bg); color: var(--text); flex: 1; }
 .settings-drawer .primary-btn.small { padding: 8px 12px; }
+.settings-drawer .row + .row { border-top: 1px dashed rgba(0,0,0,0.08); padding-top: 8px; }
+[data-theme="dark"] .settings-drawer .row + .row { border-top-color: rgba(255,255,255,0.08); }
 
 /* Header soft glow: extend slightly more and place under content */
 header { position: relative; z-index: 10; }
