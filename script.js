@@ -127,19 +127,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const menuBtn = widget.querySelector('.widget-menu-toggle');
         const styleBtn = widget.querySelector('.widget-style');
         const snapBtn = widget.querySelector('.widget-snap');
-        const menu = widget.querySelector('.widget-menu');
-        const menuTitle = widget.querySelector('.menu-title');
-        const menuApply = widget.querySelector('.menu-apply');
-        const menuSizeMode = widget.querySelector('.menu-size-mode');
-        const menuSnap = widget.querySelector('.menu-snap');
-        const menuGrid = widget.querySelector('.menu-grid');
-        const menuStyle = widget.querySelector('.menu-style');
-        // add accent color input
-        let accentRow = document.createElement('div');
-        accentRow.className = 'menu-row';
-        accentRow.innerHTML = '<label>Accent</label><input type="color" class="menu-accent" value="#6c5ce7">';
-        menu.insertBefore(accentRow, menu.querySelector('.menu-actions'));
-        const menuAccent = accentRow.querySelector('.menu-accent');
         const resizeSE = widget.querySelector('.resize-handle.se');
         const resizeE = widget.querySelector('.resize-handle.e');
         const resizeS = widget.querySelector('.resize-handle.s');
@@ -160,14 +147,7 @@ document.addEventListener('DOMContentLoaded', function() {
             accent: '#6c5ce7',
         };
 
-        // Initialize menu values
-        menuTitle.value = state.name;
-        menuSnap.checked = !!state.snap;
-        menuGrid.value = state.grid;
-        menuStyle.value = state.style;
-        menuSizeMode.value = state.sizeMode;
-        menuAccent.value = state.accent;
-        widget.style.setProperty('--widget-accent', state.accent);
+        // Initialize: nothing to do here; inspector handles values
 
         // Close
         closeBtn.addEventListener('click', () => { widget.remove(); removeWidgetState(state.id); });
@@ -186,7 +166,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const next = styles[(styles.indexOf(state.style)+1)%styles.length];
             applyStyle(widget, next);
             state.style = next;
-            menuStyle.value = next;
             persistWidget(widget, state);
             syncInspectorIfSelected(widget);
         });
@@ -201,25 +180,7 @@ document.addEventListener('DOMContentLoaded', function() {
             syncInspectorIfSelected(widget);
         });
 
-        // Menu apply
-        menuApply.addEventListener('click', () => {
-            state.name = menuTitle.value.trim() || state.name;
-            titleEl.textContent = state.name;
-            state.snap = !!menuSnap.checked;
-            state.grid = Math.max(4, Math.min(128, parseInt(menuGrid.value) || state.grid));
-            state.sizeMode = menuSizeMode.value;
-            const nextStyle = menuStyle.value;
-            applyStyle(widget, nextStyle);
-            state.style = nextStyle;
-            state.accent = menuAccent.value || state.accent;
-            widget.style.setProperty('--widget-accent', state.accent);
-            toggleGridOverlay(state.snap ? state.grid : null);
-            if (state.snap) snapToGrid(widget, state);
-            persistWidget(widget, state);
-            menu.classList.remove('active');
-            widget.classList.remove('menu-open');
-            bodyEl.querySelector('iframe').style.pointerEvents = 'auto';
-        });
+        // No inline menu; inspector handles changes
 
         // Dragging
         let dragData = null;
