@@ -74,10 +74,11 @@
                     <div class="input-group">
                         <input type="text" id="chatName" placeholder="Enter chat name">
                         <button id="embedChat" class="primary-btn"><i class="fas fa-plus"></i> Embed</button>
+                        <button id="toggleLayout" class="icon-btn" aria-expanded="false" aria-controls="settingsPanel"><i class="fas fa-sliders-h"></i> Layout</button>
                     </div>
                 </div>
                 
-                <div class="settings-panel compact docked" id="settingsPanel" aria-label="Layout & defaults">
+                <div class="settings-panel compact docked" id="settingsPanel" aria-label="Layout & defaults" style="display:none;">
                     <div class="setting">
                         <label for="chatWidth">Width:</label>
                         <input type="number" id="chatWidth" min="300" max="1400" value="728">
@@ -103,6 +104,42 @@
                     </div>
 
                     <button id="saveSettings" class="primary-btn"><i class="fas fa-save"></i> Save</button>
+                </div>
+
+                <div id="widgetInspector" class="inspector" aria-live="polite" aria-label="Selected chat settings" style="display:none;">
+                    <div class="inspector-row">
+                        <div class="inspector-group">
+                            <label>Title</label>
+                            <input type="text" id="inspectorTitle" placeholder="Chat title">
+                        </div>
+                        <div class="inspector-group">
+                            <label>Mode</label>
+                            <select id="inspectorSizeMode">
+                                <option value="fixed">Fixed</option>
+                                <option value="free">Free</option>
+                            </select>
+                        </div>
+                        <div class="inspector-group">
+                            <label>Style</label>
+                            <select id="inspectorStyle">
+                                <option value="default">Default</option>
+                                <option value="glass">Glass</option>
+                                <option value="dark">Dark</option>
+                            </select>
+                        </div>
+                        <div class="inspector-group">
+                            <label>Snap</label>
+                            <input type="checkbox" id="inspectorSnap">
+                        </div>
+                        <div class="inspector-group">
+                            <label>Grid</label>
+                            <input type="number" id="inspectorGrid" min="4" max="128" value="16">
+                        </div>
+                        <div class="inspector-actions">
+                            <button id="inspectorApply" class="primary-btn small"><i class="fas fa-check"></i> Apply</button>
+                            <button id="inspectorClose" class="icon-btn" title="Close"><i class="fas fa-times"></i></button>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="chat-viewport">

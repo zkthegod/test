@@ -51,11 +51,21 @@ document.addEventListener('DOMContentLoaded', function() {
     const gridSizeInput = document.getElementById('gridSize');
     const autoArrangeBtn = document.getElementById('autoArrange');
     const resetLayoutBtn = document.getElementById('resetLayout');
+    const toggleLayoutBtn = document.getElementById('toggleLayout');
+    const inspectorEl = document.getElementById('widgetInspector');
+    const inspTitle = document.getElementById('inspectorTitle');
+    const inspMode = document.getElementById('inspectorSizeMode');
+    const inspStyle = document.getElementById('inspectorStyle');
+    const inspSnap = document.getElementById('inspectorSnap');
+    const inspGrid = document.getElementById('inspectorGrid');
+    const inspApply = document.getElementById('inspectorApply');
+    const inspClose = document.getElementById('inspectorClose');
+    let selectedWidget = null;
     
     // Load saved settings or set defaults
     const savedSettings = JSON.parse(localStorage.getItem('chatSettings')) || {
-        width: 728,
-        height: 486,
+        width: 911,
+        height: 610,
         snap: false,
         grid: 16
     };
@@ -67,8 +77,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     saveSettingsBtn.addEventListener('click', function() {
         const newSettings = {
-            width: parseInt(chatWidthInput.value) || 728,
-            height: parseInt(chatHeightInput.value) || 486,
+            width: parseInt(chatWidthInput.value) || 911,
+            height: parseInt(chatHeightInput.value) || 610,
             snap: !!snapToggle?.checked,
             grid: Math.max(4, Math.min(128, parseInt(gridSizeInput?.value) || 16))
         };
@@ -106,7 +116,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function getGlobalSettings() {
         const s = JSON.parse(localStorage.getItem('chatSettings')) || {};
-        return { width: s.width || 728, height: s.height || 486, snap: !!s.snap, grid: s.grid || 16 };
+        return { width: s.width || 911, height: s.height || 610, snap: !!s.snap, grid: s.grid || 16 };
     }
 
     // Drag/Resize/Snap
@@ -165,19 +175,10 @@ document.addEventListener('DOMContentLoaded', function() {
         // Menu toggle
         menuBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            menu.classList.toggle('active');
-            const isOpen = menu.classList.contains('active');
-            menu.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
-            widget.classList.toggle('menu-open', isOpen);
-            bodyEl.querySelector('iframe').style.pointerEvents = isOpen ? 'none' : 'auto';
+            // open external inspector instead of inline menu
+            openInspector(widget);
         });
-        document.addEventListener('click', (ev) => {
-            if (!widget.contains(ev.target)) { 
-                menu.classList.remove('active'); 
-                widget.classList.remove('menu-open'); 
-                bodyEl.querySelector('iframe').style.pointerEvents = 'auto';
-            }
-        });
+        // no global doc listener needed for external inspector
 
         // Style quick cycle
         styleBtn.addEventListener('click', () => {
@@ -187,6 +188,7 @@ document.addEventListener('DOMContentLoaded', function() {
             state.style = next;
             menuStyle.value = next;
             persistWidget(widget, state);
+            syncInspectorIfSelected(widget);
         });
 
         // Snap quick toggle
@@ -196,6 +198,7 @@ document.addEventListener('DOMContentLoaded', function() {
             toggleGridOverlay(state.snap ? state.grid : null);
             if (state.snap) snapToGrid(widget, state);
             persistWidget(widget, state);
+            syncInspectorIfSelected(widget);
         });
 
         // Menu apply
@@ -227,6 +230,7 @@ document.addEventListener('DOMContentLoaded', function() {
             header.setPointerCapture(e.pointerId);
             dragData = { startX: e.clientX, startY: e.clientY, startLeft: state.x, startTop: state.y };
             e.preventDefault();
+            selectWidget(widget);
         });
         header.addEventListener('pointermove', (e) => {
             if (!dragData) return;
@@ -334,30 +338,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         <button class="widget-btn widget-menu-toggle" title="Settings"><i class="fas fa-sliders-h"></i></button>
                         <button class="widget-btn widget-close" title="Close"><i class="fas fa-times"></i></button>
                     </div>
-                    <div class="widget-menu" aria-hidden="true">
-                        <div class="menu-row"><label>Title</label><input type="text" class="menu-title"></div>
-                        <div class="menu-row"><label>Size</label>
-                            <select class="menu-size-mode">
-                                <option value="fixed">Fixed</option>
-                                <option value="free">Free</option>
-                            </select>
-                        </div>
-                        <div class="menu-row"><label>Snap</label><input type="checkbox" class="menu-snap"></div>
-                        <div class="menu-row"><label>Grid</label><input type="number" class="menu-grid" min="4" max="128" value="${s.grid || 16}"></div>
-                        <div class="menu-row"><label>Style</label>
-                            <select class="menu-style">
-                                <option value="default">Default</option>
-                                <option value="glass">Glass</option>
-                                <option value="dark">Dark</option>
-                            </select>
-                        </div>
-                        <div class="menu-actions">
-                            <button class="primary-btn small menu-apply">Apply</button>
-                        </div>
-                    </div>
                 </div>
                 <div class="widget-body">
-                    <iframe src="https://xat.com/embed/chat.php#gn=${encodeURIComponent(s.name)}" title="${escapeHtml(s.name)}"></iframe>
+                    <iframe src="https://xat.com/embed/chat.php#gn=${encodeURIComponent(s.name)}" title="${escapeHtml(s.name)}" scrolling="no"></iframe>
                     <div class="resize-handle se" aria-hidden="true"></div>
                     <div class="resize-handle e" aria-hidden="true"></div>
                     <div class="resize-handle s" aria-hidden="true"></div>
@@ -1160,7 +1143,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const chatName = chatNameInput.value.trim();
         if (!chatName) { chatNameInput.focus(); return; }
 
-        const settings = JSON.parse(localStorage.getItem('chatSettings')) || { width: 728, height: 486, snap: false, grid: 16 };
+        const settings = JSON.parse(localStorage.getItem('chatSettings')) || { width: 911, height: 610, snap: false, grid: 16 };
         const widgetId = `widget-${Date.now()}`;
         const widget = document.createElement('div');
         widget.className = 'chat-widget';
@@ -1181,27 +1164,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     <button class="widget-btn widget-style" title="Style"><i class="fas fa-brush"></i></button>
                     <button class="widget-btn widget-menu-toggle" title="Settings"><i class="fas fa-sliders-h"></i></button>
                     <button class="widget-btn widget-close" title="Close"><i class="fas fa-times"></i></button>
-                </div>
-                <div class="widget-menu" aria-hidden="true">
-                    <div class="menu-row"><label>Title</label><input type="text" class="menu-title"></div>
-                    <div class="menu-row"><label>Size</label>
-                        <select class="menu-size-mode">
-                            <option value="fixed" selected>Fixed</option>
-                            <option value="free">Free</option>
-                        </select>
-                    </div>
-                    <div class="menu-row"><label>Snap</label><input type="checkbox" class="menu-snap"></div>
-                    <div class="menu-row"><label>Grid</label><input type="number" class="menu-grid" min="4" max="128" value="${settings.grid}"></div>
-                    <div class="menu-row"><label>Style</label>
-                        <select class="menu-style">
-                            <option value="default" selected>Default</option>
-                            <option value="glass">Glass</option>
-                            <option value="dark">Dark</option>
-                        </select>
-                    </div>
-                    <div class="menu-actions">
-                        <button class="primary-btn small menu-apply">Apply</button>
-                    </div>
                 </div>
             </div>
             <div class="widget-body">
@@ -1268,4 +1230,48 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     // Initialize overlay from saved settings
     toggleGridOverlay(savedSettings.snap ? (savedSettings.grid||16) : null);
+
+    function selectWidget(widget) {
+        selectedWidget = widget;
+        openInspector(widget);
+    }
+
+    function openInspector(widget) {
+        if (!widget) return;
+        selectedWidget = widget;
+        const s = widget._state;
+        inspTitle.value = s.name;
+        inspMode.value = s.sizeMode;
+        inspStyle.value = s.style;
+        inspSnap.checked = !!s.snap;
+        inspGrid.value = s.grid;
+        inspectorEl.style.display = 'block';
+        // ensure iframe interactive until apply pressed
+        widget.querySelector('iframe').style.pointerEvents = 'auto';
+    }
+
+    function syncInspectorIfSelected(widget){
+        if (selectedWidget && selectedWidget.id === widget.id) openInspector(widget);
+    }
+
+    inspApply?.addEventListener('click', () => {
+        if (!selectedWidget) return;
+        const s = selectedWidget._state;
+        s.name = inspTitle.value.trim() || s.name;
+        selectedWidget.querySelector('.title-text').textContent = s.name;
+        s.sizeMode = inspMode.value;
+        const nextStyle = inspStyle.value;
+        applyStyle(selectedWidget, nextStyle);
+        s.style = nextStyle;
+        s.snap = !!inspSnap.checked;
+        s.grid = Math.max(4, Math.min(128, parseInt(inspGrid.value) || s.grid));
+        if (s.snap) snapToGrid(selectedWidget, s);
+        persistWidget(selectedWidget, s);
+    });
+    inspClose?.addEventListener('click', () => { inspectorEl.style.display = 'none'; });
+    toggleLayoutBtn?.addEventListener('click', () => {
+        const isOpen = settingsPanel.style.display !== 'none';
+        settingsPanel.style.display = isOpen ? 'none' : 'block';
+        toggleLayoutBtn.setAttribute('aria-expanded', (!isOpen).toString());
+    });
 });
