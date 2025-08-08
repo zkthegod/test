@@ -53,7 +53,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const resetLayoutBtn = document.getElementById('resetLayout');
     const toggleLayoutBtn = document.getElementById('toggleLayout');
     const inspectorEl = document.getElementById('widgetInspector');
-    const inspTitle = document.getElementById('inspectorTitle');
     const inspMode = document.getElementById('inspectorSizeMode');
     const inspStyle = document.getElementById('inspectorStyle');
     const inspSnap = document.getElementById('inspectorSnap');
@@ -1126,9 +1125,14 @@ document.addEventListener('DOMContentLoaded', function() {
         widget.setAttribute('aria-label', `Chat widget for ${chatName}`);
 
         widget.style.width = `${settings.width}px`;
-        widget.style.height = `${settings.height}px`; // will be adjusted in init with header height
-        widget.style.left = `${Math.round(window.innerWidth/2 - settings.width/2)}px`;
-        widget.style.top = `${Math.round(120 + Math.random()*40)}px`;
+        widget.style.height = `${settings.height}px`; // adjusted in init with header height
+        const left = Math.max(20, Math.min(
+            window.innerWidth - settings.width - 20,
+            Math.round(window.innerWidth/2 - settings.width/2 + (Math.random()*100 - 50))
+        ));
+        const top = Math.max(20, Math.round(100 + Math.random()*40));
+        widget.style.left = `${left}px`;
+        widget.style.top = `${top}px`;
 
         widget.innerHTML = `
             <div class="widget-header" aria-grabbed="false">
@@ -1214,7 +1218,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!widget) return;
         selectedWidget = widget;
         const s = widget._state;
-        inspTitle.value = s.name;
         inspMode.value = s.sizeMode;
         inspStyle.value = s.style;
         inspSnap.checked = !!s.snap;
@@ -1231,8 +1234,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if (inspApply) inspApply.addEventListener('click', () => {
         if (!selectedWidget) return;
         const s = selectedWidget._state;
-        s.name = inspTitle.value.trim() || s.name;
-        selectedWidget.querySelector('.title-text').textContent = s.name;
         s.sizeMode = inspMode.value;
         const nextStyle = inspStyle.value;
         applyStyle(selectedWidget, nextStyle);
@@ -1241,6 +1242,7 @@ document.addEventListener('DOMContentLoaded', function() {
         s.grid = Math.max(4, Math.min(128, parseInt(inspGrid.value) || s.grid));
         if (s.snap) snapToGrid(selectedWidget, s);
         persistWidget(selectedWidget, s);
+        inspectorEl.style.display = 'none';
     });
     if (inspClose) inspClose.addEventListener('click', () => { inspectorEl.style.display = 'none'; });
     if (toggleLayoutBtn) toggleLayoutBtn.addEventListener('click', () => {

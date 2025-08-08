@@ -74,44 +74,11 @@
                     <div class="input-group">
                         <input type="text" id="chatName" placeholder="Enter chat name">
                         <button id="embedChat" class="primary-btn"><i class="fas fa-plus"></i> Embed</button>
-                        <button id="toggleLayout" class="icon-btn" aria-expanded="false" aria-controls="settingsPanel"><i class="fas fa-sliders-h"></i> Layout</button>
                     </div>
                 </div>
                 
-                <div class="settings-panel compact docked" id="settingsPanel" aria-label="Layout & defaults" style="display:none;">
-                    <div class="setting">
-                        <label for="chatWidth">Width:</label>
-                        <input type="number" id="chatWidth" min="300" max="1400" value="728">
-                    </div>
-                    <div class="setting">
-                        <label for="chatHeight">Height:</label>
-                        <input type="number" id="chatHeight" min="260" max="1200" value="486">
-                    </div>
-
-                    <div class="setting">
-                        <label for="snapToggle">Snap:</label>
-                        <label class="switch" aria-label="Toggle snap to grid">
-                            <input type="checkbox" id="snapToggle">
-                            <span class="slider"></span>
-                        </label>
-                        <label for="gridSize" class="ml-16">Grid:</label>
-                        <input type="number" id="gridSize" min="8" max="128" value="16" aria-label="Grid size in pixels" class="w-80">
-                    </div>
-
-                    <div class="setting">
-                        <button id="autoArrange" class="primary-btn"><i class="fas fa-th-large"></i> Auto Arrange</button>
-                        <button id="resetLayout" class="primary-btn"><i class="fas fa-undo"></i> Reset Layout</button>
-                    </div>
-
-                    <button id="saveSettings" class="primary-btn"><i class="fas fa-save"></i> Save</button>
-                </div>
-
                 <div id="widgetInspector" class="inspector" aria-live="polite" aria-label="Selected chat settings" style="display:none;">
                     <div class="inspector-row">
-                        <div class="inspector-group">
-                            <label>Title</label>
-                            <input type="text" id="inspectorTitle" placeholder="Chat title">
-                        </div>
                         <div class="inspector-group">
                             <label>Mode</label>
                             <select id="inspectorSizeMode">
