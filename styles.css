@@ -1267,3 +1267,35 @@ footer {
 
 /* Always-on-top hint */
 .chat-window.always-on-top { outline: 2px solid var(--primary); }
+
+/* Scoped wallpaper for chat page only */
+#chat-embedder.has-wallpaper {
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center top;
+    background-attachment: fixed;
+}
+
+#chat-embedder::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 140px;
+    background: linear-gradient(to bottom, var(--bg) 0%, rgba(0,0,0,0) 100%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Remove global body wallpaper styles */
+body.has-wallpaper { background: none; }
+body { background-image: none; }
+body::before { content: none; }
+
+/* Ensure chat page content sits above its fade */
+#chat-embedder { position: relative; }
+
+/* Make desktop container visually transparent */
+.chat-desktop {
+    border: none;
+    background: transparent;
+    box-shadow: none;
+}

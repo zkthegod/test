@@ -95,13 +95,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function applyDesktopSettings(settings) {
-        // Apply wallpaper to body so it spans page with nice top fade (handled by CSS ::before)
-        document.body.classList.toggle('has-wallpaper', !!settings.bgImage || !!settings.bgColor);
-        document.body.style.backgroundColor = settings.bgColor || defaultDesktopSettings.bgColor;
-        if (settings.bgImage) {
-            document.body.style.backgroundImage = `url('${settings.bgImage}')`;
-        } else {
-            document.body.style.backgroundImage = 'none';
+        // Scope wallpaper to chat page only
+        const chatPage = document.getElementById('chat-embedder');
+        if (chatPage) {
+            chatPage.classList.toggle('has-wallpaper', !!settings.bgImage || !!settings.bgColor);
+            chatPage.style.backgroundColor = settings.bgColor || defaultDesktopSettings.bgColor;
+            if (settings.bgImage) chatPage.style.backgroundImage = `url('${settings.bgImage}')`;
+            else chatPage.style.backgroundImage = 'none';
         }
         // Light tint in desktop container to keep contrast
         chatDesktop.style.background = 'rgba(0,0,0,0.06)';
@@ -209,18 +209,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Titlebar drag
         const titlebar = el.querySelector('[data-drag-handle]');
-        enableDrag(el, titlebar);
+        const title = el.querySelector('.window-titlebar .title');
+        enableDrag(el, title || titlebar);
 
         // Resize handles
         Array.from(el.querySelectorAll('[data-resize]')).forEach(handle => enableResize(el, handle));
 
         // Controls
         el.querySelector('.window-controls').addEventListener('click', (e) => {
+            e.stopPropagation();
             const btn = e.target.closest('button');
             if (!btn) return;
             const action = btn.dataset.action;
             if (action === 'close') {
-                el.remove();
+                el.parentElement && el.parentElement.removeChild(el);
                 deleteWindowState(state.id);
             } else if (action === 'toggle') {
                 el.classList.toggle('hidden-content');
@@ -271,10 +273,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Constrain to viewport (not just canvas)
             const vpW = document.documentElement.clientWidth;
-            const vpH = window.innerHeight;
+            const vpH = Math.max(window.innerHeight, document.documentElement.clientHeight);
             const w = el.offsetWidth; const h = el.offsetHeight;
-            newLeft = clamp(newLeft, -w + 60, vpW - 60); // allow partial offscreen with 60px handle to grab
-            newTop = clamp(newTop, 0, vpH - 40);
+            newLeft = clamp(newLeft, -w + 60, vpW - 60);
+            newTop = clamp(newTop, -h + 40, vpH - 40);
 
             el.style.transform = '';
             el.style.left = `${newLeft}px`;
@@ -338,9 +340,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Constrain vertically within viewport top/bottom pleasant bounds
             const vpW = document.documentElement.clientWidth;
-            const vpH = window.innerHeight;
+            const vpH = Math.max(window.innerHeight, document.documentElement.clientHeight);
             newL = clamp(newL, -newW + 60, vpW - 60);
-            newT = clamp(newT, 0, vpH - 40);
+            newT = clamp(newT, -newH + 40, vpH - 40);
 
             el.style.width = `${newW}px`;
             el.style.height = `${newH}px`;
