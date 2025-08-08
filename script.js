@@ -34,6 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.querySelector(targetId).classList.add('active');
             
             window.scrollTo({ top: 0, behavior: 'smooth' });
+            updatePageBackgroundForActiveTab();
         });
     });
     
@@ -100,16 +101,27 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function applyDesktopSettings(settings) {
-        const chatPage = document.getElementById('chat-embedder');
-        if (!chatPage) return;
-        if (settings.applyBackground) {
-            chatPage.classList.add('has-wallpaper');
-            chatPage.style.backgroundColor = settings.bgColor || '';
-            chatPage.style.backgroundImage = settings.bgImage ? `url('${settings.bgImage}')` : 'none';
+        // Save and re-evaluate background for current tab
+        updatePageBackgroundForActiveTab(settings);
+    }
+
+    function getDesktopSettings() {
+        return JSON.parse(localStorage.getItem('desktopSettings')) || defaultDesktopSettings;
+    }
+
+    function isChatTabActive() {
+        return document.getElementById('chat-embedder')?.classList.contains('active');
+    }
+
+    function updatePageBackgroundForActiveTab(inlineSettings) {
+        const settings = inlineSettings || getDesktopSettings();
+        if (settings.applyBackground && isChatTabActive()) {
+            document.body.style.backgroundColor = settings.bgColor || '';
+            document.body.style.backgroundImage = settings.bgImage ? `url('${settings.bgImage}')` : 'none';
         } else {
-            chatPage.classList.remove('has-wallpaper');
-            chatPage.style.backgroundImage = 'none';
-            chatPage.style.backgroundColor = '';
+            // Clear to theme defaults
+            document.body.style.backgroundImage = 'none';
+            document.body.style.backgroundColor = '';
         }
     }
 
@@ -255,7 +267,9 @@ document.addEventListener('DOMContentLoaded', function() {
         Array.from(el.querySelectorAll('[data-resize]')).forEach(handle => enableResize(el, handle));
 
         // Controls
-        el.querySelector('.window-controls').addEventListener('click', (e) => {
+        const controls = el.querySelector('.window-controls');
+        controls.addEventListener('pointerdown', (e) => { e.stopPropagation(); });
+        controls.addEventListener('click', (e) => {
             e.stopPropagation();
             const btn = e.target.closest('button');
             if (!btn) return;
@@ -288,6 +302,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const iframe = el.querySelector('iframe');
 
         function onPointerDown(e) {
+            // Ignore drags starting from controls
+            if (e.target.closest('.window-controls')) return;
             dragging = true;
             altResize = false;
             el.classList.add('dragging');
@@ -351,6 +367,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         function onDown(e) {
             moving = true;
+            el.classList.add('resizing');
             bringToFront(el);
             startX = e.clientX; startY = e.clientY;
             startW = el.offsetWidth; startH = el.offsetHeight;
@@ -367,6 +384,7 @@ document.addEventListener('DOMContentLoaded', function() {
             moving = false;
             cancelAnimationFrame(rafId);
             iframe.style.pointerEvents = '';
+            el.classList.remove('resizing');
 
             applyResize(true);
             persistFromElement(el);
