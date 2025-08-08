@@ -1299,3 +1299,37 @@ body::before { content: none; }
     background: transparent;
     box-shadow: none;
 }
+
+/* Minimal dropdown under gear */
+.settings-dropdown {
+    position: absolute;
+    top: 56px;
+    right: 0;
+    width: min(720px, 96%);
+    background: var(--card-bg);
+    border: var(--border);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    padding: 10px;
+    display: none;
+    z-index: 5;
+}
+.settings-dropdown.active { display: block; }
+.settings-dropdown .row { display: flex; align-items: center; gap: 10px; margin: 6px 0; flex-wrap: wrap; }
+.settings-dropdown label { color: var(--text-light); font-size: 0.9rem; }
+.settings-dropdown input[type="color"] { width: 40px; height: 40px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.15); padding: 0; }
+.settings-dropdown input[type="text"],
+.settings-dropdown input[type="number"] { padding: 8px 10px; border: var(--border); border-radius: 8px; background: var(--bg); color: var(--text); }
+.settings-dropdown .primary-btn.small { padding: 8px 12px; }
+.link-btn { background: none; border: none; color: var(--primary); cursor: pointer; padding: 6px 10px; border-radius: 8px; }
+.link-btn:hover { background: var(--nav-active); }
+.link-btn.danger { color: #e74c3c; }
+
+/* Header soft glow across pages */
+header::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; top: 0; height: 110px;
+    pointer-events: none;
+    background: radial-gradient(120% 60% at 50% 0%, rgba(108,92,231,0.08), rgba(0,0,0,0) 60%);
+}

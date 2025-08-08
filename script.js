@@ -67,9 +67,9 @@ document.addEventListener('DOMContentLoaded', function() {
     let zCounter = 10;
 
     const defaultDesktopSettings = {
-        width: 700,
-        height: 500,
-        bgColor: '#0e0f12',
+        width: 728,
+        height: 486,
+        bgColor: getComputedStyle(document.documentElement).getPropertyValue('--bg')?.trim() || '#0e0f12',
         bgImage: ''
     };
 
@@ -111,7 +111,13 @@ document.addEventListener('DOMContentLoaded', function() {
         return Math.min(Math.max(value, min), max);
     }
 
-    settingsBtn.addEventListener('click', () => settingsPanel.classList.toggle('active'));
+    settingsBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        settingsPanel.classList.toggle('active');
+    });
+    document.addEventListener('click', (e) => {
+        if (!settingsPanel.contains(e.target) && e.target !== settingsBtn) settingsPanel.classList.remove('active');
+    });
     saveSettingsBtn.addEventListener('click', () => {
         saveDesktopSettings();
         const originalText = saveSettingsBtn.innerHTML;
@@ -452,11 +458,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     alignCascadeBtn.addEventListener('click', alignCascade);
     alignTileBtn.addEventListener('click', alignTile);
-    alignLeftBtn.addEventListener('click', () => alignEdge('left'));
-    alignRightBtn.addEventListener('click', () => alignEdge('right'));
-    alignTopBtn.addEventListener('click', () => alignEdge('top'));
-    alignBottomBtn.addEventListener('click', () => alignEdge('bottom'));
-    alignCenterBtn.addEventListener('click', () => alignEdge('center'));
+    if (alignCenterBtn) alignCenterBtn.addEventListener('click', () => alignEdge('center'));
     resizeAllBtn.addEventListener('click', () => { saveDesktopSettings(); resizeAllToDefault(); });
 
     loadDesktopSettings();

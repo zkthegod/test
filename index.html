@@ -78,34 +78,24 @@
                     </div>
                 </div>
                 
-                <div class="settings-panel" id="settingsPanel">
-                    <div class="setting">
-                        <label for="chatWidth">W</label>
-                        <input type="number" id="chatWidth" min="280" max="1600" value="700" style="width:90px">
+                <div class="settings-panel settings-dropdown" id="settingsPanel">
+                    <div class="row">
+                        <label for="desktopBgColor">Background</label>
+                        <input type="color" id="desktopBgColor" value="#" aria-label="Background color">
+                        <input type="text" id="desktopBgImage" placeholder="Image URL" />
+                        <button id="applyDesktopSettings" class="primary-btn small"><i class="fas fa-image"></i> Apply</button>
                     </div>
-                    <div class="setting">
-                        <label for="chatHeight">H</label>
-                        <input type="number" id="chatHeight" min="220" max="1400" value="500" style="width:90px">
+                    <div class="row">
+                        <label>Defaults</label>
+                        <input type="number" id="chatWidth" min="280" max="2000" value="728" placeholder="Width" />
+                        <input type="number" id="chatHeight" min="220" max="1600" value="486" placeholder="Height" />
+                        <button id="resizeAll" class="primary-btn small"><i class="fas fa-expand-arrows-alt"></i> Resize All</button>
                     </div>
-                    <div class="setting">
-                        <label for="desktopBgColor">Color</label>
-                        <input type="color" id="desktopBgColor" value="#0e0f12">
-                    </div>
-                    <div class="setting" style="flex:1; min-width:240px">
-                        <label for="desktopBgImage">Wallpaper</label>
-                        <input type="text" id="desktopBgImage" placeholder="Image URL" style="flex:1;">
-                    </div>
-                    <div class="setting" style="gap:6px; flex-wrap:wrap">
-                        <button id="applyDesktopSettings" class="primary-btn"><i class="fas fa-image"></i> Apply BG</button>
-                        <button id="alignCascade" class="primary-btn"><i class="fas fa-layer-group"></i> Cascade</button>
-                        <button id="alignTile" class="primary-btn"><i class="fas fa-th-large"></i> Tile</button>
-                        <button id="alignLeft" class="primary-btn"><i class="fas fa-align-left"></i> Left</button>
-                        <button id="alignRight" class="primary-btn"><i class="fas fa-align-right"></i> Right</button>
-                        <button id="alignTop" class="primary-btn"><i class="fas fa-align-justify" style="transform:rotate(90deg)"></i> Top</button>
-                        <button id="alignBottom" class="primary-btn"><i class="fas fa-align-justify" style="transform:rotate(-90deg)"></i> Bottom</button>
-                        <button id="alignCenter" class="primary-btn"><i class="fas fa-compress-alt"></i> Center</button>
-                        <button id="resizeAll" class="primary-btn"><i class="fas fa-expand-arrows-alt"></i> Resize All</button>
-                        <button id="clearAllChats" class="primary-btn" style="background:#e74c3c"><i class="fas fa-trash"></i> Clear All</button>
+                    <div class="row actions">
+                        <button id="alignCascade" class="link-btn">Cascade</button>
+                        <button id="alignTile" class="link-btn">Tile</button>
+                        <button id="alignCenter" class="link-btn">Center</button>
+                        <button id="clearAllChats" class="link-btn danger">Clear All</button>
                     </div>
                 </div>
                 
