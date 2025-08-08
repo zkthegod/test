@@ -69,39 +69,22 @@
     <div class="section-header">
         <h2>Chat Embedder</h2>
         <div class="header-actions">
-            <button id="settingsBtn" class="icon-btn"><i class="fas fa-cog"></i> Settings</button>
-            <button id="clearAllBtn" class="icon-btn"><i class="fas fa-trash"></i> Clear Chats</button>
+            <button id="newChatBtn" class="primary-btn small"><i class="fas fa-plus"></i> New Chat</button>
+            <button id="clearChatsBtn" class="icon-btn danger"><i class="fas fa-trash-alt"></i></button>
         </div>
     </div>
-    
-    <div class="embed-controls">
+
+    <div id="chatCreationPanel" class="creation-panel">
         <div class="input-group">
-            <input type="text" id="chatName" placeholder="Enter chat name (e.g. Help)">
-            <button id="embedChat" class="primary-btn"><i class="fas fa-plus"></i> Add Chat</button>
+            <input type="text" id="chatNameInput" placeholder="Enter chat name" autocomplete="off">
+            <button id="createChatBtn" class="primary-btn"><i class="fas fa-check"></i> Create</button>
         </div>
     </div>
-    
-    <div class="settings-panel" id="settingsPanel">
-        <div class="setting">
-            <label for="chatWidth">Width:</label>
-            <input type="number" id="chatWidth" min="300" max="1200" value="700">
-        </div>
-        <div class="setting">
-            <label for="chatHeight">Height:</label>
-            <input type="number" id="chatHeight" min="300" max="1200" value="500">
-        </div>
-        <button id="saveSettings" class="primary-btn"><i class="fas fa-save"></i> Save Defaults</button>
-    </div>
-    
-    <div class="viewport-controls">
-        <button id="zoomInBtn" class="icon-btn"><i class="fas fa-search-plus"></i> Zoom In</button>
-        <button id="zoomOutBtn" class="icon-btn"><i class="fas fa-search-minus"></i> Zoom Out</button>
-        <button id="resetZoomBtn" class="icon-btn"><i class="fas fa-expand"></i> Reset Zoom</button>
-    </div>
+
+    <!-- Chats will be placed directly on the body for full freedom -->
 </section>
 
-<!-- Chats will be appended to the body for full freedom of movement -->
-<div id="chatMasterContainer"></div>
+<div id="floatingChatsContainer"></div>
 
             <section id="name-effects" class="page">
                 <div class="section-header">
