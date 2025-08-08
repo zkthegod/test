@@ -1119,7 +1119,7 @@ footer {
     position: fixed;
     inset: 0;
     z-index: 5000;
-    pointer-events: auto; /* interactive widgets */
+    pointer-events: none; /* allow clicks through unless on a widget */
 }
 
 .chat-widget {
@@ -1136,7 +1136,7 @@ footer {
     flex-direction: column;
     overflow: hidden;
     transition: box-shadow 120ms ease, transform 120ms ease, opacity 120ms ease;
-    pointer-events: auto; /* re-enable interactions inside */
+    pointer-events: auto; /* interactive */
     contain: layout paint;
 }
 
