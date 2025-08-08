@@ -1324,34 +1324,40 @@ body::before { content: none; }
 .link-btn:hover { background: var(--nav-active); }
 .link-btn.danger { color: #e74c3c; }
 
-/* Wide inline settings panel under Add Chat */
+/* Settings side drawer (restored, wider) */
+.settings-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); display: none; z-index: 19; }
+.settings-overlay.active { display: block; }
 .settings-drawer {
-    position: static;
-    width: 100%;
+    position: fixed;
+    top: 70px;
+    right: 16px;
+    width: 520px;
+    max-width: calc(100% - 32px);
     background: var(--card-bg);
     border: var(--border);
     border-radius: 12px;
-    box-shadow: var(--shadow);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.25);
     padding: 12px;
     display: none;
-    margin-top: 10px;
+    z-index: 20;
 }
 .settings-drawer.active { display: block; }
 .settings-drawer .row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 8px 0; }
+.settings-drawer label { color: var(--text-light); font-size: 0.9rem; min-width: 88px; }
+.settings-drawer input[type="color"] { width: 44px; height: 44px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.15); padding: 0; }
+.settings-drawer input[type="text"], .settings-drawer input[type="number"] { padding: 10px 12px; border: var(--border); border-radius: 8px; background: var(--bg); color: var(--text); flex: 1; }
 .settings-drawer .row:first-child input[type="color"] { flex: 0 0 44px; }
 .settings-drawer .row:first-child input[type="text"] { flex: 1 1 auto; min-width: 200px; }
-.settings-drawer .row.actions { justify-content: flex-start; flex-wrap: wrap; gap: 6px 10px; }
 .settings-drawer .row:nth-child(2) input[type="number"] { width: 140px; }
+.settings-drawer .row.actions { justify-content: flex-start; flex-wrap: wrap; gap: 6px 10px; }
+.settings-drawer .primary-btn.small { padding: 8px 12px; }
+.settings-drawer .row + .row { border-top: 1px dashed rgba(0,0,0,0.08); padding-top: 8px; }
+[data-theme="dark"] .settings-drawer .row + .row { border-top-color: rgba(255,255,255,0.08); }
 
-/* Enlarge resize handles for easier mouse resizing */
-.resize-handle { background: transparent; }
-.resize-handle.n, .resize-handle.s { height: 12px; width: 100%; left: 0; }
-.resize-handle.e, .resize-handle.w { width: 12px; height: 100%; top: 0; }
-.resize-handle.ne, .resize-handle.nw, .resize-handle.se, .resize-handle.sw { width: 16px; height: 16px; }
-.resize-handle.n { top: -6px; cursor: ns-resize; }
-.resize-handle.s { bottom: -6px; cursor: ns-resize; }
-.resize-handle.e { right: -6px; cursor: ew-resize; }
-.resize-handle.w { left: -6px; cursor: ew-resize; }
+/* Improve drag/resize usability */
+.chat-window { cursor: default; }
+.window-titlebar { cursor: grab; }
+.chat-window.resizing, .chat-window.dragging { cursor: grabbing; }
 
 /* Header soft glow: extend slightly more and place under content */
 header { position: relative; z-index: 10; }

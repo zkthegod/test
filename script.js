@@ -117,14 +117,23 @@ document.addEventListener('DOMContentLoaded', function() {
         return Math.min(Math.max(value, min), max);
     }
 
+    const settingsOverlay = document.getElementById('settingsOverlay');
     settingsBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         settingsPanel.classList.toggle('active');
+        settingsOverlay.classList.toggle('active', settingsPanel.classList.contains('active'));
         // Scroll into view if needed when opened
         if (settingsPanel.classList.contains('active')) settingsPanel.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     });
     document.addEventListener('click', (e) => {
-        if (!settingsPanel.contains(e.target) && e.target !== settingsBtn) settingsPanel.classList.remove('active');
+        if (!settingsPanel.contains(e.target) && e.target !== settingsBtn) {
+            settingsPanel.classList.remove('active');
+            settingsOverlay.classList.remove('active');
+        }
+    });
+    if (settingsOverlay) settingsOverlay.addEventListener('click', () => {
+        settingsPanel.classList.remove('active');
+        settingsOverlay.classList.remove('active');
     });
     saveSettingsBtn.addEventListener('click', () => {
         saveDesktopSettings();
