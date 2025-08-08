@@ -291,8 +291,12 @@ document.addEventListener('DOMContentLoaded', function() {
         applyStyle(widget, state.style);
         // Ensure body fits widget size exactly
         widget.style.width = `${state.w}px`;
-        widget.style.height = `${state.h}px`;
         const headerH = header.getBoundingClientRect().height;
+        // If a target body height provided, prefer it to avoid bottom gap
+        if (opts && typeof opts.targetBodyHeight === 'number') {
+            state.h = headerH + opts.targetBodyHeight;
+        }
+        widget.style.height = `${state.h}px`;
         const bodyH = Math.max(0, state.h - headerH);
         bodyEl.style.height = `${bodyH}px`;
         const iframe = bodyEl.querySelector('iframe');
@@ -1162,7 +1166,7 @@ document.addEventListener('DOMContentLoaded', function() {
         widget.setAttribute('aria-label', `Chat widget for ${chatName}`);
 
         widget.style.width = `${settings.width}px`;
-        widget.style.height = `${settings.height}px`;
+        widget.style.height = `${settings.height}px`; // will be adjusted in init with header height
         widget.style.left = `${Math.round(window.innerWidth/2 - settings.width/2)}px`;
         widget.style.top = `${Math.round(120 + Math.random()*40)}px`;
 
@@ -1187,7 +1191,7 @@ document.addEventListener('DOMContentLoaded', function() {
         widgetMount.appendChild(widget);
         chatNameInput.value = '';
 
-        initWidget(widget, { name: chatName, snap: settings.snap, grid: settings.grid });
+        initWidget(widget, { name: chatName, snap: settings.snap, grid: settings.grid, targetBodyHeight: settings.height });
         persistWidget(widget);
     }
     
