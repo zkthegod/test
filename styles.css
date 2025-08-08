@@ -1088,6 +1088,145 @@ nav a:hover, nav a.active {
     }
 }
 
+/* ================== */
+/* Enhanced Chat Embedder */
+/* ================== */
+
+.chat-viewport-container {
+    position: relative;
+    margin: 20px 0;
+    overflow: hidden;
+    border-radius: var(--radius);
+    border: var(--border);
+    background-color: var(--preview-bg);
+}
+
+.chat-viewport {
+    width: 100%;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    padding: 20px;
+    scrollbar-width: none;
+}
+
+.chat-viewport::-webkit-scrollbar {
+    display: none;
+}
+
+.chat-container {
+    display: inline-flex;
+    gap: 20px;
+    min-width: 100%;
+    padding-bottom: 10px;
+}
+
+.embedded-chat {
+    background-color: var(--card-bg);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    border: var(--border);
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+    resize: both;
+    min-width: 300px;
+    min-height: 400px;
+    max-width: 100%;
+    max-height: 90vh;
+}
+
+.embedded-chat iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: var(--card-bg);
+}
+
+.chat-header {
+    padding: 10px 15px;
+    background-color: var(--primary);
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: move;
+    user-select: none;
+}
+
+.chat-header h4 {
+    margin: 0;
+    font-weight: 500;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.chat-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.chat-action-btn {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: var(--transition);
+}
+
+.chat-action-btn:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.remove-chat {
+    background-color: #ff4757 !important;
+}
+
+.viewport-controls {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+/* Resize handle */
+.embedded-chat::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 15px;
+    height: 15px;
+    background: var(--primary-light);
+    cursor: nwse-resize;
+    border-top-left-radius: 4px;
+}
+
+/* Dragging state */
+.embedded-chat.dragging {
+    opacity: 0.9;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .embedded-chat {
+        min-width: 280px;
+        min-height: 350px;
+    }
+    
+    .chat-viewport {
+        padding: 15px;
+    }
+
 footer {
     text-align: center;
     padding: 20px 0;
