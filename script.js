@@ -120,6 +120,8 @@ document.addEventListener('DOMContentLoaded', function() {
     settingsBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         settingsPanel.classList.toggle('active');
+        // Scroll into view if needed when opened
+        if (settingsPanel.classList.contains('active')) settingsPanel.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     });
     document.addEventListener('click', (e) => {
         if (!settingsPanel.contains(e.target) && e.target !== settingsBtn) settingsPanel.classList.remove('active');
