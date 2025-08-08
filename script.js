@@ -37,111 +37,319 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Chat embedder functionality
-    const embedChatBtn = document.getElementById('embedChat');
-    const chatNameInput = document.getElementById('chatName');
-    const chatContainer = document.getElementById('chatContainer');
-    const settingsBtn = document.getElementById('settingsBtn');
-    const settingsPanel = document.getElementById('settingsPanel');
-    const saveSettingsBtn = document.getElementById('saveSettings');
-    const chatWidthInput = document.getElementById('chatWidth');
-    const chatHeightInput = document.getElementById('chatHeight');
-    const scrollLeftBtn = document.getElementById('scrollLeft');
-    const scrollRightBtn = document.getElementById('scrollRight');
-    
-    // Load saved settings or set defaults
-    const savedSettings = JSON.parse(localStorage.getItem('chatSettings')) || {
-        width: 650,
-        height: 486
-    };
-    
-    chatWidthInput.value = savedSettings.width;
-    chatHeightInput.value = savedSettings.height;
-    
-    settingsBtn.addEventListener('click', function() {
-        settingsPanel.classList.toggle('active');
+// ====================================
+// Enhanced Chat Embedder Functionality
+// ====================================
+
+const embedChatBtn = document.getElementById('embedChat');
+const chatNameInput = document.getElementById('chatName');
+const chatContainer = document.getElementById('chatContainer');
+const chatViewport = document.getElementById('chatViewport');
+const settingsBtn = document.getElementById('settingsBtn');
+const settingsPanel = document.getElementById('settingsPanel');
+const saveSettingsBtn = document.getElementById('saveSettings');
+const chatWidthInput = document.getElementById('chatWidth');
+const chatHeightInput = document.getElementById('chatHeight');
+const defaultThemeSelect = document.getElementById('defaultTheme');
+const scrollLeftBtn = document.getElementById('scrollLeft');
+const scrollRightBtn = document.getElementById('scrollRight');
+const clearAllBtn = document.getElementById('clearAllBtn');
+const zoomInBtn = document.getElementById('zoomIn');
+const zoomOutBtn = document.getElementById('zoomOut');
+const resetViewBtn = document.getElementById('resetView');
+
+// Load saved settings or set defaults
+const savedSettings = JSON.parse(localStorage.getItem('chatSettings')) || {
+    width: 700,
+    height: 500,
+    theme: 'light'
+};
+
+// Load saved chats
+const savedChats = JSON.parse(localStorage.getItem('savedChats')) || [];
+
+chatWidthInput.value = savedSettings.width;
+chatHeightInput.value = savedSettings.height;
+defaultThemeSelect.value = savedSettings.theme;
+
+// Initialize
+function initChatEmbedder() {
+    // Load saved chats
+    savedChats.forEach(chat => {
+        createChatWindow(chat.name, chat.width, chat.height, chat.theme, chat.x, chat.y);
     });
     
-    saveSettingsBtn.addEventListener('click', function() {
-        const newSettings = {
-            width: parseInt(chatWidthInput.value) || 650,
-            height: parseInt(chatHeightInput.value) || 486
-        };
-        
-        localStorage.setItem('chatSettings', JSON.stringify(newSettings));
-        settingsPanel.classList.remove('active');
-        
-        document.querySelectorAll('.embedded-chat iframe').forEach(iframe => {
-            iframe.width = newSettings.width;
-            iframe.height = newSettings.height;
-        });
-        
-        const originalText = saveSettingsBtn.innerHTML;
-        saveSettingsBtn.innerHTML = '<i class="fas fa-check"></i> Saved!';
+    // Scroll to end if there are chats
+    if (savedChats.length > 0) {
         setTimeout(() => {
-            saveSettingsBtn.innerHTML = originalText;
-        }, 2000);
-    });
-    
-    embedChatBtn.addEventListener('click', embedChat);
-    chatNameInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            embedChat();
-        }
-    });
-    
-    function embedChat() {
-        const chatName = chatNameInput.value.trim();
-        if (!chatName) {
-            chatNameInput.focus();
-            return;
-        }
-        
-        const settings = JSON.parse(localStorage.getItem('chatSettings')) || {
-            width: 650,
-            height: 486
-        };
-        
-        const chatId = Date.now();
-        const chatWrapper = document.createElement('div');
-        chatWrapper.className = 'embedded-chat';
-        chatWrapper.id = `chat-${chatId}`;
-        
-        chatWrapper.innerHTML = `
-            <button class="remove-chat" data-chat-id="${chatId}">×</button>
-            <iframe src="https://xat.com/embed/chat.php#gn=${encodeURIComponent(chatName)}" 
-                    width="${settings.width}" height="${settings.height}" 
-                    frameborder="0" scrolling="no"></iframe>
-        `;
-        
-        chatContainer.appendChild(chatWrapper);
-        chatNameInput.value = '';
-        
-        setTimeout(() => {
-            chatContainer.scrollTo({
-                left: chatContainer.scrollWidth,
+            chatViewport.scrollTo({
+                left: chatViewport.scrollWidth,
                 behavior: 'smooth'
             });
         }, 100);
-        
-        chatWrapper.querySelector('.remove-chat').addEventListener('click', function() {
-            document.getElementById(`chat-${this.getAttribute('data-chat-id')}`).remove();
-        });
+    }
+}
+
+// Create a new chat window
+function createChatWindow(name, width, height, theme, x, y) {
+    const chatId = Date.now();
+    const chatWrapper = document.createElement('div');
+    chatWrapper.className = 'embedded-chat';
+    chatWrapper.id = `chat-${chatId}`;
+    chatWrapper.style.width = `${width}px`;
+    chatWrapper.style.height = `${height}px`;
+    
+    // Set position if provided
+    if (x && y) {
+        chatWrapper.style.position = 'absolute';
+        chatWrapper.style.left = `${x}px`;
+        chatWrapper.style.top = `${y}px`;
     }
     
-    scrollLeftBtn.addEventListener('click', function() {
-        chatContainer.scrollBy({
-            left: -300,
-            behavior: 'smooth'
+    chatWrapper.innerHTML = `
+        <div class="chat-header">
+            <h4>${name}</h4>
+            <div class="chat-actions">
+                <button class="chat-action-btn refresh-chat" title="Refresh"><i class="fas fa-sync-alt"></i></button>
+                <button class="chat-action-btn remove-chat" title="Remove" data-chat-id="${chatId}"><i class="fas fa-times"></i></button>
+            </div>
+        </div>
+        <iframe src="https://xat.com/embed/chat.php#gn=${encodeURIComponent(name)}&theme=${theme}" 
+                width="100%" height="calc(100% - 40px)" 
+                frameborder="0" scrolling="no"></iframe>
+    `;
+    
+    chatContainer.appendChild(chatWrapper);
+    
+    // Make draggable
+    makeDraggable(chatWrapper);
+    
+    // Add event listeners
+    chatWrapper.querySelector('.remove-chat').addEventListener('click', function(e) {
+        e.stopPropagation();
+        removeChat(this.getAttribute('data-chat-id'));
+    });
+    
+    chatWrapper.querySelector('.refresh-chat').addEventListener('click', function(e) {
+        e.stopPropagation();
+        const iframe = chatWrapper.querySelector('iframe');
+        iframe.src = iframe.src;
+    });
+    
+    // Save to localStorage
+    saveChatsToStorage();
+}
+
+// Make elements draggable
+function makeDraggable(element) {
+    const header = element.querySelector('.chat-header');
+    let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+    
+    header.onmousedown = dragMouseDown;
+    
+    function dragMouseDown(e) {
+        e = e || window.event;
+        e.preventDefault();
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        document.onmouseup = closeDragElement;
+        document.onmousemove = elementDrag;
+        element.classList.add('dragging');
+    }
+    
+    function elementDrag(e) {
+        e = e || window.event;
+        e.preventDefault();
+        pos1 = pos3 - e.clientX;
+        pos2 = pos4 - e.clientY;
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        
+        // Set new position
+        const rect = chatViewport.getBoundingClientRect();
+        let newTop = (element.offsetTop - pos2);
+        let newLeft = (element.offsetLeft - pos1);
+        
+        // Constrain to viewport
+        newTop = Math.max(20, Math.min(newTop, rect.height - element.offsetHeight));
+        newLeft = Math.max(20, Math.min(newLeft, chatViewport.scrollWidth - element.offsetWidth));
+        
+        element.style.top = newTop + "px";
+        element.style.left = newLeft + "px";
+    }
+    
+    function closeDragElement() {
+        document.onmouseup = null;
+        document.onmousemove = null;
+        element.classList.remove('dragging');
+        saveChatsToStorage();
+    }
+}
+
+// Remove chat
+function removeChat(chatId) {
+    const chat = document.getElementById(`chat-${chatId}`);
+    if (chat) chat.remove();
+    saveChatsToStorage();
+}
+
+// Clear all chats
+function clearAllChats() {
+    if (confirm('Are you sure you want to remove all embedded chats?')) {
+        chatContainer.innerHTML = '';
+        localStorage.removeItem('savedChats');
+    }
+}
+
+// Save chats to localStorage
+function saveChatsToStorage() {
+    const chats = [];
+    document.querySelectorAll('.embedded-chat').forEach(chat => {
+        const chatId = chat.id.replace('chat-', '');
+        const name = chat.querySelector('.chat-header h4').textContent;
+        const rect = chat.getBoundingClientRect();
+        const viewportRect = chatViewport.getBoundingClientRect();
+        
+        chats.push({
+            id: chatId,
+            name: name,
+            width: chat.offsetWidth,
+            height: chat.offsetHeight,
+            theme: defaultThemeSelect.value,
+            x: rect.left - viewportRect.left + chatViewport.scrollLeft,
+            y: rect.top - viewportRect.top + chatViewport.scrollTop
         });
     });
     
-    scrollRightBtn.addEventListener('click', function() {
-        chatContainer.scrollBy({
-            left: 300,
+    localStorage.setItem('savedChats', JSON.stringify(chats));
+}
+
+// Event Listeners
+settingsBtn.addEventListener('click', function() {
+    settingsPanel.classList.toggle('active');
+});
+
+saveSettingsBtn.addEventListener('click', function() {
+    const newSettings = {
+        width: parseInt(chatWidthInput.value) || 700,
+        height: parseInt(chatHeightInput.value) || 500,
+        theme: defaultThemeSelect.value
+    };
+    
+    localStorage.setItem('chatSettings', JSON.stringify(newSettings));
+    settingsPanel.classList.remove('active');
+    
+    showToast('Settings saved!');
+});
+
+embedChatBtn.addEventListener('click', embedChat);
+chatNameInput.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') embedChat();
+});
+
+clearAllBtn.addEventListener('click', clearAllChats);
+
+scrollLeftBtn.addEventListener('click', function() {
+    chatViewport.scrollBy({
+        left: -300,
+        behavior: 'smooth'
+    });
+});
+
+scrollRightBtn.addEventListener('click', function() {
+    chatViewport.scrollBy({
+        left: 300,
+        behavior: 'smooth'
+    });
+});
+
+zoomInBtn.addEventListener('click', function() {
+    chatContainer.style.transform = chatContainer.style.transform 
+        ? `scale(${parseFloat(chatContainer.style.transform.replace('scale(', '')) + 0.1})` 
+        : 'scale(1.1)';
+});
+
+zoomOutBtn.addEventListener('click', function() {
+    const currentScale = chatContainer.style.transform 
+        ? parseFloat(chatContainer.style.transform.replace('scale(', '')) 
+        : 1;
+    if (currentScale > 0.5) {
+        chatContainer.style.transform = `scale(${currentScale - 0.1})`;
+    }
+});
+
+resetViewBtn.addEventListener('click', function() {
+    chatContainer.style.transform = '';
+});
+
+function embedChat() {
+    const chatName = chatNameInput.value.trim();
+    if (!chatName) {
+        chatNameInput.focus();
+        showToast('Please enter a chat name');
+        return;
+    }
+    
+    createChatWindow(
+        chatName, 
+        savedSettings.width, 
+        savedSettings.height, 
+        savedSettings.theme
+    );
+    
+    chatNameInput.value = '';
+    
+    setTimeout(() => {
+        chatViewport.scrollTo({
+            left: chatViewport.scrollWidth,
             behavior: 'smooth'
         });
-    });
+    }, 100);
+}
+
+function showToast(message) {
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.classList.add('show');
+    }, 10);
+    
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => {
+            toast.remove();
+        }, 300);
+    }, 3000);
+}
+
+// Initialize on load
+initChatEmbedder();
+
+// Add toast styles
+const style = document.createElement('style');
+style.textContent = `
+    .toast {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: var(--primary);
+        color: white;
+        padding: 12px 24px;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        z-index: 1000;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    .toast.show {
+        opacity: 1;
+    }
+`;
+document.head.appendChild(style);
     
     // Status monitoring
     const services = [
