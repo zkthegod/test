@@ -1092,53 +1092,37 @@ nav a:hover, nav a.active {
 /* Enhanced Chat Embedder */
 /* ================== */
 
-.chat-viewport-container {
-    position: relative;
-    margin: 20px 0;
-    overflow: hidden;
-    border-radius: var(--radius);
-    border: var(--border);
-    background-color: var(--preview-bg);
-}
-
-.chat-viewport {
+#chatMasterContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
-    overflow-x: auto;
-    scroll-behavior: smooth;
-    padding: 20px;
-    scrollbar-width: none;
-}
-
-.chat-viewport::-webkit-scrollbar {
-    display: none;
-}
-
-.chat-container {
-    display: inline-flex;
-    gap: 20px;
-    min-width: 100%;
-    padding-bottom: 10px;
+    height: 100%;
+    pointer-events: none;
+    z-index: 100;
+    overflow: hidden;
 }
 
 .embedded-chat {
+    position: absolute;
     background-color: var(--card-bg);
     border-radius: var(--radius);
     box-shadow: var(--shadow);
     border: var(--border);
-    transition: var(--transition);
-    position: relative;
     overflow: hidden;
-    flex-shrink: 0;
-    resize: both;
     min-width: 300px;
     min-height: 400px;
-    max-width: 100%;
-    max-height: 90vh;
+    max-width: 100vw;
+    max-height: 100vh;
+    touch-action: none;
+    user-select: none;
+    pointer-events: all;
+    resize: both;
 }
 
 .embedded-chat iframe {
     width: 100%;
-    height: 100%;
+    height: calc(100% - 40px);
     border: none;
     background: var(--card-bg);
 }
@@ -1194,26 +1178,26 @@ nav a:hover, nav a.active {
     display: flex;
     gap: 10px;
     justify-content: center;
-    margin-top: 10px;
+    margin: 10px 0;
 }
 
 /* Resize handle */
-.embedded-chat::after {
-    content: '';
+.resize-handle {
     position: absolute;
     bottom: 0;
     right: 0;
-    width: 15px;
-    height: 15px;
+    width: 20px;
+    height: 20px;
     background: var(--primary-light);
     cursor: nwse-resize;
-    border-top-left-radius: 4px;
+    z-index: 20;
 }
 
 /* Dragging state */
 .embedded-chat.dragging {
     opacity: 0.9;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
 }
 
 /* Responsive adjustments */
@@ -1223,9 +1207,10 @@ nav a:hover, nav a.active {
         min-height: 350px;
     }
     
-    .chat-viewport {
-        padding: 15px;
+    .viewport-controls {
+        flex-wrap: wrap;
     }
+}
 
 footer {
     text-align: center;
