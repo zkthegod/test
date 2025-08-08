@@ -46,8 +46,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const saveSettingsBtn = document.getElementById('saveSettings');
     const chatWidthInput = document.getElementById('chatWidth');
     const chatHeightInput = document.getElementById('chatHeight');
-    const scrollLeftBtn = document.getElementById('scrollLeft');
-    const scrollRightBtn = document.getElementById('scrollRight');
     const widgetLayer = document.getElementById('widgetLayer');
     const snapToggle = document.getElementById('snapToggle');
     const gridSizeInput = document.getElementById('gridSize');
@@ -66,10 +64,6 @@ document.addEventListener('DOMContentLoaded', function() {
     chatHeightInput.value = savedSettings.height;
     if (snapToggle) snapToggle.checked = !!savedSettings.snap;
     if (gridSizeInput) gridSizeInput.value = savedSettings.grid || 16;
-    
-    settingsBtn.addEventListener('click', function() {
-        settingsPanel.classList.toggle('active');
-    });
     
     saveSettingsBtn.addEventListener('click', function() {
         const newSettings = {
@@ -404,20 +398,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Rehydrate widgets on load
     loadAllWidgets();
-    
-    scrollLeftBtn.addEventListener('click', function() {
-        chatContainer.scrollBy({
-            left: -300,
-            behavior: 'smooth'
-        });
-    });
-    
-    scrollRightBtn.addEventListener('click', function() {
-        chatContainer.scrollBy({
-            left: 300,
-            behavior: 'smooth'
-        });
-    });
     
     // Status monitoring
     const services = [

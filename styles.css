@@ -1346,3 +1346,28 @@ body.dragging {
 /* Ensure widget body consumes full height without extra padding */
 .widget-body { display: flex; overflow: hidden; line-height: 0; }
 .widget-body iframe { flex: 1 1 auto; height: 100%; display:block; }
+
+/* Dock settings panel to top-right in the chat section */
+#chat-embedder { position: relative; }
+.settings-panel.docked {
+    position: sticky;
+    top: 10px;
+    margin-left: auto;
+    max-width: 720px;
+    z-index: 10;
+}
+
+/* Style per-widget menu inputs */
+.widget-menu label { color: var(--text-light); font-size: 0.9rem; }
+.widget-menu input[type="number"],
+.widget-menu select,
+.widget-menu input[type="color"] {
+    padding: 6px 8px;
+    border: var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+    color: var(--text);
+}
+
+/* Remove scroll button visuals (not used) */
+.scroll-btn { display: none !important; }
