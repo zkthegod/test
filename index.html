@@ -65,37 +65,59 @@
                 </div>
             </section>
 
-            <section id="chat-embedder" class="page">
-                <div class="section-header">
-                    <h2>Chat Embedder</h2>
-                    <button id="settingsBtn" class="icon-btn"><i class="fas fa-cog"></i> Settings</button>
-                </div>
-                
-                <div class="embed-controls">
-                    <div class="input-group">
-                        <input type="text" id="chatName" placeholder="Enter chat name">
-                        <button id="embedChat" class="primary-btn"><i class="fas fa-plus"></i> Embed</button>
-                    </div>
-                </div>
-                
-                <div class="settings-panel" id="settingsPanel">
-                    <div class="setting">
-                        <label for="chatWidth">Width:</label>
-                        <input type="number" id="chatWidth" min="300" max="1200" value="700">
-                    </div>
-                    <div class="setting">
-                        <label for="chatHeight">Height:</label>
-                        <input type="number" id="chatHeight" min="300" max="1200" value="500">
-                    </div>
-                    <button id="saveSettings" class="primary-btn"><i class="fas fa-save"></i> Save</button>
-                </div>
-                
-                <div class="chat-viewport">
-                    <button class="scroll-btn left" id="scrollLeft"><i class="fas fa-chevron-left"></i></button>
-                    <div class="chat-container" id="chatContainer"></div>
-                    <button class="scroll-btn right" id="scrollRight"><i class="fas fa-chevron-right"></i></button>
-                </div>
-            </section>
+<section id="chat-embedder" class="page">
+    <div class="section-header">
+        <h2>Chat Embedder</h2>
+        <div class="header-actions">
+            <button id="settingsBtn" class="icon-btn"><i class="fas fa-cog"></i> Settings</button>
+            <button id="clearAllBtn" class="icon-btn"><i class="fas fa-trash"></i> Clear All</button>
+        </div>
+    </div>
+    
+    <div class="embed-controls">
+        <div class="input-group">
+            <input type="text" id="chatName" placeholder="Enter chat name (e.g. Help)">
+            <button id="embedChat" class="primary-btn"><i class="fas fa-plus"></i> Add Chat</button>
+        </div>
+    </div>
+    
+    <div class="settings-panel" id="settingsPanel">
+        <h3>Default Chat Settings</h3>
+        <div class="setting">
+            <label for="chatWidth">Width:</label>
+            <input type="number" id="chatWidth" min="300" max="1200" value="700">
+        </div>
+        <div class="setting">
+            <label for="chatHeight">Height:</label>
+            <input type="number" id="chatHeight" min="300" max="1200" value="500">
+        </div>
+        <div class="setting">
+            <label for="defaultTheme">Theme:</label>
+            <div class="custom-select">
+                <select id="defaultTheme">
+                    <option value="light">Light</option>
+                    <option value="dark">Dark</option>
+                </select>
+                <div class="select-arrow"></div>
+            </div>
+        </div>
+        <button id="saveSettings" class="primary-btn"><i class="fas fa-save"></i> Save Defaults</button>
+    </div>
+    
+    <div class="chat-viewport-container">
+        <button class="scroll-btn left" id="scrollLeft"><i class="fas fa-chevron-left"></i></button>
+        <div class="chat-viewport" id="chatViewport">
+            <div class="chat-container" id="chatContainer"></div>
+        </div>
+        <button class="scroll-btn right" id="scrollRight"><i class="fas fa-chevron-right"></i></button>
+    </div>
+    
+    <div class="viewport-controls">
+        <button id="zoomIn" class="icon-btn"><i class="fas fa-search-plus"></i> Zoom In</button>
+        <button id="zoomOut" class="icon-btn"><i class="fas fa-search-minus"></i> Zoom Out</button>
+        <button id="resetView" class="icon-btn"><i class="fas fa-expand"></i> Reset View</button>
+    </div>
+</section>
 
             <section id="name-effects" class="page">
                 <div class="section-header">
