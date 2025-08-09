@@ -1367,7 +1367,7 @@ footer { position: relative; z-index: 1; }
 .settings-drawer input#chatWidth, .settings-drawer input#chatHeight { width: 110px; }
 .settings-drawer input#desktopBgImage { min-width: 160px; max-width: 380px; flex: 1 1 220px; }
 
-header, .settings-drawer, .embed-controls, .section-header { position: relative; z-index: 10; }
+header, .embed-controls, .section-header { position: relative; z-index: 10; }
 /* header stacking reset above is redundant; keeping settings-drawer own z-index */
 
 .settings-drawer .row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 8px 0; }
