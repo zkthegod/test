@@ -1194,11 +1194,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const services = [
         { name: 'xat', url: 'https://xat.com', element: document.getElementById('xatStatus') },
         { name: 'wiki', url: 'https://wiki.xat.com', element: document.getElementById('wikiStatus') }
-    ];
+    ].filter(s => s.element);
     
     function checkServiceStatus(service) {
+        if (!service || !service.element) return;
         const indicator = service.element.querySelector('.status-indicator');
         const uptimeElement = service.element.querySelector('.uptime .value');
+        if (!indicator || !uptimeElement) return;
         
         indicator.classList.remove('online', 'offline');
         indicator.classList.add('loading');
@@ -1208,7 +1210,8 @@ document.addEventListener('DOMContentLoaded', function() {
             
             indicator.classList.remove('loading');
             indicator.classList.add(isOnline ? 'online' : 'offline');
-            indicator.querySelector('span').textContent = isOnline ? 'Online' : 'Offline';
+            const span = indicator.querySelector('span');
+            if (span) span.textContent = isOnline ? 'Online' : 'Offline';
             
             if (isOnline) {
                 const days = Math.floor(Math.random() * 30);
@@ -1220,8 +1223,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 1500);
     }
     
-    services.forEach(service => { checkServiceStatus(service); });
-    setInterval(() => { services.forEach(service => { checkServiceStatus(service); }); }, 5 * 60 * 1000);
+    if (services.length) {
+        services.forEach(service => { checkServiceStatus(service); });
+        setInterval(() => { services.forEach(service => { checkServiceStatus(service); }); }, 5 * 60 * 1000);
+    }
 
     // Name Effects Generator
     const effectText = document.getElementById('effectText');
