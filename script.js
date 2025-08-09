@@ -1755,19 +1755,23 @@ document.addEventListener('DOMContentLoaded', function() {
     function rebuildChatStyleChips() {
         if (!chatStylesList) return;
         chatStylesList.innerHTML = '';
+        // Read stored windows
         let windows = getWindowsState();
-        // Fallback to DOM if storage empty
-        if (!Array.isArray(windows) || windows.length === 0) {
-            const domWins = Array.from(chatDesktop.querySelectorAll('.chat-window'));
-            if (domWins.length) {
-                windows = domWins.map(el => ({
-                    id: parseInt(el.dataset.id || `${Date.now()}`),
-                    name: el.querySelector('.window-titlebar .title')?.textContent?.trim() || 'Chat',
-                    style: { borderColor: '', glowColor: '' }
-                }));
-            }
-        }
-        if (!windows || !windows.length) {
+        if (!Array.isArray(windows)) windows = [];
+        // Merge with any DOM windows to ensure presence
+        const domWins = Array.from(chatDesktop.querySelectorAll('.chat-window')).map(el => ({
+            id: parseInt(el.dataset.id || `${Date.now()}`),
+            name: el.querySelector('.window-titlebar .title')?.textContent?.trim() || 'Chat',
+            style: {}
+        }));
+        domWins.forEach(dw => {
+            if (!windows.find(w => w.id === dw.id)) windows.push({ ...dw, style: { borderColor: '', glowColor: '' } });
+        });
+        // Update section label with count if available
+        const sectionRow = chatStylesList.closest('.row');
+        const labelEl = sectionRow ? sectionRow.querySelector('label') : null;
+        if (labelEl) labelEl.textContent = `Chat Glow${windows.length ? ` (${windows.length})` : ''}`;
+        if (!windows.length) {
             const empty = document.createElement('div');
             empty.className = 'chat-style-placeholder';
             empty.innerHTML = `
@@ -1782,10 +1786,10 @@ document.addEventListener('DOMContentLoaded', function() {
             chip.className = 'chat-style-chip';
             const value = w.style?.borderColor || w.style?.glowColor || '#000000';
             chip.innerHTML = `
-                <span class="chip-title">${w.name}</span>
+                <span class=\"chip-title\">${w.name}</span>
                 <label>Glow</label>
-                <input type="color" value="${value}" data-kind="both" data-id="${w.id}" class="chip-color">
-                <input type="text" value="${value}" maxlength="7" class="chip-hex" data-id="${w.id}" placeholder="#000000">
+                <input type=\"color\" value=\"${value}\" data-id=\"${w.id}\" class=\"chip-color\">
+                <input type=\"text\" value=\"${value}\" maxlength=\"7\" class=\"chip-hex\" data-id=\"${w.id}\" placeholder=\"#000000\">
             `;
             chatStylesList.appendChild(chip);
         });
