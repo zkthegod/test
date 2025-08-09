@@ -1010,38 +1010,110 @@ document.addEventListener('DOMContentLoaded', function() {
     applyStylesToExistingWindows();
     setupAlignmentButtons();
 
-    // Status monitoring
+    // Status monitoring (image ping + local rolling metrics)
     const services = [
-        { name: 'xat', url: 'https://xat.com', element: document.getElementById('xatStatus') },
-        { name: 'wiki', url: 'https://wiki.xat.com', element: document.getElementById('wikiStatus') }
+        { key: 'xat', url: 'https://xat.com', element: document.getElementById('xatStatus') },
+        { key: 'wiki', url: 'https://wiki.xat.com', element: document.getElementById('wikiStatus') },
+        { key: 'forum', url: 'https://forum.xat.com', element: document.getElementById('forumStatus') }
     ];
-    
-    function checkServiceStatus(service) {
+
+    const CHECK_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
+    const TIMEOUT_MS = 8000;
+    const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+    const MONTH_MS = 30 * 24 * 60 * 60 * 1000;
+    const DAY_MS = 24 * 60 * 60 * 1000;
+    const RETAIN_MS = 90 * DAY_MS; // keep ~90 days of history
+
+    function pingImage(url, timeoutMs) {
+        return new Promise(resolve => {
+            let finished = false;
+            const img = new Image();
+            const done = (ok) => { if (!finished) { finished = true; resolve(!!ok); } };
+            const timer = setTimeout(() => done(false), timeoutMs);
+            img.onload = () => { clearTimeout(timer); done(true); };
+            img.onerror = () => { clearTimeout(timer); done(false); };
+            try {
+                img.src = `${url.replace(/\/$/, '')}/favicon.ico?_=${Date.now()}`;
+            } catch (e) {
+                clearTimeout(timer);
+                done(false);
+            }
+        });
+    }
+
+    function readRecords(key) {
+        try { return JSON.parse(localStorage.getItem(`uptime:${key}`)) || []; } catch { return []; }
+    }
+    function writeRecords(key, records) {
+        try { localStorage.setItem(`uptime:${key}`, JSON.stringify(records)); } catch {}
+    }
+    function pruneOld(records, now) {
+        const cutoff = now - RETAIN_MS;
+        return records.filter(r => r.t >= cutoff);
+    }
+
+    function computePercent(records, windowMs, now) {
+        const start = windowMs ? now - windowMs : 0;
+        const windowed = records.filter(r => r.t >= start);
+        if (windowed.length === 0) return null;
+        const upCount = windowed.reduce((a, r) => a + (r.up ? 1 : 0), 0);
+        return (upCount / windowed.length) * 100;
+    }
+
+    function classify(percent) {
+        if (percent === null || percent === undefined) return 'bad';
+        if (percent >= 99) return 'good';
+        if (percent >= 95) return 'warn';
+        return 'bad';
+    }
+
+    function formatPercent(p) {
+        if (p == null) return '—';
+        return `${p.toFixed(2)}%`;
+    }
+
+    function updateMetricsUI(serviceKey, element) {
+        const now = Date.now();
+        const records = readRecords(serviceKey);
+        const current = computePercent(records, DAY_MS, now); // last 24h
+        const week = computePercent(records, WEEK_MS, now);
+        const month = computePercent(records, MONTH_MS, now);
+        const life = computePercent(records, 0, now);
+        const map = { current, week, month, life };
+        Object.entries(map).forEach(([k, v]) => {
+            const percentEl = element.querySelector(`.percent[data-key="${k}"]`);
+            const fillEl = element.querySelector(`.fill[data-key="${k}"]`);
+            if (percentEl) percentEl.textContent = formatPercent(v);
+            if (fillEl) {
+                const cl = classify(v);
+                fillEl.classList.remove('good', 'warn', 'bad');
+                fillEl.classList.add(cl);
+                fillEl.style.width = `${Math.max(0, Math.min(100, v == null ? 0 : v))}%`;
+            }
+        });
+    }
+
+    async function checkService(service) {
+        if (!service.element) return;
         const indicator = service.element.querySelector('.status-indicator');
-        const uptimeElement = service.element.querySelector('.uptime .value');
-        
         indicator.classList.remove('online', 'offline');
         indicator.classList.add('loading');
-        
-        setTimeout(() => {
-            const isOnline = Math.random() > 0.2;
-            
-            indicator.classList.remove('loading');
-            indicator.classList.add(isOnline ? 'online' : 'offline');
-            indicator.querySelector('span').textContent = isOnline ? 'Online' : 'Offline';
-            
-            if (isOnline) {
-                const days = Math.floor(Math.random() * 30);
-                const hours = Math.floor(Math.random() * 24);
-                uptimeElement.textContent = `${days}d ${hours}h`;
-            } else {
-                uptimeElement.textContent = 'N/A';
-            }
-        }, 1500);
+        indicator.querySelector('span').textContent = 'Checking...';
+        const isUp = await pingImage(service.url, TIMEOUT_MS);
+        const now = Date.now();
+        let records = readRecords(service.key);
+        records.push({ t: now, up: !!isUp });
+        records = pruneOld(records, now);
+        writeRecords(service.key, records);
+        indicator.classList.remove('loading');
+        indicator.classList.add(isUp ? 'online' : 'offline');
+        indicator.querySelector('span').textContent = isUp ? 'Online' : 'Offline';
+        updateMetricsUI(service.key, service.element);
     }
-    
-    services.forEach(service => { checkServiceStatus(service); });
-    setInterval(() => { services.forEach(service => { checkServiceStatus(service); }); }, 5 * 60 * 1000);
+
+    // Kick off and schedule
+    services.forEach(service => checkService(service));
+    setInterval(() => services.forEach(service => checkService(service)), CHECK_INTERVAL_MS);
 
     // Name Effects Generator
     const effectText = document.getElementById('effectText');
