@@ -136,6 +136,7 @@ document.addEventListener('DOMContentLoaded', function() {
             item.dataset.value = opt.value;
             if (opt.selected) item.classList.add('active');
             item.addEventListener('click', (e) => {
+                e.stopPropagation();
                 // set native select for persistence
                 effectsType.value = opt.value;
                 // update label
