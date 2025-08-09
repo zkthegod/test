@@ -594,7 +594,10 @@ document.addEventListener('DOMContentLoaded', function() {
         e.stopPropagation();
         settingsPanel.classList.toggle('active');
         settingsOverlay.classList.toggle('active', settingsPanel.classList.contains('active'));
-        if (settingsPanel.classList.contains('active')) settingsPanel.focus();
+        if (settingsPanel.classList.contains('active')) {
+            rebuildChatStyleChips();
+            settingsPanel.focus();
+        }
     });
     document.addEventListener('click', (e) => {
         if (!settingsPanel.contains(e.target) && e.target !== settingsBtn) {
