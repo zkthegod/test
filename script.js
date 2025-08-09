@@ -372,6 +372,128 @@ document.addEventListener('DOMContentLoaded', function() {
                 ctx.restore(); requestAnimationFrame(draw);
             }
             draw();
+        } else if (type === 'holo-net') {
+            const canvas = document.createElement('canvas');
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            canvas.style.width='100%'; canvas.style.height='100%'; layer.appendChild(canvas);
+            const ctx = canvas.getContext('2d');
+            let t = 0;
+            function draw(){
+                t += 0.01; ctx.clearRect(0,0,canvas.width,canvas.height);
+                ctx.strokeStyle = 'rgba(108,92,231,0.35)'; ctx.lineWidth = 1;
+                const cols = 18, rows = 12;
+                for(let r=0;r<=rows;r++){
+                    ctx.beginPath();
+                    for(let c=0;c<=cols;c++){
+                        const x = (c/cols)*canvas.width;
+                        const y = (r/rows)*canvas.height + Math.sin((c/cols)*Math.PI*2 + t + r*0.3)*12;
+                        if(c===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+                    }
+                    ctx.stroke();
+                }
+                requestAnimationFrame(draw);
+            }
+            draw();
+        } else if (type === 'blackhole') {
+            const hole = document.createElement('div');
+            hole.style.position='absolute'; hole.style.left='50%'; hole.style.top='50%';
+            hole.style.transform='translate(-50%,-50%)';
+            hole.style.width='60vmin'; hole.style.height='60vmin'; hole.style.borderRadius='50%';
+            hole.style.background='radial-gradient(circle at 50% 50%, rgba(0,0,0,0.0), rgba(0,0,0,0.45) 55%, rgba(0,0,0,0.85) 65%, rgba(0,0,0,1) 70%)';
+            hole.style.filter='blur(4px)';
+            const lens = document.createElement('div');
+            lens.style.position='absolute'; lens.style.inset='-20%'; lens.style.borderRadius='50%';
+            lens.style.backdropFilter='blur(4px) saturate(1.05)';
+            lens.style.maskImage='radial-gradient(circle, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 75%)';
+            hole.appendChild(lens); layer.appendChild(hole);
+        } else if (type === 'water-refraction') {
+            const glass = document.createElement('div');
+            glass.style.position='absolute'; glass.style.inset='0'; glass.style.backdropFilter='blur(3px)';
+            glass.style.background='radial-gradient(circle, rgba(255,255,255,0.04), rgba(255,255,255,0))';
+            glass.style.opacity='0.8';
+            glass.style.maskImage='repeating-radial-gradient(circle at 50% 50%, rgba(0,0,0,1) 0 2px, rgba(0,0,0,0) 4px)';
+            layer.appendChild(glass);
+        } else if (type === 'aurora-lines') {
+            const canvas = document.createElement('canvas'); canvas.width=window.innerWidth; canvas.height=window.innerHeight;
+            canvas.style.width='100%'; canvas.style.height='100%'; layer.appendChild(canvas);
+            const ctx = canvas.getContext('2d');
+            let t=0; function draw(){ t+=0.01; ctx.clearRect(0,0,canvas.width,canvas.height);
+                for(let i=0;i<10;i++){
+                    const x = (i/10)*canvas.width;
+                    const h = (Math.sin(t+i)*0.5+0.5)*canvas.height*0.6 + canvas.height*0.2;
+                    const grad = ctx.createLinearGradient(x,0,x,canvas.height);
+                    grad.addColorStop(0,'rgba(150,80,255,0)'); grad.addColorStop(0.5,'rgba(150,80,255,0.15)'); grad.addColorStop(1,'rgba(0,0,0,0)');
+                    ctx.fillStyle=grad; ctx.fillRect(x-2,canvas.height-h,4,h);
+                }
+                requestAnimationFrame(draw);
+            } draw();
+        } else if (type === 'dim-starfield') {
+            for(let i=0;i<120;i++){
+                const s=document.createElement('div'); s.style.position='absolute';
+                s.style.left=`${Math.random()*100}%`; s.style.top=`${Math.random()*100}%`;
+                s.style.width=s.style.height='1px'; s.style.background='rgba(255,255,255,0.5)';
+                s.style.opacity=String(0.2+Math.random()*0.5);
+                s.style.animation=`twinkle ${1.5+Math.random()*2}s ease-in-out ${Math.random()}s infinite alternate`;
+                layer.appendChild(s);
+            }
+        } else if (type === 'quote-dust') {
+            const words=['Dream','Create','Inspire','Shine','Believe','Explore','Imagine','Build','Focus','Evolve'];
+            for(let i=0;i<40;i++){
+                const p=document.createElement('div'); p.textContent = Math.random()>0.9 ? words[Math.floor(Math.random()*words.length)] : '•';
+                p.style.position='absolute'; p.style.left=`${Math.random()*100}%`; p.style.top=`${Math.random()*100}%`;
+                p.style.fontSize='10px'; p.style.color='rgba(255,255,255,0.35)'; p.style.letterSpacing='1px';
+                p.style.animation=`floatUp ${6+Math.random()*6}s ease-in-out ${Math.random()*3}s infinite alternate`;
+                layer.appendChild(p);
+            }
+        } else if (type === 'grad-mesh') {
+            const mesh=document.createElement('div'); mesh.style.position='absolute'; mesh.style.inset='0';
+            mesh.style.background='radial-gradient(circle at 20% 30%, rgba(108,92,231,0.25), transparent 40%), radial-gradient(circle at 80% 70%, rgba(46,213,115,0.25), transparent 40%), radial-gradient(circle at 50% 50%, rgba(255,159,67,0.18), transparent 40%)';
+            mesh.style.filter='blur(20px)'; layer.appendChild(mesh);
+        } else if (type === 'glow-matrix') {
+            const canvas=document.createElement('canvas'); canvas.width=window.innerWidth; canvas.height=window.innerHeight;
+            canvas.style.width='100%'; canvas.style.height='100%'; layer.appendChild(canvas);
+            const ctx=canvas.getContext('2d');
+            const letters='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            const cols=Math.floor(canvas.width/16); const drops=Array(cols).fill(0);
+            function draw(){
+                ctx.fillStyle='rgba(0,0,0,0.08)'; ctx.fillRect(0,0,canvas.width,canvas.height);
+                for(let i=0;i<drops.length;i++){
+                    const x=i*16; const y=drops[i]*16;
+                    const ch=letters[Math.floor(Math.random()*letters.length)];
+                    const hue = 260 + Math.sin((i + drops[i])*0.05)*40; // purple/cyan range
+                    ctx.fillStyle=`hsla(${hue}, 90%, 60%, 0.85)`; ctx.shadowColor=ctx.fillStyle; ctx.shadowBlur=8;
+                    ctx.fillText(ch,x,y);
+                    if (y>canvas.height && Math.random()>0.98) drops[i]=0; else drops[i]++;
+                }
+                requestAnimationFrame(draw);
+            }
+            ctx.font='16px monospace'; draw();
+        } else if (type === 'neon-grid') {
+            const grid=document.createElement('div'); grid.style.position='absolute'; grid.style.inset='0'; grid.style.background='linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)'; grid.style.backgroundSize='40px 40px';
+            grid.style.boxShadow='inset 0 0 80px rgba(108,92,231,0.15)'; layer.appendChild(grid);
+        } else if (type === 'prismatic-noise') {
+            const canvas=document.createElement('canvas'); canvas.width=window.innerWidth; canvas.height=window.innerHeight; canvas.style.width='100%'; canvas.style.height='100%'; layer.appendChild(canvas);
+            const ctx=canvas.getContext('2d'); let t=0; function draw(){ t+=0.003; const img=ctx.createImageData(canvas.width, canvas.height); const d=img.data; for(let y=0;y<canvas.height;y++){ for(let x=0;x<canvas.width;x++){ const i=(y*canvas.width+x)*4; const n=Math.sin(x*0.01+y*0.01+t)*0.5+0.5; d[i]=n*200; d[i+1]=Math.sin(n*6.28)*70+130; d[i+2]=255-n*180; d[i+3]=28; } } ctx.putImageData(img,0,0); requestAnimationFrame(draw);} draw();
+        } else if (type === 'sine-rings') {
+            const canvas=document.createElement('canvas'); canvas.width=window.innerWidth; canvas.height=window.innerHeight; canvas.style.width='100%'; canvas.style.height='100%'; layer.appendChild(canvas);
+            const ctx=canvas.getContext('2d'); let t=0; function draw(){ t+=0.01; ctx.clearRect(0,0,canvas.width,canvas.height); ctx.strokeStyle='rgba(255,255,255,0.25)'; for(let r=0;r<12;r++){ ctx.beginPath(); const rad=40+r*40 + Math.sin(t+r)*8; ctx.arc(canvas.width/2, canvas.height/2, rad, 0, Math.PI*2); ctx.stroke(); } requestAnimationFrame(draw);} draw();
+        } else if (type === 'particle-swirl') {
+            const canvas=document.createElement('canvas'); canvas.width=window.innerWidth; canvas.height=window.innerHeight; canvas.style.width='100%'; canvas.style.height='100%'; layer.appendChild(canvas);
+            const ctx=canvas.getContext('2d'); const pts=Array.from({length:800},()=>({a:Math.random()*Math.PI*2,r:20+Math.random()*260,s:0.002+Math.random()*0.006})); function draw(){ ctx.clearRect(0,0,canvas.width,canvas.height); ctx.save(); ctx.translate(canvas.width/2, canvas.height/2); ctx.fillStyle='rgba(255,255,255,0.6)'; pts.forEach(p=>{ p.a+=p.s; const x=Math.cos(p.a)*p.r; const y=Math.sin(p.a)*p.r; ctx.fillRect(x,y,1,1); }); ctx.restore(); requestAnimationFrame(draw);} draw();
+        } else if (type === 'soft-bokeh') {
+            for(let i=0;i<24;i++){ const b=document.createElement('div'); const s=20+Math.random()*60; b.style.position='absolute'; b.style.left=`${Math.random()*100}%`; b.style.top=`${Math.random()*100}%`; b.style.width=b.style.height=`${s}px`; b.style.borderRadius='50%'; b.style.background='rgba(255,255,255,0.06)'; b.style.filter='blur(3px)'; layer.appendChild(b);}        
+        } else if (type === 'geo-tiles') {
+            const canvas=document.createElement('canvas'); canvas.width=window.innerWidth; canvas.height=window.innerHeight; canvas.style.width='100%'; canvas.style.height='100%'; layer.appendChild(canvas);
+            const ctx=canvas.getContext('2d'); let t=0; function draw(){ t+=0.01; ctx.clearRect(0,0,canvas.width,canvas.height); const size=50; for(let y=0;y<canvas.height;y+=size){ for(let x=0;x<canvas.width;x+=size){ const off=Math.sin((x+y)*0.01+t)*10; ctx.strokeStyle='rgba(255,255,255,0.08)'; ctx.strokeRect(x+off*0.2,y+off*0.2,size-off*0.4,size-off*0.4); } } requestAnimationFrame(draw);} draw();
+        } else if (type === 'ink-clouds') {
+            const fog=document.createElement('div'); fog.style.position='absolute'; fog.style.inset='0'; fog.style.background='radial-gradient(circle at 30% 30%, rgba(0,0,0,0.15), transparent 50%), radial-gradient(circle at 70% 60%, rgba(0,0,0,0.15), transparent 50%)'; fog.style.filter='blur(10px)'; layer.appendChild(fog);
+        } else if (type === 'sunbeams') {
+            for(let i=0;i<10;i++){ const beam=document.createElement('div'); beam.style.position='absolute'; beam.style.left='50%'; beam.style.top='0'; beam.style.width='2px'; beam.style.height='100%'; beam.style.transform=`rotate(${(i-5)*5}deg)`; beam.style.background='linear-gradient(transparent, rgba(255,255,255,0.18), transparent)'; layer.appendChild(beam);}        
+        } else if (type === 'dust-waves') {
+            const canvas=document.createElement('canvas'); canvas.width=window.innerWidth; canvas.height=window.innerHeight; canvas.style.width='100%'; canvas.style.height='100%'; layer.appendChild(canvas);
+            const ctx=canvas.getContext('2d'); let t=0; function draw(){ t+=0.01; ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle='rgba(255,255,255,0.2)'; for(let i=0;i<80;i++){ const x=Math.random()*canvas.width; const y=(Math.sin(t + i)*0.5+0.5)*canvas.height; ctx.globalAlpha=0.06; ctx.fillRect(x,y,1,1);} requestAnimationFrame(draw);} draw();
+        } else if (type === 'pulse-grid') {
+            const grid=document.createElement('div'); grid.style.position='absolute'; grid.style.inset='0'; grid.style.background='linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)'; grid.style.backgroundSize='60px 60px'; grid.style.animation='pulseGrid 4s ease-in-out infinite'; layer.appendChild(grid);
         }
     }
 
@@ -909,7 +1031,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (alignCascadeBtn) alignCascadeBtn.addEventListener('click', alignCascade);
     if (alignTileBtn) alignTileBtn.addEventListener('click', alignTile);
     if (alignCenterBtn) alignCenterBtn.addEventListener('click', () => alignEdge('center'));
-    if (resizeAllBtn) resizeAllBtn.addEventListener('click', () => { saveDesktopSettings(); resizeAllToDefault(); });
+    if (resizeAllBtn) resizeAllBtn.addEventListener('click', () => { resizeAllToDefault(); });
 
     loadDesktopSettings();
     restoreWindows();
