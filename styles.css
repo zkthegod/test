@@ -1377,3 +1377,17 @@ header::after {
 /* Ensure chats stay above footer */
 .chat-desktop, .chat-window { z-index: 100; }
 footer { position: relative; z-index: 1; }
+
+.resize-handle{position:absolute}
+.resize-handle.n{top:-6px;left:0;width:100%;height:12px;cursor:ns-resize}
+.resize-handle.s{bottom:-6px;left:0;width:100%;height:12px;cursor:ns-resize}
+.resize-handle.e{right:-6px;top:0;width:12px;height:100%;cursor:ew-resize}
+.resize-handle.w{left:-6px;top:0;width:12px;height:100%;cursor:ew-resize}
+.resize-handle.ne{top:-6px;right:-6px;width:16px;height:16px;cursor:nesw-resize}
+.resize-handle.nw{top:-6px;left:-6px;width:16px;height:16px;cursor:nwse-resize}
+.resize-handle.se{bottom:-6px;right:-6px;width:16px;height:16px;cursor:nwse-resize}
+.resize-handle.sw{bottom:-6px;left:-6px;width:16px;height:16px;cursor:nesw-resize}
+
+/* Red hover consistency */
+#clearAllChats.link-btn{transition:background .2s ease,opacity .2s ease}
+#clearAllChats.link-btn:hover{opacity:.9}

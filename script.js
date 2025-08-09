@@ -642,10 +642,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    alignCascadeBtn.addEventListener('click', alignCascade);
-    alignTileBtn.addEventListener('click', alignTile);
+    if (alignCascadeBtn) alignCascadeBtn.addEventListener('click', alignCascade);
+    if (alignTileBtn) alignTileBtn.addEventListener('click', alignTile);
     if (alignCenterBtn) alignCenterBtn.addEventListener('click', () => alignEdge('center'));
-    resizeAllBtn.addEventListener('click', () => { saveDesktopSettings(); resizeAllToDefault(); });
+    if (resizeAllBtn) resizeAllBtn.addEventListener('click', () => { saveDesktopSettings(); resizeAllToDefault(); });
 
     loadDesktopSettings();
     restoreWindows();
