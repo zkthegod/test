@@ -1417,6 +1417,7 @@ header, .embed-controls, .section-header { position: relative; z-index: 10; }
 
 .settings-drawer .row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 8px 0; }
 .settings-drawer label { color: var(--text-light); font-size: 0.9rem; min-width: 88px; }
+.settings-drawer #chatStylesList { flex: 1 1 100%; display: grid; grid-template-columns: 1fr; gap: 6px; }
 .settings-drawer input[type="color"],
 .settings-drawer input[type="text"],
 .settings-drawer input[type="number"] { padding: 10px 12px; border: var(--border); border-radius: 8px; background: var(--bg); color: var(--text); flex: 1; }
