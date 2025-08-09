@@ -1621,6 +1621,36 @@ document.addEventListener('DOMContentLoaded', function() {
     wireStyleChipListeners();
     applyStylesToExistingWindows();
 
+    function setupAlignmentButtons() {
+        const tileBtn = document.getElementById('alignTile');
+        const centerBtn = document.getElementById('alignCenter');
+        if (tileBtn && !tileBtn.dataset.bound) {
+            tileBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Tile button clicked');
+                alignTile();
+            });
+            tileBtn.dataset.bound = 'true';
+        }
+        if (centerBtn && !centerBtn.dataset.bound) {
+            centerBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Center button clicked');
+                alignEdge('center');
+            });
+            centerBtn.dataset.bound = 'true';
+        }
+    }
+
+    // Call after restoring windows
+    restoreWindows();
+    rebuildChatStyleChips();
+    wireStyleChipListeners();
+    applyStylesToExistingWindows();
+    setupAlignmentButtons();
+
     // Robust action delegation for settings drawer actions
     const drawerActions = document.querySelector('.settings-drawer .actions');
     if (drawerActions) {
