@@ -1757,12 +1757,10 @@ document.addEventListener('DOMContentLoaded', function() {
         else el.style.filter = '';
     }
 
+    let styleChipsWired = false;
     function wireStyleChipListeners() {
-        if (!chatStylesList) return;
-        chatStylesList.replaceWith(chatStylesList.cloneNode(true));
-        const freshList = document.getElementById('chatStylesList');
-        if (!freshList) return;
-        freshList.addEventListener('input', (e) => {
+        if (!chatStylesList || styleChipsWired) return;
+        chatStylesList.addEventListener('input', (e) => {
             const input = e.target;
             if (!(input instanceof HTMLInputElement)) return;
             const id = parseInt(input.dataset.id || '');
@@ -1778,6 +1776,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const el = chatDesktop.querySelector(`.chat-window[data-id="${id}"]`);
             if (el) applyChatStyleToElement(el, style);
         });
+        styleChipsWired = true;
     }
 
     function applyStylesToExistingWindows() {

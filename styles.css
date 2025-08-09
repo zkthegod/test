@@ -1452,10 +1452,19 @@ header, .embed-controls, .section-header { position: relative; z-index: 10; }
 .color-picker-wrapper input[type="color"],
 .settings-dropdown input[type="color"],
 .settings-drawer input[type="color"] {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     border: 1px solid rgba(0,0,0,0.12);
     box-shadow: 0 2px 8px rgba(0,0,0,0.12);
     padding: 0;
+    overflow: hidden;
 }
+.color-input input[type="color"]::-webkit-color-swatch-wrapper,
+.color-picker-wrapper input[type="color"]::-webkit-color-swatch-wrapper,
+.settings-dropdown input[type="color"]::-webkit-color-swatch-wrapper,
+.settings-drawer input[type="color"]::-webkit-color-swatch-wrapper { padding: 2px; }
+.color-input input[type="color"]::-webkit-color-swatch,
+.color-picker-wrapper input[type="color"]::-webkit-color-swatch,
+.settings-dropdown input[type="color"]::-webkit-color-swatch,
+.settings-drawer input[type="color"]::-webkit-color-swatch { border-radius: 50%; border: none; }
