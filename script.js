@@ -113,6 +113,125 @@ document.addEventListener('DOMContentLoaded', function() {
         return document.getElementById('chat-embedder')?.classList.contains('active');
     }
 
+    // Effects minimal overlays
+    const effectsToggle = document.getElementById('effectsToggle');
+    const effectsType = document.getElementById('effectsType');
+    const effectsLayerId = 'effectsLayer';
+
+    function ensureEffectsLayer() {
+        let layer = document.getElementById(effectsLayerId);
+        if (!layer) {
+            layer = document.createElement('div');
+            layer.id = effectsLayerId;
+            layer.style.position = 'fixed';
+            layer.style.pointerEvents = 'none';
+            layer.style.inset = '0';
+            layer.style.zIndex = '15';
+            document.body.appendChild(layer);
+        }
+        return layer;
+    }
+
+    function clearEffects() {
+        const layer = document.getElementById(effectsLayerId);
+        if (layer) layer.innerHTML = '';
+    }
+
+    function renderEffects(type) {
+        clearEffects();
+        if (!effectsToggle || !effectsToggle.checked) return;
+        const layer = ensureEffectsLayer();
+        if (type === 'snow') {
+            for (let i = 0; i < 40; i++) {
+                const flake = document.createElement('div');
+                flake.style.position = 'absolute';
+                flake.style.top = `${Math.random() * -50}px`;
+                flake.style.left = `${Math.random() * 100}%`;
+                flake.style.width = flake.style.height = `${Math.random() * 3 + 1}px`;
+                flake.style.borderRadius = '50%';
+                flake.style.background = 'rgba(255,255,255,0.7)';
+                flake.style.animation = `fall ${6 + Math.random() * 6}s linear ${Math.random() * 6}s infinite`;
+                layer.appendChild(flake);
+            }
+        } else if (type === 'sparkles') {
+            for (let i = 0; i < 30; i++) {
+                const s = document.createElement('div');
+                s.style.position = 'absolute';
+                s.style.top = `${Math.random() * 100}%`;
+                s.style.left = `${Math.random() * 100}%`;
+                s.style.width = s.style.height = '2px';
+                s.style.background = 'rgba(255,255,255,0.6)';
+                s.style.boxShadow = '0 0 6px rgba(255,255,255,0.8)';
+                s.style.animation = `twinkle ${1 + Math.random()}s ease-in-out ${Math.random() * 1.5}s infinite alternate`;
+                layer.appendChild(s);
+            }
+        } else if (type === 'bokeh') {
+            for (let i = 0; i < 18; i++) {
+                const b = document.createElement('div');
+                b.style.position = 'absolute';
+                b.style.top = `${Math.random() * 100}%`;
+                b.style.left = `${Math.random() * 100}%`;
+                const size = 8 + Math.random() * 20;
+                b.style.width = b.style.height = `${size}px`;
+                b.style.borderRadius = '50%';
+                b.style.background = 'rgba(255,255,255,0.08)';
+                b.style.filter = 'blur(2px)';
+                layer.appendChild(b);
+            }
+        } else if (type === 'stars') {
+            for (let i = 0; i < 50; i++) {
+                const star = document.createElement('div');
+                star.style.position = 'absolute';
+                star.style.top = `${Math.random() * 100}%`;
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.width = star.style.height = '1px';
+                star.style.background = 'rgba(255,255,255,0.9)';
+                layer.appendChild(star);
+            }
+        } else if (type === 'confetti') {
+            for (let i = 0; i < 25; i++) {
+                const c = document.createElement('div');
+                c.style.position = 'absolute';
+                c.style.top = `${Math.random() * -60}px`;
+                c.style.left = `${Math.random() * 100}%`;
+                c.style.width = '4px';
+                c.style.height = '8px';
+                c.style.background = `hsl(${Math.random()*360},80%,60%)`;
+                c.style.transform = `rotate(${Math.random()*360}deg)`;
+                c.style.animation = `fall ${5 + Math.random()*4}s linear ${Math.random()*2}s infinite`;
+                layer.appendChild(c);
+            }
+        }
+    }
+
+    if (effectsToggle && effectsType) {
+        effectsToggle.addEventListener('change', () => renderEffects(effectsType.value));
+        effectsType.addEventListener('change', () => renderEffects(effectsType.value));
+    }
+
+    // High-contrast overlay for extreme wallpapers
+    function applyContrastMask(enabled) {
+        const id = 'contrastMask';
+        let mask = document.getElementById(id);
+        if (enabled) {
+            if (!mask) {
+                mask = document.createElement('div');
+                mask.id = id;
+                mask.style.position = 'fixed';
+                mask.style.inset = '0';
+                mask.style.pointerEvents = 'none';
+                mask.style.zIndex = '5';
+                document.body.appendChild(mask);
+            }
+            const theme = document.documentElement.getAttribute('data-theme') || 'light';
+            mask.style.background = theme === 'dark'
+                ? 'linear-gradient(rgba(0,0,0,0.25), rgba(0,0,0,0.25))'
+                : 'linear-gradient(rgba(255,255,255,0.25), rgba(255,255,255,0.25))';
+        } else if (mask) {
+            mask.remove();
+        }
+    }
+
     function updatePageBackgroundForActiveTab(inlineSettings) {
         const settings = inlineSettings || getDesktopSettings();
         if (settings.applyBackground && isChatTabActive()) {
@@ -122,6 +241,8 @@ document.addEventListener('DOMContentLoaded', function() {
             document.body.style.backgroundPosition = settings.bgImage ? 'center center' : '';
             document.body.style.backgroundRepeat = settings.bgImage ? 'no-repeat' : '';
             document.body.style.backgroundAttachment = settings.bgImage ? 'fixed' : '';
+            applyContrastMask(true);
+            renderEffects(effectsType?.value || 'none');
         } else {
             // Clear to theme defaults
             document.body.style.backgroundImage = 'none';
@@ -130,6 +251,8 @@ document.addEventListener('DOMContentLoaded', function() {
             document.body.style.backgroundPosition = '';
             document.body.style.backgroundRepeat = '';
             document.body.style.backgroundAttachment = '';
+            applyContrastMask(false);
+            clearEffects();
         }
     }
 
