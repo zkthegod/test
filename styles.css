@@ -1325,7 +1325,7 @@ body::before { content: none; }
 .link-btn.danger { color: #e74c3c; }
 
 /* Settings side drawer (restored, wider) */
-.settings-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); display: none; z-index: 19; }
+.settings-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); display: none; z-index: 4995; }
 .settings-overlay.active { display: block; }
 .settings-drawer {
     position: fixed;
@@ -1339,54 +1339,16 @@ body::before { content: none; }
     box-shadow: 0 12px 30px rgba(0,0,0,0.25);
     padding: 12px;
     display: none;
-    z-index: 20;
+    z-index: 5000;
 }
 .settings-drawer.active { display: block; }
-.settings-drawer .row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 8px 0; }
-.settings-drawer label { color: var(--text-light); font-size: 0.9rem; min-width: 88px; }
-.settings-drawer input[type="color"] { width: 44px; height: 44px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.15); padding: 0; }
-.settings-drawer input[type="text"], .settings-drawer input[type="number"] { padding: 10px 12px; border: var(--border); border-radius: 8px; background: var(--bg); color: var(--text); flex: 1; }
-.settings-drawer .row:first-child input[type="color"] { flex: 0 0 44px; }
-.settings-drawer .row:first-child input[type="text"] { flex: 1 1 auto; min-width: 200px; }
-.settings-drawer .row:nth-child(2) input[type="number"] { width: 140px; }
-.settings-drawer .row.actions { justify-content: flex-start; flex-wrap: wrap; gap: 6px 10px; }
-.settings-drawer .primary-btn.small { padding: 8px 12px; }
-.settings-drawer .row + .row { border-top: 1px dashed rgba(0,0,0,0.08); padding-top: 8px; }
-[data-theme="dark"] .settings-drawer .row + .row { border-top-color: rgba(255,255,255,0.08); }
 
-/* Improve drag/resize usability */
-.chat-window { cursor: default; }
-.window-titlebar { cursor: grab; }
-.chat-window.resizing, .chat-window.dragging { cursor: grabbing; }
-
-/* Header soft glow: extend slightly more and place under content */
-header { position: relative; z-index: 10; }
-header::after {
-    content: "";
-    position: absolute;
-    left: 0; right: 0; top: 0; height: 120px; /* +10px */
-    pointer-events: none;
-    background: radial-gradient(120% 70% at 50% 0%, rgba(108,92,231,0.10), rgba(0,0,0,0) 65%);
-    z-index: 0;
-}
-
-/* Ensure section headers are above page background and readable */
-.section-header { position: relative; z-index: 5; }
-
-.link-btn.danger, #clearAllChats.link-btn { color: #e74c3c; background: transparent; border: 1px solid rgba(231,76,60,0.25); padding: 8px 12px; border-radius: 8px; }
-.link-btn.danger:hover, #clearAllChats.link-btn:hover { background: rgba(231,76,60,0.15); }
-#chatStylesList { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap: 8px; width: 100%; }
-.chat-style-chip { display:flex; align-items:center; gap:8px; padding:8px; border: var(--border); border-radius: 10px; background: var(--card-bg); }
-.chat-style-chip .chip-title { font-weight:600; flex: 1; }
-.chat-style-chip input[type="color"] { width: 32px; height: 32px; border-radius: 6px; border: 1px solid rgba(0,0,0,0.15); }
-
-.link-btn.danger, #clearAllChats.link-btn { color: #fff; background: #e74c3c; padding: 8px 12px; border-radius: 8px; }
-.link-btn.danger:hover, #clearAllChats.link-btn:hover { background: #c0392b; }
-#effectsType { padding: 8px 10px; border-radius: 8px; border: var(--border); background: var(--bg); color: var(--text); }
-
-/* Ensure chats stay above footer */
+/* Ensure chats stay above footer but under settings */
 .chat-desktop, .chat-window { z-index: 100; }
 footer { position: relative; z-index: 1; }
+
+/* Remove previous forced header z-index to avoid stacking conflicts */
+/* header, .settings-drawer, .embed-controls, .section-header { position: relative; z-index: 10; } */
 
 .resize-handle{position:absolute}
 .resize-handle.n{top:-6px;left:0;width:100%;height:12px;cursor:ns-resize}

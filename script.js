@@ -426,8 +426,7 @@ document.addEventListener('DOMContentLoaded', function() {
         e.stopPropagation();
         settingsPanel.classList.toggle('active');
         settingsOverlay.classList.toggle('active', settingsPanel.classList.contains('active'));
-        // Scroll into view if needed when opened
-        if (settingsPanel.classList.contains('active')) settingsPanel.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        if (settingsPanel.classList.contains('active')) settingsPanel.focus();
     });
     document.addEventListener('click', (e) => {
         if (!settingsPanel.contains(e.target) && e.target !== settingsBtn) {
