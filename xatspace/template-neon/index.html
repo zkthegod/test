@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Neon Cards Profile</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="neon-wrap">
+    <header class="neon-header">
+      <div class="avatar"><img src="https://i.pravatar.cc/140?img=32" alt="avatar"></div>
+      <div class="intro">
+        <h1>Rexor</h1>
+        <p class="tag">Creator • Designer • Dreamer</p>
+        <div class="stats">
+          <span><i class="i i-heart"></i> 2.1k</span>
+          <span><i class="i i-star"></i> 356</span>
+          <span><i class="i i-users"></i> 89</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="neon-grid">
+      <section class="card about">
+        <h2>About Me</h2>
+        <p>Hi! I build things on the internet. I love neon, synthwave music, and making clean UI. Here you can showcase your bio, links, and more.</p>
+      </section>
+
+      <section class="card photos">
+        <h2>Photos</h2>
+        <div class="gallery" id="gallery">
+          <img src="https://picsum.photos/seed/a/400/280" alt>
+          <img src="https://picsum.photos/seed/b/400/280" alt>
+          <img src="https://picsum.photos/seed/c/400/280" alt>
+          <img src="https://picsum.photos/seed/d/400/280" alt>
+          <img src="https://picsum.photos/seed/e/400/280" alt>
+          <img src="https://picsum.photos/seed/f/400/280" alt>
+        </div>
+      </section>
+
+      <section class="card friends">
+        <h2>Friends</h2>
+        <ul class="friend-list">
+          <li><img src="https://i.pravatar.cc/48?img=5"><span>@miko</span></li>
+          <li><img src="https://i.pravatar.cc/48?img=15"><span>@sora</span></li>
+          <li><img src="https://i.pravatar.cc/48?img=25"><span>@ivy</span></li>
+          <li><img src="https://i.pravatar.cc/48?img=35"><span>@nova</span></li>
+        </ul>
+      </section>
+
+      <section class="card details">
+        <h2>Details</h2>
+        <ul class="kv">
+          <li><span>Location</span><strong>Night City</strong></li>
+          <li><span>Website</span><strong>rexor.lol</strong></li>
+          <li><span>Status</span><strong>Always shipping</strong></li>
+        </ul>
+      </section>
+    </main>
+  </div>
+
+  <div class="lightbox" id="lightbox"><img alt></div>
+
+  <script src="script.js"></script>
+</body>
+</html>

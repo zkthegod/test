@@ -1,0 +1,32 @@
+:root{--bg:#0a0c1a;--panel:#0f1326;--text:#e6ebff;--muted:#9aa4c4;--accent:#6c5ce7;--accent2:#ff6ec7;--radius:16px}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(1200px 600px at 80% -10%,rgba(255,110,199,.12),transparent),radial-gradient(800px 400px at -10% 20%,rgba(108,92,231,.18),transparent),var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif}
+.neon-wrap{max-width:1100px;margin:0 auto;padding:24px}
+.neon-header{display:flex;gap:16px;align-items:center;margin-bottom:16px}
+.avatar{width:96px;height:96px;border-radius:50%;padding:4px;background:conic-gradient(from 90deg,var(--accent),var(--accent2));box-shadow:0 0 24px rgba(108,92,231,.45)}
+.avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.intro h1{margin:0;font-size:1.6rem}
+.tag{color:var(--muted);margin-top:4px}
+.stats{display:flex;gap:12px;font-weight:600;margin-top:8px}
+.stats .i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;background:var(--accent)}
+.i-heart{background:#ff6b81}.i-star{background:#feca57}.i-users{background:#1dd1a1}
+
+.neon-grid{display:grid;grid-template-columns:2fr 1fr;gap:16px}
+.card{background:linear-gradient(180deg,rgba(255,255,255,.04),transparent),var(--panel);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.35),0 0 0 1px rgba(108,92,231,.08) inset}
+.card h2{margin:0 0 10px 0;font-size:1.05rem}
+
+.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.gallery img{width:100%;height:160px;object-fit:cover;border-radius:12px;cursor:pointer;transition:.2s transform, .2s filter}
+.gallery img:hover{transform:translateY(-3px);filter:brightness(1.1)}
+
+.friend-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.friend-list li{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.03);padding:8px;border-radius:10px}
+.friend-list img{width:28px;height:28px;border-radius:50%}
+
+.kv{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.kv li{display:flex;justify-content:space-between;background:rgba(255,255,255,.03);padding:8px;border-radius:10px}
+.kv span{color:var(--muted)}
+
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center}
+.lightbox img{max-width:92%;max-height:92%;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+
+@media (max-width: 900px){.neon-grid{grid-template-columns:1fr}.gallery{grid-template-columns:repeat(2,1fr)} }
