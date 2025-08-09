@@ -581,13 +581,71 @@ document.addEventListener('DOMContentLoaded', function() {
                 requestAnimationFrame(draw);
             } draw();
         } else if (type === 'feathers') {
-            const parts=[]; for(let i=0;i<60;i++){ const p=document.createElement('div'); p.textContent='~'; p.style.position='absolute'; p.style.color='rgba(255,255,255,0.35)'; p.style.fontSize=`${10+Math.random()*8}px`; p.style.left=`${Math.random()*100}%`; p.style.top=`${-10 - Math.random()*40}px`; p.dataset.vx=String((Math.random()-0.5)*0.2); p.dataset.vy=String(0.2+Math.random()*0.3); layer.appendChild(p); parts.push(p);}            
-            function tick(){ parts.forEach(p=>{ const vx=parseFloat(p.dataset.vx||'0'); const vy=parseFloat(p.dataset.vy||'0.25'); const rect=p.getBoundingClientRect(); const x=rect.left+vx; const y=rect.top+vy; p.style.transform=`translate(${x}px, ${y}px)`; if (y>window.innerHeight+20){ p.style.top=`${-20}px`; p.style.transform=`translate(${Math.random()*window.innerWidth}px, 0)`; } }); requestAnimationFrame(tick);} tick();
+            const canvas=document.createElement('canvas'); canvas.width=window.innerWidth; canvas.height=window.innerHeight; canvas.style.width='100%'; canvas.style.height='100%'; layer.appendChild(canvas);
+            const ctx=canvas.getContext('2d');
+            const parts = Array.from({length:80},()=>({
+                x: Math.random()*canvas.width,
+                y: Math.random()*-canvas.height*0.5,
+                vx: (Math.random()*0.4-0.2) + 0.2, // slight right drift
+                vy: 0.25 + Math.random()*0.35,
+                r: 6 + Math.random()*10,
+                a: Math.random()*Math.PI*2,
+                av: (Math.random()*0.02 - 0.01),
+                alpha: 0.18 + Math.random()*0.2
+            }));
+            function draw(){
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                parts.forEach(p=>{
+                    p.x += p.vx; p.y += p.vy; p.a += p.av;
+                    // wrap
+                    if (p.y > canvas.height + 30) { p.y = -20; p.x = Math.random()*canvas.width; }
+                    ctx.save();
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate(p.a);
+                    ctx.fillStyle = `rgba(255,255,255,${p.alpha})`;
+                    ctx.beginPath();
+                    // feather-like ellipse
+                    ctx.ellipse(0,0,p.r*0.6,p.r,0,0,Math.PI*2);
+                    ctx.fill();
+                    ctx.restore();
+                });
+                requestAnimationFrame(draw);
+            } draw();
         } else if (type === 'smoke-trails') {
             const canvas=document.createElement('canvas'); canvas.width=window.innerWidth; canvas.height=window.innerHeight; canvas.style.width='100%'; canvas.style.height='100%'; layer.appendChild(canvas);
-            const ctx=canvas.getContext('2d'); const trails=Array.from({length:6},()=>({x:Math.random()*canvas.width, y:canvas.height+20, path:[], life:0}));
-            function draw(){ ctx.clearRect(0,0,canvas.width,canvas.height); ctx.globalAlpha=0.08; ctx.fillStyle='black'; ctx.fillRect(0,0,canvas.width,canvas.height); ctx.globalAlpha=1;
-                trails.forEach(t=>{ t.life+=0.005; t.y-=0.3; const nx=t.x + Math.sin(t.life*3)*0.6; t.path.push({x:nx, y:t.y}); if(t.path.length>120) t.path.shift(); ctx.strokeStyle='rgba(255,255,255,0.18)'; ctx.lineWidth=2; ctx.beginPath(); t.path.forEach((pt,i)=>{ if(i===0) ctx.moveTo(pt.x,pt.y); else ctx.lineTo(pt.x,pt.y); }); ctx.stroke(); if (t.y< -40){ t.y=canvas.height+20; t.path=[]; t.x=Math.random()*canvas.width; t.life=0; } });
+            const ctx=canvas.getContext('2d');
+            const particles = [];
+            function spawn(){
+                for(let i=0;i<4;i++){
+                    particles.push({
+                        x: canvas.width*0.5 + (Math.random()*160-80),
+                        y: canvas.height + 10,
+                        vx: 0.2 + Math.random()*0.8, // diagonal drift to right
+                        vy: -0.8 - Math.random()*0.8, // rising
+                        life: 0,
+                        max: 220 + Math.random()*220,
+                        r: 6 + Math.random()*10
+                    });
+                }
+            }
+            function colorFor(t){ // t in [0,1]
+                if (t<0.2) return `rgba(255,120,60,${0.35*(1-t/0.2)+0.15})`; // warm near source
+                if (t<0.6) return `rgba(200,200,200,${0.22})`;
+                return `rgba(140,140,140,${0.12*(1-(t-0.6)/0.4)})`;
+            }
+            function draw(){
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                spawn();
+                for(let i=particles.length-1;i>=0;i--){
+                    const p=particles[i]; p.life++;
+                    p.x += p.vx + Math.sin(p.life*0.05)*0.2; // mild curl
+                    p.y += p.vy;
+                    const t = p.life/p.max;
+                    const rr = p.r + t*14; // bigger as it ages
+                    ctx.fillStyle = colorFor(t);
+                    ctx.beginPath(); ctx.arc(p.x,p.y,rr,0,Math.PI*2); ctx.fill();
+                    if (t>=1) particles.splice(i,1);
+                }
                 requestAnimationFrame(draw);
             } draw();
         }
