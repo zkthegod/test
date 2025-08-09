@@ -8,6 +8,19 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <style>
+      /* Layout polish: keep footer at bottom */
+      .container { min-height: 100vh; display: flex; flex-direction: column; }
+      main { flex: 1; }
+      /* Footer styling */
+      .site-footer { background: linear-gradient(to bottom, var(--card-bg), rgba(0,0,0,0.02)); border-top: var(--border); }
+      .site-footer .footer-inner { max-width: 1200px; margin: 0 auto; padding: 20px; }
+      .site-footer .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; align-items: start; }
+      .site-footer h4 { font-size: 0.95rem; margin-bottom: 8px; color: var(--text); }
+      .site-footer p, .site-footer a { color: var(--text-light); font-size: 0.92rem; text-decoration: none; }
+      .site-footer a:hover { color: var(--primary); }
+      .site-footer .footer-bottom { display: flex; justify-content: space-between; align-items: center; padding-top: 10px; margin-top: 10px; border-top: var(--border); color: var(--text-light); font-size: 0.88rem; }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -235,6 +248,20 @@
                     </div>
                 </div>
                 
+                <style>
+                /* Scoped visual polish for Name Effects */
+                #name-effects .input-group { background: var(--card-bg); border: var(--border); border-radius: var(--radius); padding: 10px; display: flex; gap: 10px; align-items: center; }
+                #name-effects .input-group input[type="text"] { flex: 1; }
+                #name-effects .effect-grid { grid-template-columns: 1fr 1fr; gap: 16px; }
+                #name-effects .effect-panel { padding: 16px; }
+                #name-effects .effect-panel h3 { display: flex; align-items: center; gap: 8px; font-size: 1rem; margin-bottom: 12px; position: relative; }
+                #name-effects .effect-panel h3::after { content: ""; position: absolute; left: 0; right: 0; bottom: -6px; height: 1px; background: var(--nav-active); }
+                #name-effects .option label { width: 160px; color: var(--text); }
+                #name-effects .preview-container { padding: 50px; background: linear-gradient(180deg, var(--preview-bg), transparent); box-shadow: inset 0 1px 0 rgba(0,0,0,0.04); }
+                #name-effects .effect-preview { letter-spacing: -0.5px; }
+                #name-effects .code-section h3 { font-size: 0.95rem; color: var(--text); }
+                </style>
+
                 <div class="effect-controls">
                     <div class="input-group">
                         <input type="text" id="effectText" value="Rexor" maxlength="20">
@@ -428,8 +455,30 @@
             </section>
         </main>
 
-        <footer>
-            <p>rexor.lol - Created in Rexor's basement with the occasional help of DeepSeek and emotional support from Mr. ChatGPT himself.</p>
+        <footer class="site-footer">
+            <div class="footer-inner">
+                <div class="footer-grid">
+                    <div>
+                        <h4>rexor.lol</h4>
+                        <p>Premium tools for xat.com users.</p>
+                    </div>
+                    <div>
+                        <h4>Quick Links</h4>
+                        <p><a href="#home"><i class="fas fa-home"></i> Home</a></p>
+                        <p><a href="#name-effects"><i class="fas fa-magic"></i> Name Effects</a></p>
+                        <p><a href="#simpsons-avatars"><i class="fas fa-user-astronaut"></i> Avatars</a></p>
+                    </div>
+                    <div>
+                        <h4>Connect</h4>
+                        <p><a href="https://github.com/zkthegod/test" target="_blank" rel="noopener"><i class="fab fa-github"></i> GitHub</a></p>
+                        <p><a href="#" target="_blank" rel="noopener"><i class="fab fa-discord"></i> Discord</a></p>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <span>© <span id="yearNow"></span> rexor.lol</span>
+                    <span>Built with ❤️ by Rexor</span>
+                </div>
+            </div>
         </footer>
     </div>
 
@@ -601,6 +650,9 @@
       const cards = Array.from(grid.querySelectorAll('.uptime-card'));
       cards.forEach(initMonitor);
     })();
+    </script>
+    // Footer year
+    (function(){ const y = document.getElementById('yearNow'); if (y) y.textContent = new Date().getFullYear(); })();
     </script>
 </body>
 </html>
