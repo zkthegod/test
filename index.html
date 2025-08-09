@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>rexor.lol</title>
+    <title>xat Tools | rexor.lol</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
@@ -14,7 +14,7 @@
             <div class="header-content">
                 <div class="logo">
                     <h1>rexor.lol</h1>
-                    <span class="subtitle"> </span>
+                    <span class="subtitle">xat Tools</span>
                 </div>
                 <div class="header-right">
                     <nav>
@@ -41,8 +41,8 @@
         <main>
             <section id="home" class="page active">
                 <div class="section-header">
-                    <h2>Uptime Tracker</h2>
-                    <p class="description">Tools for xat</p>
+                    <h2>Welcome to xat Tools</h2>
+                    <p class="description">Premium tools for xat.com users</p>
                 </div>
                 
                 <div class="status-grid">
@@ -52,24 +52,7 @@
                             <div class="dot"></div>
                             <span>Checking...</span>
                         </div>
-                        <div class="uptime-metrics">
-                            <div class="metric">
-                                <div class="metric-row"><span>Current</span><span class="percent" data-key="current">-</span></div>
-                                <div class="progress"><div class="fill" data-key="current"></div></div>
-                            </div>
-                            <div class="metric">
-                                <div class="metric-row"><span>Weekly</span><span class="percent" data-key="week">-</span></div>
-                                <div class="progress"><div class="fill" data-key="week"></div></div>
-                            </div>
-                            <div class="metric">
-                                <div class="metric-row"><span>Monthly</span><span class="percent" data-key="month">-</span></div>
-                                <div class="progress"><div class="fill" data-key="month"></div></div>
-                            </div>
-                            <div class="metric">
-                                <div class="metric-row"><span>Lifetime</span><span class="percent" data-key="life">-</span></div>
-                                <div class="progress"><div class="fill" data-key="life"></div></div>
-                            </div>
-                        </div>
+                        <div class="uptime">Uptime: <span class="value">-</span></div>
                     </div>
                     <div class="status-card" id="wikiStatus">
                         <h3><i class="fas fa-book"></i> wiki.xat.com</h3>
@@ -77,49 +60,7 @@
                             <div class="dot"></div>
                             <span>Checking...</span>
                         </div>
-                        <div class="uptime-metrics">
-                            <div class="metric">
-                                <div class="metric-row"><span>Current</span><span class="percent" data-key="current">-</span></div>
-                                <div class="progress"><div class="fill" data-key="current"></div></div>
-                            </div>
-                            <div class="metric">
-                                <div class="metric-row"><span>Weekly</span><span class="percent" data-key="week">-</span></div>
-                                <div class="progress"><div class="fill" data-key="week"></div></div>
-                            </div>
-                            <div class="metric">
-                                <div class="metric-row"><span>Monthly</span><span class="percent" data-key="month">-</span></div>
-                                <div class="progress"><div class="fill" data-key="month"></div></div>
-                            </div>
-                            <div class="metric">
-                                <div class="metric-row"><span>Lifetime</span><span class="percent" data-key="life">-</span></div>
-                                <div class="progress"><div class="fill" data-key="life"></div></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="status-card" id="forumStatus">
-                        <h3><i class="fas fa-comments"></i> forum.xat.com</h3>
-                        <div class="status-indicator loading">
-                            <div class="dot"></div>
-                            <span>Checking...</span>
-                        </div>
-                        <div class="uptime-metrics">
-                            <div class="metric">
-                                <div class="metric-row"><span>Current</span><span class="percent" data-key="current">-</span></div>
-                                <div class="progress"><div class="fill" data-key="current"></div></div>
-                            </div>
-                            <div class="metric">
-                                <div class="metric-row"><span>Weekly</span><span class="percent" data-key="week">-</span></div>
-                                <div class="progress"><div class="fill" data-key="week"></div></div>
-                            </div>
-                            <div class="metric">
-                                <div class="metric-row"><span>Monthly</span><span class="percent" data-key="month">-</span></div>
-                                <div class="progress"><div class="fill" data-key="month"></div></div>
-                            </div>
-                            <div class="metric">
-                                <div class="metric-row"><span>Lifetime</span><span class="percent" data-key="life">-</span></div>
-                                <div class="progress"><div class="fill" data-key="life"></div></div>
-                            </div>
-                        </div>
+                        <div class="uptime">Uptime: <span class="value">-</span></div>
                     </div>
                 </div>
             </section>
@@ -197,10 +138,7 @@
                             <div class="select-arrow"><i class="fas fa-chevron-down"></i></div>
                         </div>
                     </div>
-                    <div class="row">
-                        <label>Chat Glow</label>
-                        <div id="chatStylesList"></div>
-                    </div>
+                    <div class="row" id="chatStylesList"></div>
                     <div class="row actions">
                         <button id="alignTile" class="link-btn" type="button">Tile</button>
                         <button id="alignCenter" class="link-btn" type="button">Center</button>

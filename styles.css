@@ -1417,7 +1417,6 @@ header, .embed-controls, .section-header { position: relative; z-index: 10; }
 
 .settings-drawer .row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 8px 0; }
 .settings-drawer label { color: var(--text-light); font-size: 0.9rem; min-width: 88px; }
-.settings-drawer #chatStylesList { flex: 1 1 100%; display: grid; grid-template-columns: 1fr; gap: 6px; }
 .settings-drawer input[type="color"],
 .settings-drawer input[type="text"],
 .settings-drawer input[type="number"] { padding: 10px 12px; border: var(--border); border-radius: 8px; background: var(--bg); color: var(--text); flex: 1; }
@@ -1484,16 +1483,4 @@ header, .embed-controls, .section-header { position: relative; z-index: 10; }
 .chat-style-chip .chip-title { font-weight: 600; color: var(--text); min-width: 120px; }
 .chat-style-chip label { color: var(--text-light); font-size: 0.9rem; }
 .chat-style-chip input[type="color"] { flex: 0 0 auto; width: 40px; height: 32px; padding: 0; border: none; border-radius: 6px; }
-.chat-style-chip input.chip-hex { width: 100px; padding: 8px 10px; border: var(--border); border-radius: 8px; background: var(--bg); color: var(--text); }
 .chat-style-placeholder { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 10px; border: var(--border); border-radius: 10px; color: var(--text-light); background: var(--card-bg); }
-
-/* Uptime metrics */
-.status-card .uptime-metrics { display: flex; flex-direction: column; gap: 10px; }
-.status-card .metric { display: flex; flex-direction: column; gap: 6px; }
-.status-card .metric-row { display: flex; align-items: center; justify-content: space-between; font-size: 0.9rem; color: var(--text-light); }
-.status-card .progress { height: 8px; background: rgba(0,0,0,0.06); border-radius: 999px; overflow: hidden; border: 1px solid rgba(0,0,0,0.05); }
-[data-theme="dark"] .status-card .progress { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.06); }
-.status-card .progress .fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%); transition: width 0.8s ease, background 0.3s ease; }
-.status-card .progress .fill.good { background: linear-gradient(90deg, #2ecc71 0%, #27ae60 100%); }
-.status-card .progress .fill.warn { background: linear-gradient(90deg, #f1c40f 0%, #f39c12 100%); }
-.status-card .progress .fill.bad { background: linear-gradient(90deg, #e74c3c 0%, #c0392b 100%); }
