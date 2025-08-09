@@ -1024,6 +1024,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const DAY_MS = 24 * 60 * 60 * 1000;
     const RETAIN_MS = 90 * DAY_MS; // keep ~90 days of history
 
+    async function checkViaFetch(url, timeoutMs) {
+        try {
+            const controller = new AbortController();
+            const id = setTimeout(() => controller.abort(), timeoutMs);
+            // no-cors returns opaque but still signals network reachability
+            const res = await fetch(url, { mode: 'no-cors', method: 'HEAD', signal: controller.signal });
+            clearTimeout(id);
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }
+
     function pingImage(url, timeoutMs) {
         return new Promise(resolve => {
             let finished = false;
@@ -1099,7 +1112,11 @@ document.addEventListener('DOMContentLoaded', function() {
         indicator.classList.remove('online', 'offline');
         indicator.classList.add('loading');
         indicator.querySelector('span').textContent = 'Checking...';
-        const isUp = await pingImage(service.url, TIMEOUT_MS);
+        // Try fetch first, fallback to image ping
+        let isUp = await checkViaFetch(service.url, TIMEOUT_MS);
+        if (!isUp) {
+            isUp = await pingImage(service.url, TIMEOUT_MS);
+        }
         const now = Date.now();
         let records = readRecords(service.key);
         records.push({ t: now, up: !!isUp });
@@ -1237,11 +1254,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const glow = glowColor?.value || '#000000';
         const speed = waveSpeed?.value || '';
 
-        if (colors.length > 1) {
-            const totalColors = colors.length;
+        if (colors.length >= 1) {
+            const useColors = colors.length === 1 ? [colors[0], colors[0]] : colors;
+            const totalColors = useColors.length;
             const gradientStops = [];
-            colors.forEach((color, i) => { const percent = Math.round((i / totalColors) * 100); gradientStops.push(`${color} ${percent}%`); });
-            gradientStops.push(`${colors[0]} 100%`);
+            useColors.forEach((color, i) => { const percent = Math.round((i / totalColors) * 100); gradientStops.push(`${color} ${percent}%`); });
+            gradientStops.push(`${useColors[0]} 100%`);
             const gradient = `repeating-linear-gradient(${angle}deg, ${gradientStops.join(', ')})`;
             effectPreview.style.backgroundImage = gradient;
             effectPreview.style.backgroundSize = '200% 100%';
@@ -1253,9 +1271,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 const speedClass = { 'o1': 'wave-normal','f1': 'wave-slow','f2': 'wave-very-slow','o2': 'wave-fast','o3': 'wave-very-fast' }[speed];
                 if (speedClass) effectPreview.classList.add(speedClass);
             }
-        } else if (colors.length === 1) {
-            effectPreview.style.background = colors[0];
-            effectPreview.style.animation = 'none';
+        } else {
+            effectPreview.style.backgroundImage = 'none';
         }
         effectPreview.style.setProperty('--glow-color', glow);
         let code = '(glow';
