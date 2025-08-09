@@ -1753,37 +1753,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Build per-chat style chips
     const chatStylesList = document.getElementById('chatStylesList');
     function rebuildChatStyleChips() {
-    const list = document.getElementById('chatStylesList');
-    if (!list) return;
-    list.innerHTML = '';
-
-    // Glow Color Picker
-    const glowItem = document.createElement('div');
-    glowItem.className = 'color-input';
-    glowItem.innerHTML = `
-        <input type="color" value="${state.style?.glowColor || '#0000ff'}">
-        <input type="text" value="${state.style?.glowColor || '#0000ff'}">
-    `;
-
-    glowItem.querySelectorAll('input').forEach(input => {
-        input.addEventListener('input', e => {
-            const color = e.target.value;
-            state.style.glowColor = color;
-            const win = document.querySelector(\`.chat-window[data-id="\${state.id}"]\`);
-            if (win) {
-                win.style.setProperty('--glow-color', color);
-                win.style.filter = `drop-shadow(0 0 8px ${color})
-                                    drop-shadow(0 0 5px ${color})
-                                    drop-shadow(0 0 3px ${color})`;
-            }
-            if (typeof saveStylesForWindow === 'function') {
-                saveStylesForWindow(state);
-            }
-        });
-    });
-
-    list.appendChild(glowItem);
-
         if (!chatStylesList) return;
         chatStylesList.innerHTML = '';
         // Read stored windows
