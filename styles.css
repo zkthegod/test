@@ -1579,3 +1579,6 @@ header::before {
 
 /* Allow dragging without interfering with slider */
 .window-titlebar { gap: 10px; }
+
+.window-controls .ctrl-btn[data-action="info"] { color: var(--text-light); }
+.window-controls .ctrl-btn[data-action="info"]:hover { background: var(--nav-active); color: var(--text); }

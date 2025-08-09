@@ -540,9 +540,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="title"><i class="fas fa-comment-dots" style="margin-right:6px;color:var(--primary)"></i>${escapeHtml(state.name)}</div>
                 <div class="title-size">
                     <input type="range" class="size-scale" min="0.5" max="2" value="1" step="0.05" aria-label="Chat size scale">
-                    <span class="size-out">${state.width}x${state.height}</span>
                 </div>
                 <div class="window-controls">
+                    <button class="ctrl-btn" data-action="info" title="">
+                        <i class="fas fa-info-circle"></i>
+                    </button>
                     <button class="ctrl-btn" data-action="toggle" title="Show/Hide content"><i class="fas fa-minus"></i></button>
                     <button class="ctrl-btn" data-action="close" title="Close"><i class="fas fa-times"></i></button>
                 </div>
@@ -590,11 +592,17 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
+        // Keep info tooltip updated
+        const infoBtn = el.querySelector('.window-controls [data-action="info"]');
+        function updateChatInfoTooltip() {
+            if (!infoBtn) return;
+            infoBtn.title = `${el.offsetWidth}x${el.offsetHeight}`;
+        }
+        updateChatInfoTooltip();
+
         // Per-chat size slider scaling with aspect ratio
         const sizeScale = el.querySelector('.size-scale');
-        const sizeOut = el.querySelector('.size-out');
         if (sizeScale) {
-            // Base on current saved defaults to keep consistent aspect
             const base = getDesktopSettings();
             sizeScale.addEventListener('input', () => {
                 const s = parseFloat(sizeScale.value || '1');
@@ -602,8 +610,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 const newH = Math.round(base.height * s);
                 el.style.width = `${newW}px`;
                 el.style.height = `${newH}px`;
-                if (sizeOut) sizeOut.textContent = `${newW}x${newH}`;
                 persistFromElement(el, state.id);
+                updateChatInfoTooltip();
             });
         }
 
@@ -629,6 +637,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         function onPointerDown(e) {
             if (e.target.closest('.window-controls')) return;
+            if (e.target.closest('.title-size')) return; // allow size slider interaction without dragging
             dragging = true;
             moved = false;
             resizingViaDrag = e.shiftKey; // hold Shift to resize while dragging
@@ -685,6 +694,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             persistFromElement(el);
+            // update tooltip after move or resize
+            const infoBtn = el.querySelector('.window-controls [data-action="info"]');
+            if (infoBtn) infoBtn.title = `${el.offsetWidth}x${el.offsetHeight}`;
         }
         function tick() {
             rafId = requestAnimationFrame(() => {
@@ -741,6 +753,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
             applyResize(true);
             persistFromElement(el);
+            const infoBtn = el.querySelector('.window-controls [data-action="info"]');
+            if (infoBtn) infoBtn.title = `${el.offsetWidth}x${el.offsetHeight}`;
         }
         function loop() { rafId = requestAnimationFrame(() => { applyResize(false); if (moving) loop(); }); }
         function applyResize(finalize) {
@@ -762,6 +776,9 @@ document.addEventListener('DOMContentLoaded', function() {
             el.style.height = `${newH}px`;
             el.style.left = `${newL}px`;
             el.style.top = `${newT}px`;
+
+            const infoBtn = el.querySelector('.window-controls [data-action="info"]');
+            if (infoBtn) infoBtn.title = `${newW}x${newH}`;
         }
 
         handle.addEventListener('pointerdown', onDown);
