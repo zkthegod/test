@@ -10,11 +10,12 @@
     <link rel="stylesheet" href="styles.css">
     <style>
       /* Layout polish: keep footer at bottom */
+      html, body { overflow-x: hidden; }
       .container { min-height: 100vh; display: flex; flex-direction: column; }
       main { flex: 1; }
       /* Footer styling */
-      .site-footer { background: linear-gradient(to bottom, var(--card-bg), rgba(0,0,0,0.02)); border-top: var(--border); margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw); }
-      .site-footer .footer-inner { width: 100%; margin: 0 auto; padding: 12px 20px; }
+      .site-footer { background: linear-gradient(to bottom, var(--card-bg), rgba(0,0,0,0.02)); border-top: var(--border); }
+      .site-footer .footer-inner { max-width: 1200px; width: 100%; margin: 0 auto; padding: 12px 20px; }
       .site-footer .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; align-items: start; }
       .site-footer h4 { font-size: 0.95rem; margin-bottom: 8px; color: var(--text); }
       .site-footer p, .site-footer a { color: var(--text-light); font-size: 0.92rem; text-decoration: none; }
@@ -475,10 +476,7 @@
                         <p><a href="#" target="_blank" rel="noopener"><i class="fab fa-discord"></i> Discord</a></p>
                     </div>
                 </div>
-                <div class="footer-bottom">
-                    <span>© <span id="yearNow"></span> rexor.lol</span>
-                    <span>Built with ❤️ by Rexor</span>
-                </div>
+
             </div>
         </footer>
     </div>
@@ -651,9 +649,6 @@
       const cards = Array.from(grid.querySelectorAll('.uptime-card'));
       cards.forEach(initMonitor);
     })();
-    </script>
-    // Footer year
-    (function(){ const y = document.getElementById('yearNow'); if (y) y.textContent = new Date().getFullYear(); })();
     </script>
 </body>
 </html>
