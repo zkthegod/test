@@ -50,7 +50,7 @@
                 <style>
                 /* Scoped styles to avoid affecting other pages */
                 #home .uptime-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 16px; }
-                #home .uptime-card { background: var(--card-bg); border: var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px; position: relative; overflow: hidden; }
+                #home .uptime-card { --accent: var(--nav-active); background: var(--card-bg); border: var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px; position: relative; overflow: hidden; }
                 #home .uptime-card h3 { display: flex; align-items: center; gap: 10px; font-size: 1.05rem; margin-bottom: 12px; }
                 #home .uptime-meta { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 8px; margin-bottom: 12px; }
                 #home .status-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 6px; }
@@ -58,19 +58,26 @@
                 #home .status-sub { color: var(--text-light); font-size: 0.9rem; }
                 #home .latency { color: var(--text-light); font-size: 0.92rem; }
                 #home .latency strong { color: var(--text); }
-                #home .refresh-btn { --ring: 0deg; --ring-color: #2ecc71; position: relative; width: 42px; height: 42px; border-radius: 50%; border: none; background: conic-gradient(var(--ring-color) var(--ring), transparent 0); padding: 2px; cursor: pointer; transition: var(--transition); }
-                #home .refresh-btn .btn-inner { display: grid; place-items: center; width: 100%; height: 100%; border-radius: 50%; background: var(--card-bg); color: var(--text-light); }
+                #home .refresh-btn { --ring: 0deg; --ring-color: #2ecc71; position: relative; width: 46px; height: 46px; border-radius: 50%; border: none; background: conic-gradient(var(--ring-color) var(--ring), transparent 0); padding: 3px; cursor: pointer; transition: var(--transition); }
+                #home .refresh-btn .btn-inner { display: grid; place-items: center; width: 100%; height: 100%; border-radius: 50%; background: var(--card-bg); color: var(--text); }
+                #home .refresh-btn .countdown-label { font-variant-numeric: tabular-nums; font-weight: 700; font-size: 0.9rem; line-height: 1; }
                 #home .refresh-btn:hover .btn-inner { color: var(--text); }
                 #home .refresh-btn.ok { --ring-color: #2ecc71; }
                 #home .refresh-btn.warn { --ring-color: #f1c40f; }
                 #home .refresh-btn.danger { --ring-color: #e74c3c; }
+                #home .refresh-btn.ok .btn-inner, #home .refresh-btn.warn .btn-inner, #home .refresh-btn.danger .btn-inner { animation: breathGlow 2.2s ease-in-out infinite; }
+                @keyframes breathGlow { 0%,100% { box-shadow: 0 0 0px 0 var(--ring-color); } 50% { box-shadow: 0 0 16px 2px var(--ring-color); } }
                 #home .progress { height: 8px; background: var(--nav-active); border-radius: 999px; overflow: hidden; }
                 #home .progress .bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary), var(--primary-dark)); transition: width 0.4s ease; }
                 #home .row { display: grid; grid-template-columns: 100px 1fr; align-items: center; gap: 10px; margin: 8px 0; }
                 #home .row .label { color: var(--text-light); font-size: 0.9rem; }
                 #home .row .value { font-weight: 600; color: var(--text); justify-self: end; }
                 #home .foot { display: flex; justify-content: space-between; align-items: baseline; margin-top: 10px; font-size: 0.85rem; color: var(--text-light); }
-                #home .uptime-card .corner { position: absolute; top: -60px; right: -60px; width: 180px; height: 180px; border-radius: 50%; background: radial-gradient(closest-side, var(--nav-active), transparent 70%); filter: blur(6px); opacity: 0.6; }
+                #home .uptime-card .corner { position: absolute; top: -60px; right: -60px; width: 180px; height: 180px; border-radius: 50%; background: radial-gradient(closest-side, var(--accent), transparent 70%); filter: blur(6px); opacity: 0.6; animation: cornerPulse 6s ease-in-out infinite; }
+                #home .uptime-card.ok { --accent: rgba(46,204,113,0.20); }
+                #home .uptime-card.warn { --accent: rgba(241,196,15,0.22); }
+                #home .uptime-card.danger { --accent: rgba(231,76,60,0.20); }
+                @keyframes cornerPulse { 0%,100% { transform: translate(0,0) scale(1); opacity: 0.55; } 50% { transform: translate(-4px, 4px) scale(1.05); opacity: 0.85; } }
                 </style>
 
                 <div class="uptime-grid" id="uptimeGrid">
@@ -83,7 +90,7 @@
                                 <span class="status-text">Checking...</span>
                                 <div class="status-sub">Last check: —</div>
                             </div>
-                            <button class="refresh-btn ok" aria-label="Refresh now"><span class="btn-inner"><i class="fas fa-clock"></i></span></button>
+                            <button class="refresh-btn ok" aria-label="Refresh now"><span class="btn-inner"><span class="countdown-label">60s</span></span></button>
                         </div>
                         <div class="row"><span class="label">Monthly uptime</span><span class="value month-value">—</span></div>
                         <div class="progress"><div class="bar month-bar"></div></div>
@@ -101,7 +108,7 @@
                                 <span class="status-text">Checking...</span>
                                 <div class="status-sub">Last check: —</div>
                             </div>
-                            <button class="refresh-btn ok" aria-label="Refresh now"><span class="btn-inner"><i class="fas fa-clock"></i></span></button>
+                            <button class="refresh-btn ok" aria-label="Refresh now"><span class="btn-inner"><span class="countdown-label">60s</span></span></button>
                         </div>
                         <div class="row"><span class="label">Monthly uptime</span><span class="value month-value">—</span></div>
                         <div class="progress"><div class="bar month-bar"></div></div>
@@ -119,7 +126,7 @@
                                 <span class="status-text">Checking...</span>
                                 <div class="status-sub">Last check: —</div>
                             </div>
-                            <button class="refresh-btn ok" aria-label="Refresh now"><span class="btn-inner"><i class="fas fa-clock"></i></span></button>
+                            <button class="refresh-btn ok" aria-label="Refresh now"><span class="btn-inner"><span class="countdown-label">60s</span></span></button>
                         </div>
                         <div class="row"><span class="label">Monthly uptime</span><span class="value month-value">—</span></div>
                         <div class="progress"><div class="bar month-bar"></div></div>
@@ -443,6 +450,7 @@
       function clamp(n, a, b){ return Math.min(Math.max(n, a), b); }
       function formatPct(p){ return `${p.toFixed(2)}%`; }
       function timeAgo(ts){ if(!ts) return '—'; const s = Math.floor((now()-ts)/1000); if(s<60) return `${s}s ago`; const m=Math.floor(s/60); if(m<60) return `${m}m ago`; const h=Math.floor(m/60); if(h<24) return `${h}h ago`; const d=Math.floor(h/24); return `${d}d ago`; }
+      function fmtCountdown(ms){ const total = Math.max(0, Math.ceil(ms/1000)); const mm = Math.floor(total/60); const ss = total%60; return mm>0 ? `${mm}:${String(ss).padStart(2,'0')}` : `${ss}s`; }
 
       function loadStore(){ try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch { return {}; } }
       function saveStore(store){ try { localStorage.setItem(STORAGE_KEY, JSON.stringify(store)); } catch {}
@@ -496,7 +504,7 @@
         }
       }
 
-      function setCountdown(btn, pct){
+      function setCountdown(btn, pct, remainingMs){
         const clamped = clamp(pct, 0, 1);
         const deg = Math.round(clamped * 360);
         btn.style.setProperty('--ring', deg + 'deg');
@@ -504,6 +512,12 @@
         if (clamped > 0.5) btn.classList.add('ok');
         else if (clamped > 0.2) btn.classList.add('warn');
         else btn.classList.add('danger');
+        // Update countdown label
+        const label = btn.querySelector('.countdown-label');
+        if (label) label.textContent = fmtCountdown(remainingMs);
+        // Mirror state to card for corner accent color
+        const card = btn.closest('.uptime-card');
+        if (card){ card.classList.remove('ok','warn','danger'); card.classList.add(btn.classList.contains('ok')?'ok':btn.classList.contains('warn')?'warn':'danger'); }
       }
 
       function updateCard(card, stats){
@@ -544,7 +558,7 @@
         function tick(){
           const remaining = nextAt - now();
           const pct = remaining <= 0 ? 0 : remaining / CHECK_INTERVAL_MS;
-          setCountdown(refreshBtn, pct);
+          setCountdown(refreshBtn, pct, remaining);
           if (remaining <= 0){
             doCheck();
             nextAt = now() + CHECK_INTERVALMS_SAFE;
@@ -567,7 +581,7 @@
           updateCard(card, stats);
         }
 
-        refreshBtn.addEventListener('click', () => { nextAt = now(); });
+        refreshBtn.addEventListener('click', () => { nextAt = now(); setCountdown(refreshBtn, 0, 0); });
 
         // Initial draw from stored stats then first check
         updateCard(card, getStats(host));
