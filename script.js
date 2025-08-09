@@ -482,11 +482,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 shard.style.transform=`rotate(${Math.random()*20-10}deg)`; shard.style.transition='transform .8s ease'; layer.appendChild(shard);} 
             window.addEventListener('scroll', ()=>{ const amt=(window.scrollY%200)/200; Array.from(layer.children).forEach((el,i)=>{ el.style.transform=`translateY(${(i%4-2)*amt*10}px) rotate(${(i%7-3)*2}deg)`; }); }, { passive:true });
         } else if (type === 'gravity-planets') {
-            const planets=[]; for(let i=0;i<3;i++){ const p=document.createElement('div'); p.style.position='absolute'; p.style.left=`${20+i*30}%`; p.style.top=`${30+i*10}%`;
-                p.style.width=p.style.height=`${40+Math.random()*26}px`; p.style.borderRadius='50%'; p.style.background='radial-gradient(circle at 30% 30%, rgba(255,255,255,0.8), rgba(108,92,231,0.35))'; layer.appendChild(p); planets.push(p); }
-            const canvas=document.createElement('canvas'); canvas.width=innerWidth; canvas.height=innerHeight; layer.appendChild(canvas); const ctx=canvas.getContext('2d'); let parts=[];
-            function draw(){ if (!effectRunActive(runId)) return; ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle='rgba(255,255,255,0.7)'; parts.forEach(pt=>{ let ax=0,ay=0; planets.forEach(pl=>{ const r=pl.getBoundingClientRect(); const cx=r.left+r.width/2, cy=r.top+r.height/2; const dx=cx-pt.x, dy=cy-pt.y; const d=Math.hypot(dx,dy); const g=8000/((d*d)+2000); ax+=dx*g; ay+=dy*g; }); pt.vx=(pt.vx||0)+ax; pt.vy=(pt.vy||0)+ay; pt.x+=pt.vx; pt.y+=pt.vy; ctx.fillRect(pt.x,pt.y,1,1); }); requestAnimationFrame(draw);} draw();
-            const id = setInterval(()=>{ parts.push({x:Math.random()*innerWidth, y:Math.random()*innerHeight*0.8}); if(parts.length>1400) parts.splice(0,500); }, 120); effectsCleanup.push(()=>clearInterval(id));
+            const planets=[]; for(let i=0;i<3;i++){ const p=document.createElement('div'); p.style.position='absolute'; p.style.left=`${25+i*25}%`; p.style.top=`${28+i*12}%`;
+                const size = 36+Math.random()*28; p.style.width=p.style.height=`${size}px`; p.style.borderRadius='50%';
+                p.style.boxShadow='0 0 30px rgba(108,92,231,0.35), inset 0 0 20px rgba(255,255,255,0.25)';
+                p.style.background='radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(108,92,231,0.35))'; layer.appendChild(p); planets.push(p); }
+            const canvas=document.createElement('canvas'); canvas.width=innerWidth; canvas.height=innerHeight; layer.appendChild(canvas); const ctx=canvas.getContext('2d');
+            let particles = Array.from({length: 900}, ()=>({ x: Math.random()*innerWidth, y: Math.random()*innerHeight*0.8, vx: 0, vy: 0 }));
+            function draw(){ if (!effectRunActive(runId)) return; ctx.clearRect(0,0,canvas.width,canvas.height);
+                ctx.fillStyle='rgba(255,255,255,0.7)'; ctx.globalAlpha=0.9;
+                particles.forEach(pt=>{ let ax=0,ay=0; planets.forEach(pl=>{ const r=pl.getBoundingClientRect(); const cx=r.left+r.width/2, cy=r.top+r.height/2; const dx=cx-pt.x, dy=cy-pt.y; const d=Math.hypot(dx,dy); const g=6000/((d*d)+2000); ax+=dx*g; ay+=dy*g; }); pt.vx=(pt.vx*0.98)+ax; pt.vy=(pt.vy*0.98)+ay; pt.x+=pt.vx; pt.y+=pt.vy; ctx.fillRect(pt.x,pt.y,1,1); });
+                // light orbital rings
+                ctx.globalAlpha=0.25; planets.forEach(pl=>{ const r=pl.getBoundingClientRect(); const cx=r.left+r.width/2, cy=r.top+r.height/2; ctx.beginPath(); ctx.arc(cx, cy, r.width*0.9, 0, Math.PI*2); ctx.strokeStyle='rgba(108,92,231,0.35)'; ctx.stroke(); });
+                ctx.globalAlpha=1; requestAnimationFrame(draw);
+            }
+            draw();
         } else if (type === 'wormhole') {
             const canvas=document.createElement('canvas'); canvas.width=innerWidth; canvas.height=innerHeight; layer.appendChild(canvas); const ctx=canvas.getContext('2d'); let t=0;
             function draw(){
@@ -507,12 +516,16 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (type === 'light-shafts') {
             const canvas=document.createElement('canvas'); canvas.width=innerWidth; canvas.height=innerHeight; layer.appendChild(canvas); const ctx=canvas.getContext('2d'); let t=0; function draw(){ if (!effectRunActive(runId)) return; const w=canvas.width,h=canvas.height; ctx.clearRect(0,0,w,h); ctx.globalAlpha=0.15; for(let i=0;i<12;i++){ ctx.save(); ctx.translate(w/2, 0); ctx.rotate((i/12)*Math.PI/8 + Math.sin(t*0.02)*0.02); const grad=ctx.createLinearGradient(0,0,0,h*0.8); grad.addColorStop(0,'rgba(255,255,255,0.35)'); grad.addColorStop(1,'rgba(255,255,255,0)'); ctx.fillStyle=grad; ctx.fillRect(-10,0,20,h); ctx.restore(); } t+=1; requestAnimationFrame(draw);} draw();
         } else if (type === 'minecraft-portal') {
+            // removed effect: minecraft-portal
+        } else if (type === 'nebula-reactor') {
             const canvas=document.createElement('canvas'); canvas.width=innerWidth; canvas.height=innerHeight; layer.appendChild(canvas); const ctx=canvas.getContext('2d'); let t=0;
-            function draw(){ if (!effectRunActive(runId)) return; const w=canvas.width,h=canvas.height; ctx.clearRect(0,0,w,h);
-                ctx.lineWidth=2;
-                for(let x=0;x<w;x+=8){ const hue=285 + Math.sin((x*0.01)+t*0.02)*8; ctx.strokeStyle=`hsla(${hue},70%,62%,0.18)`; ctx.beginPath();
-                    for(let y=0;y<h;y+=6){ const ny=Math.sin((x*0.05)+t*0.04)*8 + Math.sin((y*0.04)+t*0.03)*4; ctx.lineTo(x, y+ny); } ctx.stroke(); }
-                t+=1; requestAnimationFrame(draw);} draw();
+            function draw(){ const w=canvas.width,h=canvas.height; ctx.clearRect(0,0,w,h); for(let i=0;i<140;i++){ const x=Math.random()*w,y=Math.random()*h*0.8; const r=1+Math.random()*2; ctx.fillStyle=`hsla(${(t+i)%360},80%,60%,0.18)`; ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill(); } t+=0.6; requestAnimationFrame(draw);} draw();
+        } else if (type === 'time-slice') {
+            const canvas=document.createElement('canvas'); canvas.width=innerWidth; canvas.height=innerHeight; layer.appendChild(canvas); const ctx=canvas.getContext('2d'); let t=0;
+            function draw(){ const w=canvas.width,h=canvas.height; ctx.clearRect(0,0,w,h); for(let i=0;i<w;i+=16){ const off=Math.sin((i*0.02)+t)*8; ctx.fillStyle='rgba(255,255,255,0.04)'; ctx.fillRect(i,0,8,h); ctx.fillStyle='rgba(0,0,0,0.02)'; ctx.fillRect(i+8+off,0,8,h);} t+=0.02; requestAnimationFrame(draw);} draw();
+        } else if (type === 'dna-tunnel') {
+            const canvas=document.createElement('canvas'); canvas.width=innerWidth; canvas.height=innerHeight; layer.appendChild(canvas); const ctx=canvas.getContext('2d'); let t=0;
+            function draw(){ const w=canvas.width,h=canvas.height; ctx.clearRect(0,0,w,h); for(let i=0;i<120;i++){ const a=i*0.2+t; const x=w/2 + Math.cos(a)*i*1.2; const y=h*0.4 + Math.sin(a)*i*0.8; ctx.fillStyle='rgba(255,255,255,0.6)'; ctx.fillRect(x,y,2,2);} t+=0.04; requestAnimationFrame(draw);} draw();
         }
     }
 
