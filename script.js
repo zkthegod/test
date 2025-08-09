@@ -677,7 +677,7 @@ document.addEventListener('DOMContentLoaded', function() {
             height: desktop.height,
             z: ++zCounter,
             collapsed: false,
-            style: { borderColor: '#6c5ce7', glowColor: '#6c5ce7' }
+            style: { borderColor: '', glowColor: '#000000' }
         };
         createChatWindow(initialState);
         upsertWindowState(initialState);
@@ -1742,9 +1742,9 @@ document.addEventListener('DOMContentLoaded', function() {
             chip.innerHTML = `
                 <span class="chip-title">${w.name}</span>
                 <label>Border</label>
-                <input type="color" value="${w.style?.borderColor || '#6c5ce7'}" data-kind="border" data-id="${w.id}">
+                <input type="color" value="${w.style?.borderColor || '#000000'}" data-kind="border" data-id="${w.id}">
                 <label>Glow</label>
-                <input type="color" value="${w.style?.glowColor || '#6c5ce7'}" data-kind="glow" data-id="${w.id}">
+                <input type="color" value="${w.style?.glowColor || '#000000'}" data-kind="glow" data-id="${w.id}">
             `;
             chatStylesList.appendChild(chip);
         });

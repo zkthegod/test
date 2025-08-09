@@ -1197,6 +1197,7 @@ footer {
     position: absolute;
     background: var(--card-bg);
     color: var(--text);
+    filter: drop-shadow(0 0 6px rgba(0,0,0,0.35));
     border: var(--border);
     border-radius: 12px;
     box-shadow: 0 12px 30px rgba(0,0,0,0.2);
