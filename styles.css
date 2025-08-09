@@ -66,12 +66,12 @@ body::before {
 body::after {
     content: "";
     position: fixed;
-    top: -20vh;
+    top: -48vh;
     left: 50%;
     transform: translateX(-50%);
-    width: 120vw;
-    height: 60vh;
-    background: radial-gradient(ellipse at center, rgba(108,92,231,0.35) 0%, rgba(108,92,231,0.15) 25%, rgba(108,92,231,0.06) 45%, rgba(108,92,231,0) 60%);
+    width: 110vw;
+    height: 72vh;
+    background: radial-gradient(ellipse at center, rgba(108,92,231,0.32) 0%, rgba(108,92,231,0.14) 28%, rgba(108,92,231,0.06) 46%, rgba(108,92,231,0) 62%);
     pointer-events: none;
     z-index: 0;
     animation: headerGlowPulse 18s ease-in-out infinite alternate;

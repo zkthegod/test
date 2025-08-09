@@ -428,6 +428,98 @@ document.addEventListener('DOMContentLoaded', function() {
                 ctx.restore(); requestAnimationFrame(draw);
             }
             draw();
+        } else if (type === 'hypercube') {
+            const canvas = document.createElement('canvas'); canvas.width=innerWidth; canvas.height=innerHeight; layer.appendChild(canvas);
+            const ctx = canvas.getContext('2d'); let a=0;
+            function draw(){ ctx.clearRect(0,0,canvas.width,canvas.height); ctx.save(); ctx.translate(canvas.width/2, canvas.height/2-40);
+                ctx.strokeStyle='rgba(255,255,255,0.25)'; ctx.lineWidth=1;
+                for(let k=0;k<4;k++){ ctx.save(); ctx.rotate(a + k*Math.PI/2); const s=80; ctx.strokeRect(-s,-s,s*2,s*2); ctx.restore(); }
+                ctx.restore(); a+=0.003; requestAnimationFrame(draw); }
+            draw();
+        } else if (type === 'liquid-magnet') {
+            for(let i=0;i<6;i++){
+                const b = document.createElement('div'); b.style.position='absolute'; b.style.width=b.style.height=`${60+Math.random()*80}px`;
+                b.style.left=`${Math.random()*100}%`; b.style.top=`${Math.random()*80}%`; b.style.borderRadius='50%';
+                b.style.background='radial-gradient(circle at 30% 30%, rgba(255,255,255,0.35), rgba(255,255,255,0.08))'; b.style.backdropFilter='blur(8px)';
+                b.style.transition='transform .6s ease'; layer.appendChild(b);
+            }
+            window.addEventListener('pointermove', (e)=>{
+                const mx=e.clientX, my=e.clientY; Array.from(layer.children).forEach((el)=>{
+                    const rect=el.getBoundingClientRect(); const cx=rect.left+rect.width/2, cy=rect.top+rect.height/2;
+                    const dx=mx-cx, dy=my-cy; const d=Math.hypot(dx,dy); const pull=Math.max(0, 160 - d)/160;
+                    el.style.transform = `translate(${dx*0.06*pull}px, ${dy*0.06*pull}px)`;
+                });
+            }, { passive:true });
+        } else if (type === 'black-hole') {
+            const canvas=document.createElement('canvas'); canvas.width=innerWidth; canvas.height=innerHeight; layer.appendChild(canvas);
+            const ctx=canvas.getContext('2d'); let t=0; function draw(){ const w=canvas.width,h=canvas.height; ctx.clearRect(0,0,w,h);
+                ctx.save(); ctx.translate(w/2, h/2-20); for(let r=6;r<180;r+=2){ const ang=t*0.02 + r*0.08; ctx.strokeStyle=`rgba(0,0,0,${0.003*r})`;
+                    ctx.beginPath(); for(let a=0;a<Math.PI*2;a+=0.2){ const rr=r + Math.sin(a+ang)*2; ctx.lineTo(Math.cos(a)*rr, Math.sin(a)*rr); } ctx.stroke(); }
+                ctx.restore(); t++; requestAnimationFrame(draw);} draw();
+        } else if (type === 'mandelbrot-zoom') {
+            const canvas=document.createElement('canvas'); canvas.width=innerWidth; canvas.height=innerHeight; layer.appendChild(canvas);
+            const ctx=canvas.getContext('2d'); let zoom=200, cx=-0.5, cy=0; function draw(){ const w=canvas.width,h=canvas.height; const img=ctx.createImageData(w,h);
+                for(let y=0;y<h;y+=2){ for(let x=0;x<w;x+=2){ let a=(x-w/2)/zoom+cx, b=(y-h/2)/zoom+cy, ca=a, cb=b, n=0; while(n<32){ const aa=a*a - b*b; const bb=2*a*b; a=aa+ca; b=bb+cb; if(a*a+b*b>4) break; n++; }
+                    const p=(y*w+x)*4; const v=n===32?0:255-n*8; img.data[p]=v; img.data[p+1]=v; img.data[p+2]=v; img.data[p+3]=22; }} ctx.putImageData(img,0,0);
+                zoom*=1.002; requestAnimationFrame(draw);} draw();
+        } else if (type === 'light-net') {
+            const canvas=document.createElement('canvas'); canvas.width=innerWidth; canvas.height=innerHeight; layer.appendChild(canvas);
+            const ctx=canvas.getContext('2d'); let t=0; function draw(){ const w=canvas.width,h=canvas.height; ctx.clearRect(0,0,w,h); ctx.globalAlpha=0.5; ctx.strokeStyle='rgba(108,92,231,0.35)';
+                for(let y=0;y<=h;y+=40){ ctx.beginPath(); for(let x=0;x<=w;x+=40){ const yy=y+Math.sin((x*0.02)+t)*6; ctx.lineTo(x,yy);} ctx.stroke(); }
+                for(let x=0;x<=w;x+=40){ ctx.beginPath(); for(let y=0;y<=h;y+=40){ const xx=x+Math.cos((y*0.02)+t)*6; ctx.lineTo(xx,y);} ctx.stroke(); }
+                t+=0.02; requestAnimationFrame(draw);} draw();
+        } else if (type === 'micro-fluid') {
+            const canvas=document.createElement('canvas'); canvas.width=innerWidth; canvas.height=innerHeight; layer.appendChild(canvas);
+            const ctx=canvas.getContext('2d'); let pts=Array.from({length:2000},()=>({x:Math.random()*innerWidth,y:Math.random()*innerHeight})); let mx=0,my=0;
+            window.addEventListener('pointermove', (e)=>{ mx=e.clientX; my=e.clientY; }, { passive:true });
+            function draw(){ ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle='rgba(255,255,255,0.6)';
+                pts.forEach(p=>{ const dx=mx-p.x, dy=my-p.y; const d=Math.hypot(dx,dy); const f=Math.max(0, 120-d)/120; p.x -= dx*0.003*f; p.y -= dy*0.003*f; ctx.fillRect(p.x,p.y,1,1); });
+                requestAnimationFrame(draw);} draw();
+        } else if (type === 'shattered-reality') {
+            for(let i=0;i<16;i++){ const shard=document.createElement('div'); shard.style.position='absolute'; shard.style.left=`${Math.random()*100}%`; shard.style.top=`${Math.random()*100}%`;
+                shard.style.width=`${10+Math.random()*12}vw`; shard.style.height=`${8+Math.random()*10}vh`; shard.style.background='rgba(255,255,255,0.06)'; shard.style.backdropFilter='blur(3px)';
+                shard.style.transform=`rotate(${Math.random()*20-10}deg)`; shard.style.transition='transform .8s ease'; layer.appendChild(shard);} 
+            window.addEventListener('scroll', ()=>{ const amt=(window.scrollY%200)/200; Array.from(layer.children).forEach((el,i)=>{ el.style.transform=`translateY(${(i%4-2)*amt*10}px) rotate(${(i%7-3)*2}deg)`; }); }, { passive:true });
+        } else if (type === 'gravity-planets') {
+            const planets=[]; for(let i=0;i<3;i++){ const p=document.createElement('div'); p.style.position='absolute'; p.style.left=`${20+i*30}%`; p.style.top=`${30+i*10}%`;
+                p.style.width=p.style.height=`${40+Math.random()*26}px`; p.style.borderRadius='50%'; p.style.background='radial-gradient(circle at 30% 30%, rgba(255,255,255,0.8), rgba(108,92,231,0.35))'; layer.appendChild(p); planets.push(p); }
+            const canvas=document.createElement('canvas'); canvas.width=innerWidth; canvas.height=innerHeight; layer.appendChild(canvas); const ctx=canvas.getContext('2d'); let parts=[];
+            function draw(){ ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle='rgba(255,255,255,0.7)'; parts.forEach(pt=>{ let ax=0,ay=0; planets.forEach(pl=>{ const r=pl.getBoundingClientRect(); const cx=r.left+r.width/2, cy=r.top+r.height/2; const dx=cx-pt.x, dy=cy-pt.y; const d=Math.hypot(dx,dy); const g=10000/((d*d)+2000); ax+=dx*g; ay+=dy*g; }); pt.vx=(pt.vx||0)+ax; pt.vy=(pt.vy||0)+ay; pt.x+=pt.vx; pt.y+=pt.vy; ctx.fillRect(pt.x,pt.y,1,1); }); requestAnimationFrame(draw);} draw();
+            setInterval(()=>{ parts.push({x:Math.random()*innerWidth, y:Math.random()*innerHeight*0.8}); if(parts.length>2000) parts.splice(0,800); }, 80);
+        } else if (type === 'smoke-portal') {
+            const canvas=document.createElement('canvas'); canvas.width=innerWidth; canvas.height=innerHeight; layer.appendChild(canvas); const ctx=canvas.getContext('2d'); let t=0;
+            function draw(){ const w=canvas.width,h=canvas.height; ctx.clearRect(0,0,w,h); ctx.globalCompositeOperation='lighter'; ctx.strokeStyle='rgba(255,255,255,0.06)';
+                for(let r=20;r<280;r+=6){ ctx.beginPath(); for(let a=0;a<Math.PI*2;a+=0.2){ const rr=r+Math.sin(a*3 + t*0.03)*3; ctx.lineTo(w/2 + Math.cos(a)*rr, h*0.45 + Math.sin(a)*rr); } ctx.stroke(); }
+                t++; requestAnimationFrame(draw);} draw(); ctx.globalCompositeOperation='source-over';
+        } else if (type === 'water-refraction') {
+            const canvas=document.createElement('canvas'); canvas.width=innerWidth; canvas.height=innerHeight; layer.appendChild(canvas); const ctx=canvas.getContext('2d'); let t=0;
+            function draw(){ const w=canvas.width,h=canvas.height; ctx.clearRect(0,0,w,h); ctx.fillStyle='rgba(255,255,255,0.04)';
+                for(let y=0;y<h;y+=4){ for(let x=0;x<w;x+=4){ const dx=Math.sin((y*0.05)+t)*1.5; const dy=Math.cos((x*0.05)+t)*1.5; ctx.fillRect(x+dx,y+dy,3,3);} }
+                t+=0.04; requestAnimationFrame(draw);} draw();
+        } else if (type === 'nebula-reactor') {
+            const canvas=document.createElement('canvas'); canvas.width=innerWidth; canvas.height=innerHeight; layer.appendChild(canvas); const ctx=canvas.getContext('2d'); let t=0;
+            function draw(){ const w=canvas.width,h=canvas.height; ctx.clearRect(0,0,w,h); for(let i=0;i<140;i++){ const x=Math.random()*w,y=Math.random()*h*0.8; const r=1+Math.random()*2; ctx.fillStyle=`hsla(${(t+i)%360},80%,60%,0.18)`; ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill(); } t+=0.6; requestAnimationFrame(draw);} draw();
+        } else if (type === 'time-slice') {
+            const canvas=document.createElement('canvas'); canvas.width=innerWidth; canvas.height=innerHeight; layer.appendChild(canvas); const ctx=canvas.getContext('2d'); let t=0;
+            function draw(){ const w=canvas.width,h=canvas.height; ctx.clearRect(0,0,w,h); for(let i=0;i<w;i+=16){ const off=Math.sin((i*0.02)+t)*8; ctx.fillStyle='rgba(255,255,255,0.04)'; ctx.fillRect(i,0,8,h); ctx.fillStyle='rgba(0,0,0,0.02)'; ctx.fillRect(i+8+off,0,8,h);} t+=0.02; requestAnimationFrame(draw);} draw();
+        } else if (type === 'dna-tunnel') {
+            const canvas=document.createElement('canvas'); canvas.width=innerWidth; canvas.height=innerHeight; layer.appendChild(canvas); const ctx=canvas.getContext('2d'); let t=0;
+            function draw(){ const w=canvas.width,h=canvas.height; ctx.clearRect(0,0,w,h); for(let i=0;i<120;i++){ const a=i*0.2+t; const x=w/2 + Math.cos(a)*i*1.2; const y=h*0.4 + Math.sin(a)*i*0.8; ctx.fillStyle='rgba(255,255,255,0.6)'; ctx.fillRect(x,y,2,2);} t+=0.04; requestAnimationFrame(draw);} draw();
+        } else if (type === 'light-explosion') {
+            window.addEventListener('click', (e)=>{ const burst=document.createElement('div'); burst.style.position='fixed'; burst.style.left=`${e.clientX}px`; burst.style.top=`${e.clientY}px`; burst.style.width=burst.style.height='4px'; burst.style.borderRadius='50%'; burst.style.background='rgba(255,255,255,0.9)'; burst.style.boxShadow='0 0 60px rgba(255,255,255,0.8)'; burst.style.transform='translate(-50%,-50%)'; burst.style.transition='all 1.6s ease'; document.body.appendChild(burst); requestAnimationFrame(()=>{ burst.style.width='200px'; burst.style.height='200px'; burst.style.opacity='0'; }); setTimeout(()=>burst.remove(), 1800); }, { once:false });
+        } else if (type === 'wormhole') {
+            const canvas=document.createElement('canvas'); canvas.width=innerWidth; canvas.height=innerHeight; layer.appendChild(canvas); const ctx=canvas.getContext('2d'); let t=0;
+            function draw(){ const w=canvas.width,h=canvas.height; ctx.clearRect(0,0,w,h); ctx.strokeStyle='rgba(255,255,255,0.2)'; for(let r=10;r<Math.max(w,h); r+=14){ ctx.beginPath(); for(let a=0;a<Math.PI*2;a+=0.12){ const rr=r + Math.sin(a*6+t)*2; ctx.lineTo(w/2 + Math.cos(a)*rr, h*0.45 + Math.sin(a)*rr);} ctx.stroke(); } t+=0.04; requestAnimationFrame(draw);} draw();
+        } else if (type === 'escher-stairs') {
+            const canvas=document.createElement('canvas'); canvas.width=innerWidth; canvas.height=innerHeight; layer.appendChild(canvas); const ctx=canvas.getContext('2d'); let t=0; function draw(){ const w=canvas.width,h=canvas.height; ctx.clearRect(0,0,w,h); ctx.strokeStyle='rgba(255,255,255,0.2)'; for(let i=0;i<20;i++){ ctx.strokeRect((i*30+t)%w, h*0.6, 60, 20); } t+=0.5; requestAnimationFrame(draw);} draw();
+        } else if (type === 'infinite-mirror') {
+            const canvas=document.createElement('canvas'); canvas.width=innerWidth; canvas.height=innerHeight; layer.appendChild(canvas); const ctx=canvas.getContext('2d'); let t=0; function draw(){ const w=canvas.width,h=canvas.height; ctx.clearRect(0,0,w,h); ctx.strokeStyle='rgba(255,255,255,0.12)'; for(let i=0;i<16;i++){ const s=(i+1)*40; ctx.strokeRect(w/2-s, h*0.45-s, s*2, s*2);} t+=0.02; requestAnimationFrame(draw);} draw();
+        } else if (type === 'depth-shadows') {
+            const canvas=document.createElement('canvas'); canvas.width=innerWidth; canvas.height=innerHeight; layer.appendChild(canvas); const ctx=canvas.getContext('2d'); let t=0; function draw(){ const w=canvas.width,h=canvas.height; ctx.clearRect(0,0,w,h); for(let i=0;i<80;i++){ const x=Math.random()*w, y=Math.random()*h*0.8; const off=Math.sin((i+t)*0.2)*6; ctx.fillStyle='rgba(0,0,0,0.04)'; ctx.fillRect(x+off,y,8,2);} t+=0.04; requestAnimationFrame(draw);} draw();
+        } else if (type === 'dream-blur') {
+            for(let i=0;i<12;i++){ const ghost=document.createElement('div'); ghost.style.position='absolute'; ghost.style.left=`${Math.random()*100}%`; ghost.style.top=`${Math.random()*80}%`; ghost.style.width=`${20+Math.random()*40}px`; ghost.style.height=ghost.style.width; ghost.style.borderRadius='50%'; ghost.style.background='rgba(255,255,255,0.05)'; ghost.style.filter='blur(8px)'; ghost.style.animation=`quoteDust ${10+Math.random()*8}s ease-in-out ${Math.random()*8}s infinite`; layer.appendChild(ghost);} 
+        } else if (type === 'light-shafts') {
+            const canvas=document.createElement('canvas'); canvas.width=innerWidth; canvas.height=innerHeight; layer.appendChild(canvas); const ctx=canvas.getContext('2d'); let t=0; function draw(){ const w=canvas.width,h=canvas.height; ctx.clearRect(0,0,w,h); ctx.globalAlpha=0.15; for(let i=0;i<12;i++){ ctx.save(); ctx.translate(w/2, 0); ctx.rotate((i/12)*Math.PI/8 + Math.sin(t*0.02)*0.02); const grad=ctx.createLinearGradient(0,0,0,h*0.8); grad.addColorStop(0,'rgba(255,255,255,0.35)'); grad.addColorStop(1,'rgba(255,255,255,0)'); ctx.fillStyle=grad; ctx.fillRect(-10,0,20,h); ctx.restore(); } t+=1; requestAnimationFrame(draw);} draw();
         }
     }
 
