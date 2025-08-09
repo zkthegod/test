@@ -677,7 +677,7 @@ document.addEventListener('DOMContentLoaded', function() {
             height: desktop.height,
             z: ++zCounter,
             collapsed: false,
-            style: { borderColor: '', glowColor: '#000000' }
+            style: { borderColor: '', glowColor: getDefaultChatColor() }
         };
         createChatWindow(initialState);
         upsertWindowState(initialState);
@@ -1875,4 +1875,24 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     bindTileCenter();
+
+    const chatDefaultColorInput = document.getElementById('chatDefaultColor');
+    function getDefaultChatColor() {
+        return localStorage.getItem('defaultChatColor') || '#000000';
+    }
+    function setDefaultChatColor(hex) {
+        localStorage.setItem('defaultChatColor', hex);
+    }
+    if (chatDefaultColorInput) {
+        chatDefaultColorInput.value = getDefaultChatColor();
+        chatDefaultColorInput.addEventListener('input', () => {
+            const hex = chatDefaultColorInput.value || '#000000';
+            setDefaultChatColor(hex);
+            const windows = getWindowsState();
+            windows.forEach(w => { w.style = { ...(w.style||{}), borderColor: hex, glowColor: hex }; });
+            setWindowsState(windows);
+            applyStylesToExistingWindows();
+            rebuildChatStyleChips();
+        });
+    }
 });

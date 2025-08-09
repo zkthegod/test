@@ -1469,3 +1469,5 @@ header, .embed-controls, .section-header { position: relative; z-index: 10; }
 .color-picker-wrapper input[type="color"]::-webkit-color-swatch,
 .settings-dropdown input[type="color"]::-webkit-color-swatch,
 .settings-drawer input[type="color"]::-webkit-color-swatch { border-radius: 50%; border: none; }
+
+/* chatDefaultColor inherits circular input styles via generic selectors above */
