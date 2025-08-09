@@ -1480,4 +1480,4 @@ header, .embed-controls, .section-header { position: relative; z-index: 10; }
 .chat-style-chip { display: flex; align-items: center; gap: 10px; padding: 6px 10px; border: var(--border); border-radius: 10px; margin: 6px 0; background: var(--card-bg); }
 .chat-style-chip .chip-title { font-weight: 600; color: var(--text); min-width: 120px; }
 .chat-style-chip label { color: var(--text-light); font-size: 0.9rem; }
-.chat-style-chip input[type="color"] { flex: 0 0 auto; }
+.chat-style-chip input[type="color"] { flex: 0 0 auto; width: 40px; height: 32px; padding: 0; border: none; border-radius: 6px; }

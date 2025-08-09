@@ -677,7 +677,7 @@ document.addEventListener('DOMContentLoaded', function() {
             height: desktop.height,
             z: ++zCounter,
             collapsed: false,
-            style: { borderColor: '', glowColor: '#000000' }
+            style: { borderColor: '', glowColor: '' }
         };
         createChatWindow(initialState);
         upsertWindowState(initialState);
@@ -740,6 +740,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (action === 'close') {
                 el.parentElement && el.parentElement.removeChild(el);
                 deleteWindowState(state.id);
+                rebuildChatStyleChips();
             } else if (action === 'toggle') {
                 el.classList.toggle('hidden-content');
                 state.collapsed = el.classList.contains('hidden-content');
@@ -1747,7 +1748,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const value = w.style?.borderColor || w.style?.glowColor || '#000000';
             chip.innerHTML = `
                 <span class="chip-title">${w.name}</span>
-                <label>Color</label>
+                <label>Glow</label>
                 <input type="color" value="${value}" data-kind="both" data-id="${w.id}">
             `;
             chatStylesList.appendChild(chip);
@@ -1757,8 +1758,11 @@ document.addEventListener('DOMContentLoaded', function() {
     function applyChatStyleToElement(el, style) {
         if (style?.borderColor) el.style.boxShadow = `0 0 0 2px ${style.borderColor}`;
         else el.style.boxShadow = '';
-        if (style?.glowColor) el.style.filter = `drop-shadow(0 0 8px ${style.glowColor})`;
-        else el.style.filter = '';
+        if (style?.glowColor) {
+            el.style.filter = `drop-shadow(0 2px 10px rgba(0,0,0,0.22)) drop-shadow(0 0 10px ${style.glowColor})`;
+        } else {
+            el.style.filter = '';
+        }
     }
 
     let styleChipsWired = false;
