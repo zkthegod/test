@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function() {
             layer.style.position = 'fixed';
             layer.style.pointerEvents = 'none';
             layer.style.inset = '0';
-            layer.style.zIndex = '15';
+            layer.style.zIndex = '0'; // behind content; content raised via CSS
             document.body.appendChild(layer);
         }
         return layer;
@@ -373,23 +373,24 @@ document.addEventListener('DOMContentLoaded', function() {
     function applyContrastMask(enabled) {
         const id = 'contrastMask';
         let mask = document.getElementById(id);
-        if (enabled) {
-            if (!mask) {
-                mask = document.createElement('div');
-                mask.id = id;
-                mask.style.position = 'fixed';
-                mask.style.inset = '0';
-                mask.style.pointerEvents = 'none';
-                mask.style.zIndex = '5';
-                document.body.appendChild(mask);
-            }
-            const theme = document.documentElement.getAttribute('data-theme') || 'light';
-            mask.style.background = theme === 'dark'
-                ? 'linear-gradient(rgba(0,0,0,0.25), rgba(0,0,0,0.25))'
-                : 'linear-gradient(rgba(255,255,255,0.25), rgba(255,255,255,0.25))';
-        } else if (mask) {
-            mask.remove();
+        // Never show mask on Chat Embedder page
+        if (!enabled || isChatTabActive()) {
+            if (mask) mask.remove();
+            return;
         }
+        if (!mask) {
+            mask = document.createElement('div');
+            mask.id = id;
+            mask.style.position = 'fixed';
+            mask.style.inset = '0';
+            mask.style.pointerEvents = 'none';
+            mask.style.zIndex = '1'; // below main content
+            document.body.appendChild(mask);
+        }
+        const theme = document.documentElement.getAttribute('data-theme') || 'light';
+        mask.style.background = theme === 'dark'
+            ? 'linear-gradient(rgba(0,0,0,0.25), rgba(0,0,0,0.25))'
+            : 'linear-gradient(rgba(255,255,255,0.25), rgba(255,255,255,0.25))';
     }
 
     function updatePageBackgroundForActiveTab(inlineSettings) {
@@ -1571,8 +1572,6 @@ document.addEventListener('DOMContentLoaded', function() {
             chip.className = 'chat-style-chip';
             chip.innerHTML = `
                 <span class="chip-title">${w.name}</span>
-                <label>Border</label>
-                <input type="color" value="${w.style?.borderColor || '#6c5ce7'}" data-kind="border" data-id="${w.id}">
                 <label>Glow</label>
                 <input type="color" value="${w.style?.glowColor || '#6c5ce7'}" data-kind="glow" data-id="${w.id}">
             `;
@@ -1581,8 +1580,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function applyChatStyleToElement(el, style) {
-        if (style?.borderColor) el.style.boxShadow = `0 0 0 2px ${style.borderColor}`;
-        else el.style.boxShadow = '';
+        // Remove border styling per requirements; only keep glow
+        el.style.boxShadow = '';
         if (style?.glowColor) el.style.filter = `drop-shadow(0 0 8px ${style.glowColor})`;
         else el.style.filter = '';
     }
@@ -1598,8 +1597,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const idx = windows.findIndex(w => w.id === id);
             if (idx < 0) return;
             const style = windows[idx].style || {};
-            if (kind === 'border') style.borderColor = input.value;
             if (kind === 'glow') style.glowColor = input.value;
+            // Persist and apply
             windows[idx].style = style;
             setWindowsState(windows);
             const el = chatDesktop.querySelector(`.chat-window[data-id="${id}"]`);
