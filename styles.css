@@ -1369,8 +1369,8 @@ footer { position: relative; z-index: 0; }
 #clearAllChats.link-btn{transition:background .2s ease,opacity .2s ease}
 #clearAllChats.link-btn:hover{opacity:.9}
 
-.settings-drawer input#chatWidth, .settings-drawer input#chatHeight { width: 84px; }
-.settings-drawer input#desktopBgImage { min-width: 140px; max-width: 300px; flex: 1 1 200px; }
+.settings-drawer input#chatWidth, .settings-drawer input#chatHeight { width: 84px; flex: 0 0 84px; }
+.settings-drawer input#desktopBgImage { width: 220px; min-width: 0; max-width: 220px; flex: 0 0 220px; }
 
 header, .embed-controls, .section-header { position: relative; z-index: 10; }
 /* header stacking reset above is redundant; keeping settings-drawer own z-index */
