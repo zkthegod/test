@@ -143,6 +143,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (type === 'snow') {
             for (let i = 0; i < 40; i++) {
                 const flake = document.createElement('div');
+                flake.className = 'snow-flake';
                 flake.style.position = 'absolute';
                 flake.style.top = `${Math.random() * -50}px`;
                 flake.style.left = `${Math.random() * 100}%`;
@@ -155,6 +156,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (type === 'sparkles') {
             for (let i = 0; i < 30; i++) {
                 const s = document.createElement('div');
+                s.className = 'star';
                 s.style.position = 'absolute';
                 s.style.top = `${Math.random() * 100}%`;
                 s.style.left = `${Math.random() * 100}%`;
@@ -167,6 +169,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (type === 'bokeh') {
             for (let i = 0; i < 18; i++) {
                 const b = document.createElement('div');
+                b.className = 'bokeh-dot';
                 b.style.position = 'absolute';
                 b.style.top = `${Math.random() * 100}%`;
                 b.style.left = `${Math.random() * 100}%`;
@@ -329,8 +332,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const ypos = Array(cols).fill(0);
             const color = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#6c5ce7';
             function draw(){
-                ctx.fillStyle='rgba(0,0,0,0.5)'; ctx.fillRect(0,0,canvas.width,canvas.height);
-                ctx.fillStyle=color; ctx.globalAlpha=0.5; ctx.font='14px monospace';
+                ctx.fillStyle='rgba(0,0,0,0.1)'; ctx.fillRect(0,0,canvas.width,canvas.height);
+                ctx.fillStyle=color; ctx.globalAlpha=1; ctx.font='14px monospace';
                 ypos.forEach((y, ind)=>{ const text = String.fromCharCode(0x30A0 + Math.random()*96);
                     const x = ind*14; ctx.fillText(text, x, y);
                     if (y > canvas.height && Math.random()>0.975) ypos[ind]=0; else ypos[ind]=y+14; });
