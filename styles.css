@@ -1404,3 +1404,5 @@ footer { position: relative; z-index: 1; }
 
 .settings-drawer input#chatWidth, .settings-drawer input#chatHeight { width: 110px; }
 .settings-drawer input#desktopBgImage { min-width: 160px; max-width: 380px; flex: 1 1 220px; }
+
+header, .settings-drawer, .embed-controls, .section-header { position: relative; z-index: 10; }

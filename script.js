@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function() {
             layer.style.position = 'fixed';
             layer.style.pointerEvents = 'none';
             layer.style.inset = '0';
-            layer.style.zIndex = '15';
+            layer.style.zIndex = '3'; // behind header/buttons
             document.body.appendChild(layer);
         }
         return layer;
@@ -329,11 +329,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const ypos = Array(cols).fill(0);
             const color = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#6c5ce7';
             function draw(){
-                ctx.fillStyle='rgba(0,0,0,0.05)'; ctx.fillRect(0,0,canvas.width,canvas.height);
-                ctx.fillStyle=color; ctx.font='14px monospace';
+                ctx.fillStyle='rgba(0,0,0,0.5)'; ctx.fillRect(0,0,canvas.width,canvas.height);
+                ctx.fillStyle=color; ctx.globalAlpha=0.5; ctx.font='14px monospace';
                 ypos.forEach((y, ind)=>{ const text = String.fromCharCode(0x30A0 + Math.random()*96);
                     const x = ind*14; ctx.fillText(text, x, y);
                     if (y > canvas.height && Math.random()>0.975) ypos[ind]=0; else ypos[ind]=y+14; });
+                ctx.globalAlpha=1;
                 requestAnimationFrame(draw);
             }
             draw();
@@ -1668,4 +1669,41 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    // Fresh binding for Tile/Center (redo)
+    function bindTileCenter() {
+        const tileBtn = document.getElementById('alignTile');
+        const centerBtn = document.getElementById('alignCenter');
+        if (tileBtn) tileBtn.onclick = (e) => { e.preventDefault(); e.stopPropagation(); tileChats(); };
+        if (centerBtn) centerBtn.onclick = (e) => { e.preventDefault(); e.stopPropagation(); centerChats(); };
+    }
+
+    function tileChats() {
+        const nodes = Array.from(chatDesktop.querySelectorAll('.chat-window'));
+        if (!nodes.length) return;
+        const pad = 16; let x=pad, y=pad, rowH=0;
+        const deskRect = chatDesktop.getBoundingClientRect();
+        nodes.forEach(el => {
+            el.style.transform='';
+            const w = el.offsetWidth; const h=el.offsetHeight;
+            if (x + w + pad > deskRect.width) { x = pad; y += rowH + pad; rowH = 0; }
+            el.style.left = `${x}px`; el.style.top = `${y}px`;
+            x += w + pad; rowH = Math.max(rowH, h);
+            persistFromElement(el);
+        });
+    }
+
+    function centerChats() {
+        const nodes = Array.from(chatDesktop.querySelectorAll('.chat-window'));
+        const deskRect = chatDesktop.getBoundingClientRect();
+        const pad = 16;
+        nodes.forEach(el => {
+            el.style.transform='';
+            el.style.left = `${Math.max(pad,(deskRect.width - el.offsetWidth)/2)}px`;
+            el.style.top = `${Math.max(pad,(deskRect.height - el.offsetHeight)/2)}px`;
+            persistFromElement(el);
+        });
+    }
+
+    bindTileCenter();
 });
