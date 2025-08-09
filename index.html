@@ -94,7 +94,7 @@
                     </div>
                     <div class="row">
                         <label>Effects</label>
-                        <select id="effectsType">
+                        <select id="effectsType" onclick="event.stopPropagation()">
                             <option value="none">None</option>
                             <option value="snow">Snow</option>
                             <option value="sparkles">Sparkles</option>
@@ -107,7 +107,6 @@
                             <option value="aurora">Aurora</option>
                             <option value="rain">Rain</option>
                             <option value="grid-glow">Grid Glow</option>
-                            <option value="comet">Comets</option>
                         </select>
                     </div>
                     <div class="row" id="chatStylesList"></div>

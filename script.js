@@ -258,17 +258,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 line.style.background='rgba(255,255,255,0.05)';
                 layer.appendChild(line);
             }
-        } else if (type === 'comet') {
-            for (let i=0; i<3; i++) {
-                const c = document.createElement('div');
-                c.style.position='absolute';
-                c.style.top = `${Math.random()*50}%`;
-                c.style.left = `${Math.random()*100}%`;
-                c.style.width = '120px'; c.style.height='2px';
-                c.style.background='linear-gradient(90deg, rgba(255,255,255,0.8), transparent)';
-                c.style.animation=`fall ${3+Math.random()*2}s linear ${Math.random()}s infinite`;
-                layer.appendChild(c);
-            }
         }
     }
 
@@ -339,6 +328,7 @@ document.addEventListener('DOMContentLoaded', function() {
             settingsOverlay.classList.remove('active');
         }
     });
+    settingsPanel.addEventListener('click', (e) => { e.stopPropagation(); });
     if (settingsOverlay) settingsOverlay.addEventListener('click', () => {
         settingsPanel.classList.remove('active');
         settingsOverlay.classList.remove('active');
@@ -674,12 +664,13 @@ document.addEventListener('DOMContentLoaded', function() {
     function alignTile() {
         const list = readAllWindows();
         if (!list.length) return;
-        const vpW = document.documentElement.clientWidth;
+        const deskRect = chatDesktop.getBoundingClientRect();
+        const deskW = deskRect.width;
         const pad = 16;
         let x = pad, y = pad, rowH = 0;
         list.forEach(el => {
             const w = el.offsetWidth; const h = el.offsetHeight;
-            if (x + w + pad > vpW) { x = pad; y += rowH + pad; rowH = 0; }
+            if (x + w + pad > deskW) { x = pad; y += rowH + pad; rowH = 0; }
             el.style.left = `${x}px`; el.style.top = `${y}px`;
             x += w + pad; rowH = Math.max(rowH, h);
             persistFromElement(el);
@@ -688,17 +679,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function alignEdge(edge) {
         const list = readAllWindows();
-        const vpW = document.documentElement.clientWidth;
-        const vpH = Math.max(window.innerHeight, document.documentElement.clientHeight);
+        const deskRect = chatDesktop.getBoundingClientRect();
+        const deskW = deskRect.width;
+        const deskH = deskRect.height;
         const pad = 16;
         list.forEach(el => {
             if (edge === 'left') el.style.left = `${pad}px`;
-            if (edge === 'right') el.style.left = `${Math.max(pad, vpW - el.offsetWidth - pad)}px`;
+            if (edge === 'right') el.style.left = `${Math.max(pad, deskW - el.offsetWidth - pad)}px`;
             if (edge === 'top') el.style.top = `${pad}px`;
-            if (edge === 'bottom') el.style.top = `${Math.max(pad, vpH - el.offsetHeight - pad)}px`;
+            if (edge === 'bottom') el.style.top = `${Math.max(pad, deskH - el.offsetHeight - pad)}px`;
             if (edge === 'center') {
-                el.style.left = `${Math.max(pad, (vpW - el.offsetWidth)/2)}px`;
-                el.style.top = `${Math.max(pad, (vpH - el.offsetHeight)/2)}px`;
+                el.style.left = `${Math.max(pad, (deskW - el.offsetWidth)/2)}px`;
+                el.style.top = `${Math.max(pad, (deskH - el.offsetHeight)/2)}px`;
             }
             persistFromElement(el);
         });
