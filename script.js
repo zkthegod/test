@@ -701,14 +701,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function createChatWindow(state) {
-    // Apply glow color if available in state
-    if (state.style?.glowColor) {
-        el.style.setProperty('--glow-color', state.style.glowColor);
-        el.style.filter = `drop-shadow(0 0 8px ${state.style.glowColor}) 
-                           drop-shadow(0 0 5px ${state.style.glowColor}) 
-                           drop-shadow(0 0 3px ${state.style.glowColor})`;
-    }
-
         const el = document.createElement('div');
         el.className = 'chat-window';
         el.dataset.id = String(state.id);
@@ -1761,6 +1753,37 @@ document.addEventListener('DOMContentLoaded', function() {
     // Build per-chat style chips
     const chatStylesList = document.getElementById('chatStylesList');
     function rebuildChatStyleChips() {
+    const list = document.getElementById('chatStylesList');
+    if (!list) return;
+    list.innerHTML = '';
+
+    // Glow Color Picker
+    const glowItem = document.createElement('div');
+    glowItem.className = 'color-input';
+    glowItem.innerHTML = `
+        <input type="color" value="${state.style?.glowColor || '#0000ff'}">
+        <input type="text" value="${state.style?.glowColor || '#0000ff'}">
+    `;
+
+    glowItem.querySelectorAll('input').forEach(input => {
+        input.addEventListener('input', e => {
+            const color = e.target.value;
+            state.style.glowColor = color;
+            const win = document.querySelector(\`.chat-window[data-id="\${state.id}"]\`);
+            if (win) {
+                win.style.setProperty('--glow-color', color);
+                win.style.filter = `drop-shadow(0 0 8px ${color})
+                                    drop-shadow(0 0 5px ${color})
+                                    drop-shadow(0 0 3px ${color})`;
+            }
+            if (typeof saveStylesForWindow === 'function') {
+                saveStylesForWindow(state);
+            }
+        });
+    });
+
+    list.appendChild(glowItem);
+
         if (!chatStylesList) return;
         chatStylesList.innerHTML = '';
         // Read stored windows
@@ -1855,20 +1878,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function applyStylesToExistingWindows() {
-    document.querySelectorAll('.chat-window').forEach(el => {
-        const id = parseInt(el.dataset.id, 10);
-        const winState = getWindowsState().find(w => w.id === id);
-        if (winState?.style?.glowColor) {
-            el.style.setProperty('--glow-color', winState.style.glowColor);
-            el.style.filter = `drop-shadow(0 0 8px ${winState.style.glowColor}) 
-                               drop-shadow(0 0 5px ${winState.style.glowColor}) 
-                               drop-shadow(0 0 3px ${winState.style.glowColor})`;
-        } else {
-            el.style.removeProperty('--glow-color');
-            el.style.filter = '';
-        }
-    });
-
         const windows = getWindowsState();
         windows.forEach(w => {
             const el = chatDesktop.querySelector(`.chat-window[data-id="${w.id}"]`);
