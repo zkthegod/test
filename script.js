@@ -161,6 +161,14 @@ document.addEventListener('DOMContentLoaded', function() {
             effectsMenu.classList.toggle('open');
         });
         document.addEventListener('click', () => { effectsMenu.classList.remove('open'); });
+        // Close when clicking elsewhere inside the settings panel too
+        if (settingsPanel) {
+            settingsPanel.addEventListener('click', (e) => {
+                if (!effectsSelect.contains(e.target) && !effectsMenu.contains(e.target)) {
+                    effectsMenu.classList.remove('open');
+                }
+            });
+        }
     }
 
     function ensureEffectsLayer() {
@@ -529,6 +537,59 @@ document.addEventListener('DOMContentLoaded', function() {
             const ctx=canvas.getContext('2d'); let t=0; function draw(){ t+=0.01; ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle='rgba(255,255,255,0.2)'; for(let i=0;i<80;i++){ const x=Math.random()*canvas.width; const y=(Math.sin(t + i)*0.5+0.5)*canvas.height; ctx.globalAlpha=0.06; ctx.fillRect(x,y,1,1);} requestAnimationFrame(draw);} draw();
         } else if (type === 'pulse-grid') {
             const grid=document.createElement('div'); grid.style.position='absolute'; grid.style.inset='0'; grid.style.background='linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)'; grid.style.backgroundSize='60px 60px'; grid.style.animation='pulseGrid 4s ease-in-out infinite'; layer.appendChild(grid);
+        } else if (type === 'soft-orbs') {
+            const canvas=document.createElement('canvas'); canvas.width=window.innerWidth; canvas.height=window.innerHeight; canvas.style.width='100%'; canvas.style.height='100%'; layer.appendChild(canvas);
+            const ctx=canvas.getContext('2d');
+            const orbs=Array.from({length:18},()=>({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:40+Math.random()*120,vx:(Math.random()-0.5)*0.2,vy:(Math.random()-0.5)*0.2,alpha:0.08+Math.random()*0.08}));
+            function draw(){
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                ctx.globalCompositeOperation='lighter';
+                orbs.forEach(o=>{
+                    o.x+=o.vx; o.y+=o.vy;
+                    if (o.x< -o.r) o.x=canvas.width+o.r; if (o.x> canvas.width+o.r) o.x=-o.r;
+                    if (o.y< -o.r) o.y=canvas.height+o.r; if (o.y> canvas.height+o.r) o.y=-o.r;
+                    const g=ctx.createRadialGradient(o.x,o.y,0,o.x,o.y,o.r);
+                    g.addColorStop(0,`rgba(108,92,231,${o.alpha})`);
+                    g.addColorStop(1,'rgba(108,92,231,0)');
+                    ctx.fillStyle=g; ctx.beginPath(); ctx.arc(o.x,o.y,o.r,0,Math.PI*2); ctx.fill();
+                });
+                ctx.globalCompositeOperation='source-over';
+                requestAnimationFrame(draw);
+            } draw();
+        } else if (type === 'slow-ripples') {
+            const canvas=document.createElement('canvas'); canvas.width=window.innerWidth; canvas.height=window.innerHeight; canvas.style.width='100%'; canvas.style.height='100%'; layer.appendChild(canvas);
+            const ctx=canvas.getContext('2d'); let t=0;
+            function draw(){ t+=0.01; ctx.clearRect(0,0,canvas.width,canvas.height);
+                for(let i=0;i<8;i++){
+                    const y= (i+1)/(8+1)*canvas.height;
+                    ctx.beginPath();
+                    for(let x=0;x<=canvas.width;x+=6){ const yy=y+Math.sin((x*0.008)+t+i*0.4)*10; if(x===0) ctx.moveTo(x,yy); else ctx.lineTo(x,yy); }
+                    const hue=260 + i*6 + Math.sin(t*0.3+i)*10; ctx.strokeStyle=`hsla(${hue},60%,60%,0.25)`; ctx.lineWidth=2; ctx.stroke();
+                }
+                requestAnimationFrame(draw);
+            } draw();
+        } else if (type === 'grass') {
+            const canvas=document.createElement('canvas'); canvas.width=window.innerWidth; canvas.height=window.innerHeight; canvas.style.width='100%'; canvas.style.height='100%'; layer.appendChild(canvas);
+            const ctx=canvas.getContext('2d'); let t=0; const blades=600; const h=canvas.height;
+            const baseY=h*0.98;
+            function draw(){ t+=0.02; ctx.clearRect(0,0,canvas.width,canvas.height);
+                ctx.strokeStyle='rgba(90,200,120,0.35)'; ctx.lineWidth=1;
+                for(let i=0;i<blades;i++){
+                    const x=(i/blades)*canvas.width; const len = 40+Math.sin(i*0.2+t)*10; const sway=Math.sin(t+i*0.05)*10;
+                    ctx.beginPath(); ctx.moveTo(x,baseY); ctx.quadraticCurveTo(x+sway*0.4,baseY-len*0.5, x+sway, baseY-len); ctx.stroke();
+                }
+                requestAnimationFrame(draw);
+            } draw();
+        } else if (type === 'feathers') {
+            const parts=[]; for(let i=0;i<60;i++){ const p=document.createElement('div'); p.textContent='~'; p.style.position='absolute'; p.style.color='rgba(255,255,255,0.35)'; p.style.fontSize=`${10+Math.random()*8}px`; p.style.left=`${Math.random()*100}%`; p.style.top=`${-10 - Math.random()*40}px`; p.dataset.vx=String((Math.random()-0.5)*0.2); p.dataset.vy=String(0.2+Math.random()*0.3); layer.appendChild(p); parts.push(p);}            
+            function tick(){ parts.forEach(p=>{ const vx=parseFloat(p.dataset.vx||'0'); const vy=parseFloat(p.dataset.vy||'0.25'); const rect=p.getBoundingClientRect(); const x=rect.left+vx; const y=rect.top+vy; p.style.transform=`translate(${x}px, ${y}px)`; if (y>window.innerHeight+20){ p.style.top=`${-20}px`; p.style.transform=`translate(${Math.random()*window.innerWidth}px, 0)`; } }); requestAnimationFrame(tick);} tick();
+        } else if (type === 'smoke-trails') {
+            const canvas=document.createElement('canvas'); canvas.width=window.innerWidth; canvas.height=window.innerHeight; canvas.style.width='100%'; canvas.style.height='100%'; layer.appendChild(canvas);
+            const ctx=canvas.getContext('2d'); const trails=Array.from({length:6},()=>({x:Math.random()*canvas.width, y:canvas.height+20, path:[], life:0}));
+            function draw(){ ctx.clearRect(0,0,canvas.width,canvas.height); ctx.globalAlpha=0.08; ctx.fillStyle='black'; ctx.fillRect(0,0,canvas.width,canvas.height); ctx.globalAlpha=1;
+                trails.forEach(t=>{ t.life+=0.005; t.y-=0.3; const nx=t.x + Math.sin(t.life*3)*0.6; t.path.push({x:nx, y:t.y}); if(t.path.length>120) t.path.shift(); ctx.strokeStyle='rgba(255,255,255,0.18)'; ctx.lineWidth=2; ctx.beginPath(); t.path.forEach((pt,i)=>{ if(i===0) ctx.moveTo(pt.x,pt.y); else ctx.lineTo(pt.x,pt.y); }); ctx.stroke(); if (t.y< -40){ t.y=canvas.height+20; t.path=[]; t.x=Math.random()*canvas.width; t.life=0; } });
+                requestAnimationFrame(draw);
+            } draw();
         }
     }
 
