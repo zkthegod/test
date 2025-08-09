@@ -1640,3 +1640,6 @@ html, body { overscroll-behavior: none; }
 .effects-option { padding: 8px 10px; cursor: pointer; color: var(--text); }
 .effects-option:hover { background: var(--nav-active); }
 .effects-option.active { background: rgba(108,92,231,0.18); }
+
+/* Hide native select for effects; custom dropdown is used */
+.settings-drawer select#effectsType { display: none; }

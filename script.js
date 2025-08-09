@@ -124,6 +124,43 @@ document.addEventListener('DOMContentLoaded', function() {
     // Effects minimal overlays
     const effectsType = document.getElementById('effectsType');
     const effectsLayerId = 'effectsLayer';
+    const effectsSelect = document.getElementById('effectsSelect');
+    const effectsMenu = document.getElementById('effectsMenu');
+    // Build custom effects menu from native select
+    if (effectsType && effectsMenu && effectsSelect) {
+        effectsMenu.innerHTML = '';
+        Array.from(effectsType.options).forEach(opt => {
+            const item = document.createElement('div');
+            item.className = 'effects-option';
+            item.textContent = opt.textContent || opt.value;
+            item.dataset.value = opt.value;
+            if (opt.selected) item.classList.add('active');
+            item.addEventListener('click', (e) => {
+                // set native select for persistence
+                effectsType.value = opt.value;
+                // update label
+                const label = effectsSelect.querySelector('.label');
+                if (label) label.textContent = item.textContent;
+                // set active
+                Array.from(effectsMenu.children).forEach(c => c.classList.remove('active'));
+                item.classList.add('active');
+                // render
+                renderEffects(effectsType.value);
+                effectsMenu.classList.remove('open');
+            });
+            effectsMenu.appendChild(item);
+        });
+        const lbl = effectsSelect.querySelector('.label');
+        if (lbl) {
+            const sel = effectsType.selectedOptions?.[0]?.textContent || effectsType.value || 'None';
+            lbl.textContent = sel;
+        }
+        effectsSelect.addEventListener('click', (e) => {
+            e.stopPropagation();
+            effectsMenu.classList.toggle('open');
+        });
+        document.addEventListener('click', () => { effectsMenu.classList.remove('open'); });
+    }
 
     function ensureEffectsLayer() {
         let layer = document.getElementById(effectsLayerId);
