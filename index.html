@@ -343,94 +343,123 @@
             <section id="xatspace-templates" class="page">
                 <div class="section-header">
                     <h2>xatspace Templates</h2>
-                    <p class="description"></p>
+                    <p class="description">Premium pre-made templates for your xatspace</p>
                 </div>
                 
-                <div class="templates-grid">
+                <style>
+                  /* Scoped preview styles for xatspace templates */
+                  #xatspace-templates .templates-grid { display:grid; grid-template-columns: repeat(auto-fit,minmax(320px,1fr)); gap:16px; }
+                  #xatspace-templates .template-card .template-preview { position:relative; padding-top:56%; border-radius:12px; overflow:hidden; background:var(--preview-bg); border: var(--border); }
+                  #xatspace-templates .template-card .template-preview iframe { position:absolute; inset:0; width:100%; height:100%; border:0; }
+                </style>
+                <div class="templates-grid" id="xatspaceTemplatesGrid">
                     <div class="template-card">
                         <div class="template-preview">
-                            <img src="https://back.picto.gg/image/jdXWxJlS.png" alt="Modern xatspace template">
+                            <iframe src="xatspace/template-neon/index.html" title="Neon Cards"></iframe>
                         </div>
                         <div class="template-info">
-                            <h3>Modern xatspace</h3>
-                            <p>Clean, responsive design with gradient accents</p>
+                            <h3>Neon Cards</h3>
+                            <p>Synthwave neon glow with gallery lightbox</p>
                             <div class="template-actions">
-                                <a href="#" class="primary-btn no-underline" target="_blank"><i class="fas fa-eye"></i> Live Demo</a>
-                                <button class="primary-btn"><i class="fas fa-download"></i> Download Code</button>
+                                <a href="xatspace/template-neon/index.html" class="primary-btn no-underline" target="_blank"><i class="fas fa-eye"></i> Open Demo</a>
+                                <button class="primary-btn" data-xat-dl="template-neon"><i class="fas fa-download"></i> Download Single File</button>
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="template-card dark">
-                        <div class="template-preview">
-                            <img src="https://back.picto.gg/image/YYhyE2hH.png" alt="Dark theme template">
-                        </div>
-                        <div class="template-info">
-                            <h3>Dark Theme</h3>
-                            <p>Elegant dark mode design with light accents</p>
-                            <div class="template-actions">
-                                <a href="#" class="primary-btn no-underline" target="_blank"><i class="fas fa-eye"></i> Live Demo</a>
-                                <button class="primary-btn"><i class="fas fa-download"></i> Download Code</button>
-                            </div>
-                        </div>
-                    </div>
-                    
                     <div class="template-card">
                         <div class="template-preview">
-                            <img src="https://via.placeholder.com/400x300/a29bfe/ffffff?text=Retro+Style" alt="Retro style template">
+                            <iframe src="xatspace/template-glass/index.html" title="Glassmorphism"></iframe>
                         </div>
                         <div class="template-info">
-                            <h3>Retro Style</h3>
-                            <p>Nostalgic 90s design with pixel art elements</p>
+                            <h3>Glassmorphism</h3>
+                            <p>Frosted glass panels over colorful gradient</p>
                             <div class="template-actions">
-                                <a href="#" class="primary-btn no-underline" target="_blank"><i class="fas fa-eye"></i> Live Demo</a>
-                                <button class="primary-btn"><i class="fas fa-download"></i> Download Code</button>
+                                <a href="xatspace/template-glass/index.html" class="primary-btn no-underline" target="_blank"><i class="fas fa-eye"></i> Open Demo</a>
+                                <button class="primary-btn" data-xat-dl="template-glass"><i class="fas fa-download"></i> Download Single File</button>
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="template-card dark">
-                        <div class="template-preview">
-                            <img src="https://via.placeholder.com/400x300/00b894/ffffff?text=Minimalist" alt="Minimalist template">
-                        </div>
-                        <div class="template-info">
-                            <h3>Minimalist</h3>
-                            <p>Simple, clean layout with focus on content</p>
-                            <div class="template-actions">
-                                <a href="#" class="primary-btn no-underline" target="_blank"><i class="fas fa-eye"></i> Live Demo</a>
-                                <button class="primary-btn"><i class="fas fa-download"></i> Download Code</button>
-                            </div>
-                        </div>
-                    </div>
-                    
                     <div class="template-card">
                         <div class="template-preview">
-                            <img src="https://via.placeholder.com/400x300/0984e3/ffffff?text=Gaming+Theme" alt="Gaming theme template">
+                            <iframe src="xatspace/template-terminal/index.html" title="Terminal/Cyber"></iframe>
                         </div>
                         <div class="template-info">
-                            <h3>Gaming Theme</h3>
-                            <p>Bold design with gaming-inspired elements</p>
+                            <h3>Terminal/Cyber</h3>
+                            <p>CRT scanlines, typing cursor headings</p>
                             <div class="template-actions">
-                                <a href="#" class="primary-btn no-underline" target="_blank"><i class="fas fa-eye"></i> Live Demo</a>
-                                <button class="primary-btn"><i class="fas fa-download"></i> Download Code</button>
+                                <a href="xatspace/template-terminal/index.html" class="primary-btn no-underline" target="_blank"><i class="fas fa-eye"></i> Open Demo</a>
+                                <button class="primary-btn" data-xat-dl="template-terminal"><i class="fas fa-download"></i> Download Single File</button>
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="template-card dark">
+                    <div class="template-card">
                         <div class="template-preview">
-                            <img src="https://via.placeholder.com/400x300/6c5ce7/ffffff?text=Animated+Effects" alt="Animated effects template">
+                            <iframe src="xatspace/template-minimal/index.html" title="Minimal Magazine"></iframe>
                         </div>
                         <div class="template-info">
-                            <h3>Animated Effects</h3>
-                            <p>Dynamic design with subtle animations</p>
+                            <h3>Minimal Magazine</h3>
+                            <p>Content-first with clean typography</p>
                             <div class="template-actions">
-                                <a href="#" class="primary-btn no-underline" target="_blank"><i class="fas fa-eye"></i> Live Demo</a>
-                                <button class="primary-btn"><i class="fas fa-download"></i> Download Code</button>
+                                <a href="xatspace/template-minimal/index.html" class="primary-btn no-underline" target="_blank"><i class="fas fa-eye"></i> Open Demo</a>
+                                <button class="primary-btn" data-xat-dl="template-minimal"><i class="fas fa-download"></i> Download Single File</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="template-card">
+                        <div class="template-preview">
+                            <iframe src="xatspace/template-parallax/index.html" title="Parallax Hero"></iframe>
+                        </div>
+                        <div class="template-info">
+                            <h3>Parallax Hero</h3>
+                            <p>Layered gradient blobs with parallax</p>
+                            <div class="template-actions">
+                                <a href="xatspace/template-parallax/index.html" class="primary-btn no-underline" target="_blank"><i class="fas fa-eye"></i> Open Demo</a>
+                                <button class="primary-btn" data-xat-dl="template-parallax"><i class="fas fa-download"></i> Download Single File</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="template-card">
+                        <div class="template-preview">
+                            <iframe src="xatspace/template-retro/index.html" title="Retro Pixel"></iframe>
+                        </div>
+                        <div class="template-info">
+                            <h3>Retro Pixel</h3>
+                            <p>8-bit pixel borders with bitmap font</p>
+                            <div class="template-actions">
+                                <a href="xatspace/template-retro/index.html" class="primary-btn no-underline" target="_blank"><i class="fas fa-eye"></i> Open Demo</a>
+                                <button class="primary-btn" data-xat-dl="template-retro"><i class="fas fa-download"></i> Download Single File</button>
                             </div>
                         </div>
                     </div>
                 </div>
+                <script>
+                // xatspace: build single-file download (scoped to #xatspace-templates)
+                (function(){
+                  const grid = document.getElementById('xatspaceTemplatesGrid');
+                  if (!grid) return;
+                  async function buildSingleFile(dir){
+                    const base = `xatspace/${dir}`;
+                    const [html, css, js] = await Promise.all([
+                      fetch(`${base}/index.html`).then(r=>r.text()),
+                      fetch(`${base}/styles.css`).then(r=>r.text()),
+                      fetch(`${base}/script.js`).then(r=>r.text()),
+                    ]);
+                    const merged = html
+                      .replace(/<link[^>]*styles\\.css[^>]*>/i, `<style>\n${css}\n<\/style>`) 
+                      .replace(/<script[^>]*src=\"script\\.js\"[^>]*><\\/script>/i, `<script>\n${js}\n<\\/script>`);
+                    const blob = new Blob([merged], {type:'text/html'});
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url; a.download = `${dir}.html`; a.click();
+                    setTimeout(()=>URL.revokeObjectURL(url), 2000);
+                  }
+                  grid.addEventListener('click', (e) => {
+                    const btn = e.target.closest('button[data-xat-dl]');
+                    if (!btn) return;
+                    buildSingleFile(btn.dataset.xatDl).catch(console.error);
+                  });
+                })();
+                </script>
             </section>
 
             <section id="simpsons-avatars" class="page">
