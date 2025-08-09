@@ -803,14 +803,18 @@ nav a:hover, nav a.active {
 }
 
 .color-picker-wrapper input[type="color"] {
-    width: 40px;
-    height: 40px;
-    border: 2px solid var(--primary);
-    border-radius: 8px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid rgba(0,0,0,0.12);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
     cursor: pointer;
     padding: 0;
     transition: var(--transition);
+    overflow: hidden;
 }
+.color-picker-wrapper input[type="color"]::-webkit-color-swatch-wrapper { padding: 2px; }
+.color-picker-wrapper input[type="color"]::-webkit-color-swatch { border-radius: 50%; border: none; }
 
 .color-picker-wrapper input[type="color"]:hover {
     transform: scale(1.05);
@@ -1414,7 +1418,7 @@ header, .embed-controls, .section-header { position: relative; z-index: 10; }
 .settings-drawer input[type="color"],
 .settings-drawer input[type="text"],
 .settings-drawer input[type="number"] { padding: 10px 12px; border: var(--border); border-radius: 8px; background: var(--bg); color: var(--text); flex: 1; }
-.settings-drawer .row:first-child input[type="color"] { flex: 0 0 44px; }
+.settings-drawer .row:first-child input[type="color"] { flex: 0 0 36px; }
 .settings-drawer .row:first-child input[type="text"] { flex: 1 1 auto; min-width: 140px; }
 .settings-drawer .row:nth-child(2) input[type="number"] { width: 140px; }
 .settings-drawer .row.actions { justify-content: flex-start; flex-wrap: wrap; gap: 6px 10px; }
