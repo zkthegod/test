@@ -2036,4 +2036,87 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    // Uptime tracker
+    const uptimeCards = document.querySelectorAll('.uptime-card');
+    const statusApi = (url) => `/status-check?url=${encodeURIComponent(url)}`; // replace with real API later
+
+    const uptimeState = {};
+    uptimeCards.forEach(card => {
+        const site = card.dataset.site;
+        uptimeState[site] = {
+            monthlyChecks: 0,
+            monthlyUp: 0,
+            lifetimeChecks: 0,
+            lifetimeUp: 0,
+            lastPingMs: 0,
+            lastAt: null
+        };
+    });
+
+    async function checkSite(card) {
+        const site = card.dataset.site;
+        const st = uptimeState[site];
+        const pingEl = card.querySelector('.ping');
+        const lastEl = card.querySelector('.last-check');
+        const pill = card.querySelector('.status-pill');
+        const monthBar = card.querySelectorAll('.progress .bar')[0];
+        const lifeBar = card.querySelectorAll('.progress .bar')[1];
+        const monthVal = card.querySelectorAll('.stat .value')[0];
+        const lifeVal = card.querySelectorAll('.stat .value')[1];
+        const clockBtn = card.querySelector('.clock-btn');
+
+        const started = performance.now();
+        let ok = false;
+        try {
+            const res = await fetch(statusApi(`https://${site}`), { cache: 'no-store' });
+            const end = performance.now();
+            st.lastPingMs = Math.round(end - started);
+            ok = res.ok;
+        } catch(e) {
+            const end = performance.now();
+            st.lastPingMs = Math.round(end - started);
+            ok = false;
+        }
+        st.lastAt = new Date();
+        st.monthlyChecks++; st.lifetimeChecks++;
+        if (ok) { st.monthlyUp++; st.lifetimeUp++; }
+
+        // update UI
+        pingEl.textContent = `${st.lastPingMs} ms`;
+        lastEl.textContent = `Last check: ${st.lastAt.toLocaleTimeString()}`;
+        pill.textContent = ok ? 'Online' : 'Offline';
+        pill.style.color = ok ? '#2ecc71' : '#e74c3c';
+
+        const mPct = st.monthlyChecks ? Math.round((st.monthlyUp/st.monthlyChecks)*100) : 0;
+        const lPct = st.lifetimeChecks ? Math.round((st.lifetimeUp/st.lifetimeChecks)*100) : 0;
+        monthBar.style.width = `${mPct}%`;
+        lifeBar.style.width = `${lPct}%`;
+        monthVal.textContent = `${mPct}%`;
+        lifeVal.textContent = `${lPct}%`;
+
+        // clock color based on time remaining to next check (1 min cadence)
+        // we simulate 0..60s progression
+        let t = 60; // next check in 60s
+        clockBtn.classList.remove('ok','warn','crit');
+        clockBtn.classList.add('ok');
+        let sec = 60;
+        const timer = setInterval(()=>{
+            sec--;
+            const pct = sec/60;
+            clockBtn.classList.remove('ok','warn','crit');
+            if (pct > 0.5) clockBtn.classList.add('ok');
+            else if (pct > 0.2) clockBtn.classList.add('warn');
+            else clockBtn.classList.add('crit');
+            if (sec<=0) { clearInterval(timer); }
+        }, 1000);
+    }
+
+    function scheduleUptime() {
+        uptimeCards.forEach(card => { checkSite(card); });
+        setInterval(() => { uptimeCards.forEach(card => { checkSite(card); }); }, 60 * 1000);
+    }
+
+    // Kick off
+    if (uptimeCards.length) scheduleUptime();
 });
