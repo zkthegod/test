@@ -91,12 +91,10 @@
                         <label>Defaults</label>
                         <input type="number" id="chatWidth" min="280" max="2000" value="730" placeholder="Width" />
                         <input type="number" id="chatHeight" min="220" max="1600" value="495" placeholder="Height" />
-                        
                     </div>
                     <div class="row">
                         <label>Effects</label>
-                        <div class="custom-select">
-                            <select id="effectsType" onclick="event.stopPropagation()">
+                        <select id="effectsType" onclick="event.stopPropagation()">
                             <option value="none">None</option>
                             <option value="snow">Snow</option>
                             <option value="sparkles">Sparkles</option>
@@ -115,35 +113,14 @@
                             <option value="code-rain">Code Rain</option>
                             <option value="glass-orbs">Glass Orbs</option>
                             <option value="galaxy">Particle Galaxy</option>
-                            <option value="gradient-drift">Gradient Drift</option>
-                            <option value="wave-lines">Wave Lines</option>
-                            <option value="quote-dust">Quote Dust</option>
-                            <option value="pixel-explosion">Pixel Explosion</option>
-                            <option value="lens-flare">Lens Flare</option>
-                            <option value="black-hole">Black Hole Lens Warp</option>
-                            <option value="mandelbrot-zoom">Infinite Mandelbrot Zoom</option>
-                            <option value="light-net">Holographic Light Net</option>
-                            <option value="micro-fluid">Micro-Particle Fluid</option>
-                            <option value="shattered-reality">Shattered Reality</option>
-                            <option value="gravity-planets">Gravity Planets</option>
-                            <option value="time-slice">Time Slice Effect</option>
-                            <option value="dna-tunnel">DNA Helix Tunnel</option>
-                            <option value="wormhole">Wormhole Travel</option>
-                            <option value="escher-stairs">Escher Stairways</option>
-                            <option value="infinite-mirror">Infinite Mirror</option>
-                            <option value="depth-shadows">Depth-Shifted Shadows</option>
-                            <option value="dream-blur">Dream Blur Layer</option>
-                            <option value="light-shafts">Volumetric Light Shafts</option>
-                            </select>
-                            <div class="select-arrow"><i class="fas fa-chevron-down"></i></div>
-                        </div>
+                        </select>
                     </div>
                     <div class="row" id="chatStylesList"></div>
                     <div class="row actions">
-                        <button id="alignTile" class="link-btn" type="button">Tile</button>
-                        <button id="alignCenter" class="link-btn" type="button">Center</button>
-                        <button id="resizeAll" class="link-btn" type="button"><i class="fas fa-expand-arrows-alt"></i> Resize All</button>
-                        <button id="clearAllChats" class="link-btn danger" type="button">Clear All</button>
+                        <button id="alignTile" class="link-btn">Tile</button>
+                        <button id="alignCenter" class="link-btn">Center</button>
+                        <button id="resizeAll" class="link-btn"><i class="fas fa-expand-arrows-alt"></i> Resize All</button>
+                        <button id="clearAllChats" class="link-btn danger">Clear All</button>
                     </div>
                 </div>
                 

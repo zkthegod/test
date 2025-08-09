@@ -125,17 +125,13 @@ document.addEventListener('DOMContentLoaded', function() {
             layer.style.position = 'fixed';
             layer.style.pointerEvents = 'none';
             layer.style.inset = '0';
-            layer.style.zIndex = '0'; // behind header, footer, chats, settings
+            layer.style.zIndex = '15';
             document.body.appendChild(layer);
         }
         return layer;
     }
 
-    let effectsCleanup = [];
     function clearEffects() {
-        // remove global listeners/intervals
-        effectsCleanup.forEach(fn => { try { fn(); } catch(e){} });
-        effectsCleanup = [];
         const layer = document.getElementById(effectsLayerId);
         if (layer) layer.innerHTML = '';
     }
@@ -144,12 +140,9 @@ document.addEventListener('DOMContentLoaded', function() {
         clearEffects();
         if (!effectsType || type === 'none') return;
         const layer = ensureEffectsLayer();
-        const runId = String(Date.now());
-        layer.dataset.run = runId;
         if (type === 'snow') {
             for (let i = 0; i < 40; i++) {
                 const flake = document.createElement('div');
-                flake.className = 'snow-flake';
                 flake.style.position = 'absolute';
                 flake.style.top = `${Math.random() * -50}px`;
                 flake.style.left = `${Math.random() * 100}%`;
@@ -162,7 +155,6 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (type === 'sparkles') {
             for (let i = 0; i < 30; i++) {
                 const s = document.createElement('div');
-                s.className = 'star';
                 s.style.position = 'absolute';
                 s.style.top = `${Math.random() * 100}%`;
                 s.style.left = `${Math.random() * 100}%`;
@@ -175,7 +167,6 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (type === 'bokeh') {
             for (let i = 0; i < 18; i++) {
                 const b = document.createElement('div');
-                b.className = 'bokeh-dot';
                 b.style.position = 'absolute';
                 b.style.top = `${Math.random() * 100}%`;
                 b.style.left = `${Math.random() * 100}%`;
@@ -334,82 +325,18 @@ document.addEventListener('DOMContentLoaded', function() {
             canvas.width = window.innerWidth; canvas.height = window.innerHeight;
             canvas.style.width='100%'; canvas.style.height='100%'; layer.appendChild(canvas);
             const ctx = canvas.getContext('2d');
-            const cols = Math.floor(canvas.width/16);
+            const cols = Math.floor(canvas.width/14);
             const ypos = Array(cols).fill(0);
             const color = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#6c5ce7';
             function draw(){
-                if (!effectRunActive(runId)) return;
-                ctx.fillStyle='rgba(0,0,0,0.06)'; ctx.fillRect(0,0,canvas.width,canvas.height);
-                ctx.fillStyle=color; ctx.globalAlpha=0.9; ctx.font='14px monospace';
+                ctx.fillStyle='rgba(0,0,0,0.05)'; ctx.fillRect(0,0,canvas.width,canvas.height);
+                ctx.fillStyle=color; ctx.font='14px monospace';
                 ypos.forEach((y, ind)=>{ const text = String.fromCharCode(0x30A0 + Math.random()*96);
-                    const x = ind*16; ctx.fillText(text, x, y);
-                    if (y > canvas.height && Math.random()>0.975) ypos[ind]=0; else ypos[ind]=y+16; });
-                ctx.globalAlpha=1;
+                    const x = ind*14; ctx.fillText(text, x, y);
+                    if (y > canvas.height && Math.random()>0.975) ypos[ind]=0; else ypos[ind]=y+14; });
                 requestAnimationFrame(draw);
             }
             draw();
-        } else if (type === 'gradient-drift') {
-            const canvas = document.createElement('canvas');
-            canvas.width = window.innerWidth; canvas.height = window.innerHeight; layer.appendChild(canvas);
-            const ctx = canvas.getContext('2d'); let t = 0;
-            function draw(){
-                if (!effectRunActive(runId)) return;
-                const w = canvas.width, h = canvas.height; const g = ctx.createLinearGradient(0,0,w,h);
-                const hue = (t%360); const hue2 = ((t+60)%360);
-                g.addColorStop(0, `hsla(${hue},65%,55%,0.14)`);
-                g.addColorStop(1, `hsla(${hue2},65%,55%,0.06)`);
-                ctx.fillStyle=g; ctx.fillRect(0,0,w,h); t+=0.02; requestAnimationFrame(draw);
-            }
-            draw();
-        } else if (type === 'wave-lines') {
-            const canvas = document.createElement('canvas'); canvas.width=window.innerWidth; canvas.height=window.innerHeight; layer.appendChild(canvas);
-            const ctx = canvas.getContext('2d'); let t = 0;
-            function draw(){
-                if (!effectRunActive(runId)) return;
-                const w=canvas.width, h=canvas.height; ctx.clearRect(0,0,w,h); ctx.lineWidth=1; ctx.globalAlpha=0.45;
-                for(let i=0;i<4;i++){
-                    const y0 = h*0.2 + i*32;
-                    ctx.beginPath(); ctx.strokeStyle='rgba(108,92,231,0.24)';
-                    for(let x=0;x<=w;x+=4){ const y = y0 + Math.sin((x*0.01)+(t*0.5)+i)*8; ctx.lineTo(x,y); }
-                    ctx.stroke();
-                }
-                t+=0.014; requestAnimationFrame(draw);
-            }
-            draw();
-        } else if (type === 'quote-dust') {
-            const words = ['create','build','learn','focus','ship','iterate','enjoy'];
-            for(let i=0;i<30;i++){
-                const p = document.createElement('div');
-                p.textContent = Math.random()<0.18 ? words[Math.floor(Math.random()*words.length)] : '·';
-                p.style.position='absolute'; p.style.left=`${Math.random()*100}%`; p.style.top=`${Math.random()*100}%`;
-                p.style.fontSize = Math.random()<0.2 ? '11px' : '8px'; p.style.letterSpacing='1px'; p.style.opacity='0.0'; p.style.color='rgba(255,255,255,0.55)';
-                p.style.animation = `quoteDust ${6+Math.random()*8}s ease-in-out ${Math.random()*6}s infinite`;
-                layer.appendChild(p);
-            }
-        } else if (type === 'pixel-explosion') {
-            const canvas = document.createElement('canvas'); canvas.width=window.innerWidth; canvas.height=window.innerHeight; layer.appendChild(canvas);
-            const ctx = canvas.getContext('2d'); let sparks=[];
-            function spawn(){
-                for(let i=0;i<40;i++){ const cx = Math.random()*canvas.width, cy = Math.random()*canvas.height*0.8; sparks.push({x:cx,y:cy,vx:(Math.random()-0.5)*1.6,vy:(Math.random()-0.5)*1.6,life:70+Math.random()*30}); }
-            }
-            function draw(){
-                if (!effectRunActive(runId)) return;
-                ctx.clearRect(0,0,canvas.width,canvas.height);
-                sparks = sparks.filter(s=>s.life>0);
-                ctx.fillStyle='rgba(255,255,255,0.65)';
-                sparks.forEach(s=>{ s.x+=s.vx; s.y+=s.vy; s.life-=1; ctx.fillRect(s.x,s.y,1,1); });
-                requestAnimationFrame(draw);
-            }
-            const id = setInterval(spawn, 5200); effectsCleanup.push(()=>clearInterval(id)); draw();
-        } else if (type === 'lens-flare') {
-            for(let i=0;i<4;i++){
-                const f = document.createElement('div');
-                f.style.position='absolute'; f.style.width=f.style.height=`${40+Math.random()*60}px`;
-                f.style.left=`${Math.random()*100}%`; f.style.top=`${Math.random()*100}%`;
-                f.style.borderRadius='50%'; f.style.background='radial-gradient(circle, rgba(255,255,255,0.75), rgba(255,255,255,0))';
-                f.style.filter='blur(6px)'; f.style.opacity='0.0'; f.style.animation=`flareDrift ${22+Math.random()*14}s linear ${Math.random()*8}s infinite`;
-                layer.appendChild(f);
-            }
         } else if (type === 'glass-orbs') {
             for(let i=0;i<10;i++){
                 const orb = document.createElement('div');
@@ -424,13 +351,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const canvas = document.createElement('canvas'); canvas.width=window.innerWidth; canvas.height=window.innerHeight;
             canvas.style.width='100%'; canvas.style.height='100%'; layer.appendChild(canvas);
             const ctx = canvas.getContext('2d');
-            const particles = Array.from({length: 380}, ()=>({
+            const particles = Array.from({length: 600}, (_,i)=>({
                 angle: Math.random()*Math.PI*2,
                 radius: 40 + Math.random()* (Math.min(canvas.width,canvas.height)/2 - 40),
-                speed: 0.0005 + Math.random()*0.0010,
+                speed: 0.0005 + Math.random()*0.0015,
             }));
             function draw(){
-                if (!effectRunActive(runId)) return;
                 ctx.clearRect(0,0,canvas.width,canvas.height);
                 ctx.save(); ctx.translate(canvas.width/2, canvas.height/2);
                 ctx.fillStyle='rgba(255,255,255,0.7)';
@@ -438,94 +364,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 ctx.restore(); requestAnimationFrame(draw);
             }
             draw();
-        } else if (type === 'hypercube') {
-            // removed effects: hypercube
-        } else if (type === 'liquid-magnet') {
-            // removed effects: liquid-magnet
-        } else if (type === 'black-hole') {
-            const canvas=document.createElement('canvas'); canvas.width=innerWidth; canvas.height=innerHeight; layer.appendChild(canvas);
-            const ctx=canvas.getContext('2d'); let t=0; function draw(){
-                if (!effectRunActive(runId)) return;
-                const w=canvas.width,h=canvas.height; ctx.clearRect(0,0,w,h);
-                ctx.save(); ctx.translate(w/2, h/2-20); for(let r=6;r<180;r+=2){ const ang=t*0.02 + r*0.08; ctx.strokeStyle=`rgba(0,0,0,${0.003*r})`;
-                    ctx.beginPath(); for(let a=0;a<Math.PI*2;a+=0.2){ const rr=r + Math.sin(a+ang)*2; ctx.lineTo(Math.cos(a)*rr, Math.sin(a)*rr); } ctx.stroke(); }
-                ctx.restore(); t++; requestAnimationFrame(draw);} draw();
-        } else if (type === 'mandelbrot-zoom') {
-            const canvas=document.createElement('canvas'); canvas.width=innerWidth; canvas.height=innerHeight; layer.appendChild(canvas);
-            const ctx=canvas.getContext('2d'); let zoom=200, cx=-0.5, cy=0; function draw(){
-                if (!effectRunActive(runId)) return;
-                const w=canvas.width,h=canvas.height; const img=ctx.createImageData(w,h);
-                for(let y=0;y<h;y+=2){ for(let x=0;x<w;x+=2){ let a=(x-w/2)/zoom+cx, b=(y-h/2)/zoom+cy, ca=a, cb=b, n=0; while(n<28){ const aa=a*a - b*b; const bb=2*a*b; a=aa+ca; b=bb+cb; if(a*a+b*b>4) break; n++; }
-                    const p=(y*w+x)*4; const v=n===28?0:255-n*9; img.data[p]=v; img.data[p+1]=v; img.data[p+2]=v; img.data[p+3]=18; }} ctx.putImageData(img,0,0);
-                zoom*=1.001; requestAnimationFrame(draw);} draw();
-        } else if (type === 'light-net') {
-            const canvas=document.createElement('canvas'); canvas.width=innerWidth; canvas.height=innerHeight; layer.appendChild(canvas);
-            const ctx=canvas.getContext('2d'); let t=0; function draw(){
-                if (!effectRunActive(runId)) return;
-                const w=canvas.width,h=canvas.height; ctx.clearRect(0,0,w,h); ctx.globalAlpha=0.5; ctx.strokeStyle='rgba(108,92,231,0.28)';
-                for(let y=0;y<=h;y+=48){ ctx.beginPath(); for(let x=0;x<=w;x+=48){ const yy=y+Math.sin((x*0.02)+t)*6; ctx.lineTo(x,yy);} ctx.stroke(); }
-                for(let x=0;x<=w;x+=48){ ctx.beginPath(); for(let y=0;y<=h;y+=48){ const xx=x+Math.cos((y*0.02)+t)*6; ctx.lineTo(xx,y);} ctx.stroke(); }
-                t+=0.02; requestAnimationFrame(draw);} draw();
-        } else if (type === 'micro-fluid') {
-            const canvas=document.createElement('canvas'); canvas.width=innerWidth; canvas.height=innerHeight; layer.appendChild(canvas);
-            const ctx=canvas.getContext('2d'); let pts=Array.from({length:900},()=>({x:Math.random()*innerWidth,y:Math.random()*innerHeight})); let mx=0,my=0;
-            const onMove=(e)=>{ mx=e.clientX; my=e.clientY; };
-            window.addEventListener('pointermove', onMove, { passive:true }); effectsCleanup.push(()=>window.removeEventListener('pointermove', onMove));
-            function draw(){
-                if (!effectRunActive(runId)) return;
-                ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle='rgba(255,255,255,0.6)';
-                pts.forEach(p=>{ const dx=mx-p.x, dy=my-p.y; const d=Math.hypot(dx,dy); const f=Math.max(0, 120-d)/120; p.x -= dx*0.002*f; p.y -= dy*0.002*f; ctx.fillRect(p.x,p.y,1,1); });
-                requestAnimationFrame(draw);} draw();
-        } else if (type === 'shattered-reality') {
-            for(let i=0;i<16;i++){ const shard=document.createElement('div'); shard.style.position='absolute'; shard.style.left=`${Math.random()*100}%`; shard.style.top=`${Math.random()*100}%`;
-                shard.style.width=`${10+Math.random()*12}vw`; shard.style.height=`${8+Math.random()*10}vh`; shard.style.background='rgba(255,255,255,0.06)'; shard.style.backdropFilter='blur(3px)';
-                shard.style.transform=`rotate(${Math.random()*20-10}deg)`; shard.style.transition='transform .8s ease'; layer.appendChild(shard);} 
-            window.addEventListener('scroll', ()=>{ const amt=(window.scrollY%200)/200; Array.from(layer.children).forEach((el,i)=>{ el.style.transform=`translateY(${(i%4-2)*amt*10}px) rotate(${(i%7-3)*2}deg)`; }); }, { passive:true });
-        } else if (type === 'gravity-planets') {
-            const planets=[]; for(let i=0;i<3;i++){ const p=document.createElement('div'); p.style.position='absolute'; p.style.left=`${25+i*25}%`; p.style.top=`${28+i*12}%`;
-                const size = 36+Math.random()*28; p.style.width=p.style.height=`${size}px`; p.style.borderRadius='50%';
-                p.style.boxShadow='0 0 30px rgba(108,92,231,0.35), inset 0 0 20px rgba(255,255,255,0.25)';
-                p.style.background='radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(108,92,231,0.35))'; layer.appendChild(p); planets.push(p); }
-            const canvas=document.createElement('canvas'); canvas.width=innerWidth; canvas.height=innerHeight; layer.appendChild(canvas); const ctx=canvas.getContext('2d');
-            let particles = Array.from({length: 900}, ()=>({ x: Math.random()*innerWidth, y: Math.random()*innerHeight*0.8, vx: 0, vy: 0 }));
-            function draw(){ if (!effectRunActive(runId)) return; ctx.clearRect(0,0,canvas.width,canvas.height);
-                ctx.fillStyle='rgba(255,255,255,0.7)'; ctx.globalAlpha=0.9;
-                particles.forEach(pt=>{ let ax=0,ay=0; planets.forEach(pl=>{ const r=pl.getBoundingClientRect(); const cx=r.left+r.width/2, cy=r.top+r.height/2; const dx=cx-pt.x, dy=cy-pt.y; const d=Math.hypot(dx,dy); const g=6000/((d*d)+2000); ax+=dx*g; ay+=dy*g; }); pt.vx=(pt.vx*0.98)+ax; pt.vy=(pt.vy*0.98)+ay; pt.x+=pt.vx; pt.y+=pt.vy; ctx.fillRect(pt.x,pt.y,1,1); });
-                // light orbital rings
-                ctx.globalAlpha=0.25; planets.forEach(pl=>{ const r=pl.getBoundingClientRect(); const cx=r.left+r.width/2, cy=r.top+r.height/2; ctx.beginPath(); ctx.arc(cx, cy, r.width*0.9, 0, Math.PI*2); ctx.strokeStyle='rgba(108,92,231,0.35)'; ctx.stroke(); });
-                ctx.globalAlpha=1; requestAnimationFrame(draw);
-            }
-            draw();
-        } else if (type === 'wormhole') {
-            const canvas=document.createElement('canvas'); canvas.width=innerWidth; canvas.height=innerHeight; layer.appendChild(canvas); const ctx=canvas.getContext('2d'); let t=0;
-            function draw(){
-                if (!effectRunActive(runId)) return;
-                const w=canvas.width,h=canvas.height; ctx.clearRect(0,0,w,h); ctx.strokeStyle='rgba(255,255,255,0.12)'; ctx.lineWidth=1; ctx.save();
-                ctx.beginPath(); for(let r=10;r<Math.max(w,h); r+=14){ for(let a=0;a<Math.PI*2;a+=0.12){ const rr=r + Math.sin(a*6+t)*2; ctx.lineTo(w/2 + Math.cos(a)*rr, h*0.45 + Math.sin(a)*rr);} }
-                ctx.clip(); ctx.clearRect(0,0,w,h); ctx.restore();
-                for(let r=10;r<Math.max(w,h); r+=14){ ctx.beginPath(); for(let a=0;a<Math.PI*2;a+=0.12){ const rr=r + Math.sin(a*6+t)*2; ctx.lineTo(w/2 + Math.cos(a)*rr, h*0.45 + Math.sin(a)*rr);} ctx.stroke(); }
-                t+=0.04; requestAnimationFrame(draw);} draw();
-        } else if (type === 'escher-stairs') {
-            const canvas=document.createElement('canvas'); canvas.width=innerWidth; canvas.height=innerHeight; layer.appendChild(canvas); const ctx=canvas.getContext('2d'); let t=0; function draw(){ if (!effectRunActive(runId)) return; const w=canvas.width,h=canvas.height; ctx.clearRect(0,0,w,h); ctx.strokeStyle='rgba(255,255,255,0.2)'; for(let i=0;i<20;i++){ ctx.strokeRect((i*30+t)%w, h*0.6, 60, 20); } t+=0.5; requestAnimationFrame(draw);} draw();
-        } else if (type === 'infinite-mirror') {
-            const canvas=document.createElement('canvas'); canvas.width=innerWidth; canvas.height=innerHeight; layer.appendChild(canvas); const ctx=canvas.getContext('2d'); let t=0; function draw(){ if (!effectRunActive(runId)) return; const w=canvas.width,h=canvas.height; ctx.clearRect(0,0,w,h); ctx.strokeStyle='rgba(255,255,255,0.12)'; for(let i=0;i<16;i++){ const s=(i+1)*40; ctx.strokeRect(w/2-s, h*0.45-s, s*2, s*2);} t+=0.02; requestAnimationFrame(draw);} draw();
-        } else if (type === 'depth-shadows') {
-            const canvas=document.createElement('canvas'); canvas.width=innerWidth; canvas.height=innerHeight; layer.appendChild(canvas); const ctx=canvas.getContext('2d'); let t=0; function draw(){ if (!effectRunActive(runId)) return; const w=canvas.width,h=canvas.height; ctx.clearRect(0,0,w,h); ctx.globalAlpha=0.35; for(let i=0;i<120;i++){ const x=(i*16 + (t*3))%w, y=(i*9)% (h*0.8); const off=Math.sin((i+t)*0.2)*8; ctx.fillStyle='rgba(0,0,0,0.06)'; ctx.fillRect(x+off,y,10,3);} t+=0.02; requestAnimationFrame(draw);} draw();
-        } else if (type === 'dream-blur') {
-            for(let i=0;i<12;i++){ const ghost=document.createElement('div'); ghost.style.position='absolute'; ghost.style.left=`${Math.random()*100}%`; ghost.style.top=`${Math.random()*80}%`; ghost.style.width=`${20+Math.random()*40}px`; ghost.style.height=ghost.style.width; ghost.style.borderRadius='50%'; ghost.style.background='rgba(255,255,255,0.05)'; ghost.style.filter='blur(8px)'; ghost.style.animation=`quoteDust ${10+Math.random()*8}s ease-in-out ${Math.random()*8}s infinite`; layer.appendChild(ghost);} 
-        } else if (type === 'light-shafts') {
-            const canvas=document.createElement('canvas'); canvas.width=innerWidth; canvas.height=innerHeight; layer.appendChild(canvas); const ctx=canvas.getContext('2d'); let t=0; function draw(){ if (!effectRunActive(runId)) return; const w=canvas.width,h=canvas.height; ctx.clearRect(0,0,w,h); ctx.globalAlpha=0.15; for(let i=0;i<12;i++){ ctx.save(); ctx.translate(w/2, 0); ctx.rotate((i/12)*Math.PI/8 + Math.sin(t*0.02)*0.02); const grad=ctx.createLinearGradient(0,0,0,h*0.8); grad.addColorStop(0,'rgba(255,255,255,0.35)'); grad.addColorStop(1,'rgba(255,255,255,0)'); ctx.fillStyle=grad; ctx.fillRect(-10,0,20,h); ctx.restore(); } t+=1; requestAnimationFrame(draw);} draw();
-        } else if (type === 'minecraft-portal') {
-            // removed effect: minecraft-portal
-        } else if (type === 'nebula-reactor') {
-            const canvas=document.createElement('canvas'); canvas.width=innerWidth; canvas.height=innerHeight; layer.appendChild(canvas); const ctx=canvas.getContext('2d'); let t=0;
-            function draw(){ const w=canvas.width,h=canvas.height; ctx.clearRect(0,0,w,h); for(let i=0;i<140;i++){ const x=Math.random()*w,y=Math.random()*h*0.8; const r=1+Math.random()*2; ctx.fillStyle=`hsla(${(t+i)%360},80%,60%,0.18)`; ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill(); } t+=0.6; requestAnimationFrame(draw);} draw();
-        } else if (type === 'time-slice') {
-            const canvas=document.createElement('canvas'); canvas.width=innerWidth; canvas.height=innerHeight; layer.appendChild(canvas); const ctx=canvas.getContext('2d'); let t=0;
-            function draw(){ const w=canvas.width,h=canvas.height; ctx.clearRect(0,0,w,h); for(let i=0;i<w;i+=16){ const off=Math.sin((i*0.02)+t)*8; ctx.fillStyle='rgba(255,255,255,0.04)'; ctx.fillRect(i,0,8,h); ctx.fillStyle='rgba(0,0,0,0.02)'; ctx.fillRect(i+8+off,0,8,h);} t+=0.02; requestAnimationFrame(draw);} draw();
-        } else if (type === 'dna-tunnel') {
-            const canvas=document.createElement('canvas'); canvas.width=innerWidth; canvas.height=innerHeight; layer.appendChild(canvas); const ctx=canvas.getContext('2d'); let t=0;
-            function draw(){ const w=canvas.width,h=canvas.height; ctx.clearRect(0,0,w,h); for(let i=0;i<120;i++){ const a=i*0.2+t; const x=w/2 + Math.cos(a)*i*1.2; const y=h*0.4 + Math.sin(a)*i*0.8; ctx.fillStyle='rgba(255,255,255,0.6)'; ctx.fillRect(x,y,2,2);} t+=0.04; requestAnimationFrame(draw);} draw();
         }
     }
 
@@ -542,13 +380,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 mask.style.position = 'fixed';
                 mask.style.inset = '0';
                 mask.style.pointerEvents = 'none';
-                mask.style.zIndex = '0'; // keep behind UI
+                mask.style.zIndex = '5';
                 document.body.appendChild(mask);
             }
             const theme = document.documentElement.getAttribute('data-theme') || 'light';
             mask.style.background = theme === 'dark'
-                ? 'linear-gradient(rgba(0,0,0,0.18), rgba(0,0,0,0.18))'
-                : 'linear-gradient(rgba(255,255,255,0.12), rgba(255,255,255,0.12))';
+                ? 'linear-gradient(rgba(0,0,0,0.25), rgba(0,0,0,0.25))'
+                : 'linear-gradient(rgba(255,255,255,0.25), rgba(255,255,255,0.25))';
         } else if (mask) {
             mask.remove();
         }
@@ -563,8 +401,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.body.style.backgroundPosition = settings.bgImage ? 'center center' : '';
             document.body.style.backgroundRepeat = settings.bgImage ? 'no-repeat' : '';
             document.body.style.backgroundAttachment = settings.bgImage ? 'fixed' : '';
-            // Do not apply contrast mask on chat tab
-            applyContrastMask(false);
+            applyContrastMask(true);
             renderEffects(effectsType?.value || 'none');
         } else {
             // Clear to theme defaults
@@ -583,18 +420,13 @@ document.addEventListener('DOMContentLoaded', function() {
         return Math.min(Math.max(value, min), max);
     }
 
-    // Helper to guard RAF loops so old effects stop
-    function effectRunActive(runId) {
-        const layer = document.getElementById(effectsLayerId);
-        return !!layer && layer.dataset.run === runId;
-    }
-
     const settingsOverlay = document.getElementById('settingsOverlay');
     settingsBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         settingsPanel.classList.toggle('active');
         settingsOverlay.classList.toggle('active', settingsPanel.classList.contains('active'));
-        if (settingsPanel.classList.contains('active')) settingsPanel.focus();
+        // Scroll into view if needed when opened
+        if (settingsPanel.classList.contains('active')) settingsPanel.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     });
     document.addEventListener('click', (e) => {
         if (!settingsPanel.contains(e.target) && e.target !== settingsBtn) {
@@ -664,10 +496,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function addChatFromInput() {
         const name = (chatNameInput.value || '').trim();
-        if (!name) return;
-        const existing = readAllWindows();
-        const desktop = getDesktopSettings();
+        if (!name) { chatNameInput.focus(); return; }
+        const desktop = JSON.parse(localStorage.getItem('desktopSettings')) || defaultDesktopSettings;
         const id = Date.now();
+        const existing = getWindowsState();
         const initialState = {
             id,
             name,
@@ -676,25 +508,12 @@ document.addEventListener('DOMContentLoaded', function() {
             width: desktop.width,
             height: desktop.height,
             z: ++zCounter,
-            collapsed: false,
-            style: { borderColor: '', glowColor: '' }
+            collapsed: false
         };
         createChatWindow(initialState);
         upsertWindowState(initialState);
         chatNameInput.value = '';
         rebuildChatStyleChips();
-        applyStylesToExistingWindows();
-        // Auto-open settings and scroll to glow controls to make them visible
-        const panel = document.getElementById('settingsPanel');
-        const overlay = document.getElementById('settingsOverlay');
-        if (panel && !panel.classList.contains('active')) {
-            panel.classList.add('active');
-            if (overlay) overlay.classList.add('active');
-        }
-        const list = document.getElementById('chatStylesList');
-        if (list && panel && panel.classList.contains('active')) {
-            list.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
     }
 
     function createChatWindow(state) {
@@ -751,7 +570,6 @@ document.addEventListener('DOMContentLoaded', function() {
             if (action === 'close') {
                 el.parentElement && el.parentElement.removeChild(el);
                 deleteWindowState(state.id);
-                rebuildChatStyleChips();
             } else if (action === 'toggle') {
                 el.classList.toggle('hidden-content');
                 state.collapsed = el.classList.contains('hidden-content');
@@ -997,15 +815,10 @@ document.addEventListener('DOMContentLoaded', function() {
     if (alignCascadeBtn) alignCascadeBtn.addEventListener('click', alignCascade);
     if (alignTileBtn) alignTileBtn.addEventListener('click', alignTile);
     if (alignCenterBtn) alignCenterBtn.addEventListener('click', () => alignEdge('center'));
-    if (resizeAllBtn) resizeAllBtn.addEventListener('click', () => { resizeAllToDefault(); });
+    if (resizeAllBtn) resizeAllBtn.addEventListener('click', () => { saveDesktopSettings(); resizeAllToDefault(); });
 
-    // Initial setup once
     loadDesktopSettings();
     restoreWindows();
-    rebuildChatStyleChips();
-    wireStyleChipListeners();
-    applyStylesToExistingWindows();
-    setupAlignmentButtons();
 
     // Status monitoring
     const services = [
@@ -1753,24 +1566,15 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!chatStylesList) return;
         chatStylesList.innerHTML = '';
         const windows = getWindowsState();
-        if (!windows.length) {
-            const empty = document.createElement('div');
-            empty.className = 'chat-style-placeholder';
-            empty.innerHTML = `
-                <span>No chats yet. Add a chat to customize its glow.</span>
-                <button class="primary-btn small" data-action="focus-add">Add Chat</button>
-            `;
-            chatStylesList.appendChild(empty);
-            return;
-        }
         windows.forEach(w => {
             const chip = document.createElement('div');
             chip.className = 'chat-style-chip';
-            const value = w.style?.borderColor || w.style?.glowColor || '#000000';
             chip.innerHTML = `
                 <span class="chip-title">${w.name}</span>
+                <label>Border</label>
+                <input type="color" value="${w.style?.borderColor || '#6c5ce7'}" data-kind="border" data-id="${w.id}">
                 <label>Glow</label>
-                <input type="color" value="${value}" data-kind="both" data-id="${w.id}">
+                <input type="color" value="${w.style?.glowColor || '#6c5ce7'}" data-kind="glow" data-id="${w.id}">
             `;
             chatStylesList.appendChild(chip);
         });
@@ -1779,16 +1583,12 @@ document.addEventListener('DOMContentLoaded', function() {
     function applyChatStyleToElement(el, style) {
         if (style?.borderColor) el.style.boxShadow = `0 0 0 2px ${style.borderColor}`;
         else el.style.boxShadow = '';
-        if (style?.glowColor) {
-            el.style.filter = `drop-shadow(0 2px 10px rgba(0,0,0,0.22)) drop-shadow(0 0 10px ${style.glowColor})`;
-        } else {
-            el.style.filter = '';
-        }
+        if (style?.glowColor) el.style.filter = `drop-shadow(0 0 8px ${style.glowColor})`;
+        else el.style.filter = '';
     }
 
-    let styleChipsWired = false;
     function wireStyleChipListeners() {
-        if (!chatStylesList || styleChipsWired) return;
+        if (!chatStylesList) return;
         chatStylesList.addEventListener('input', (e) => {
             const input = e.target;
             if (!(input instanceof HTMLInputElement)) return;
@@ -1798,21 +1598,13 @@ document.addEventListener('DOMContentLoaded', function() {
             const idx = windows.findIndex(w => w.id === id);
             if (idx < 0) return;
             const style = windows[idx].style || {};
-            if (kind === 'both') { style.borderColor = input.value; style.glowColor = input.value; }
+            if (kind === 'border') style.borderColor = input.value;
+            if (kind === 'glow') style.glowColor = input.value;
             windows[idx].style = style;
             setWindowsState(windows);
             const el = chatDesktop.querySelector(`.chat-window[data-id="${id}"]`);
             if (el) applyChatStyleToElement(el, style);
         });
-        chatStylesList.addEventListener('click', (e) => {
-            const btn = e.target.closest('button');
-            if (!btn) return;
-            if (btn.dataset.action === 'focus-add') {
-                const input = document.getElementById('chatName');
-                if (input) input.focus();
-            }
-        });
-        styleChipsWired = true;
     }
 
     function applyStylesToExistingWindows() {
@@ -1832,8 +1624,6 @@ document.addEventListener('DOMContentLoaded', function() {
     function setupAlignmentButtons() {
         const tileBtn = document.getElementById('alignTile');
         const centerBtn = document.getElementById('alignCenter');
-        const tileBtn2 = document.getElementById('alignTile');
-        const centerBtn2 = document.getElementById('alignCenter');
         if (tileBtn && !tileBtn.dataset.bound) {
             tileBtn.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -1854,6 +1644,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Call after restoring windows
+    restoreWindows();
+    rebuildChatStyleChips();
+    wireStyleChipListeners();
+    applyStylesToExistingWindows();
+    setupAlignmentButtons();
+
     // Robust action delegation for settings drawer actions
     const drawerActions = document.querySelector('.settings-drawer .actions');
     if (drawerActions) {
@@ -1863,7 +1660,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!btn) return;
             if (btn.id === 'alignTile') { alignTile(); }
             if (btn.id === 'alignCenter') { alignEdge('center'); }
-            if (btn.id === 'resizeAll') { resizeAllToDefault(); }
+            if (btn.id === 'resizeAll') { saveDesktopSettings(); resizeAllToDefault(); }
             if (btn.id === 'clearAllChats') {
                 localStorage.removeItem('chatWindows');
                 Array.from(chatDesktop.querySelectorAll('.chat-window')).forEach(el => el.remove());
@@ -1871,43 +1668,4 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-
-    // Fresh binding for Tile/Center (redo)
-    function bindTileCenter() {
-        const tileBtn = document.getElementById('alignTile');
-        const centerBtn = document.getElementById('alignCenter');
-        if (tileBtn) tileBtn.onclick = (e) => { e.preventDefault(); e.stopPropagation(); tileChats(); };
-        if (centerBtn) centerBtn.onclick = (e) => { e.preventDefault(); e.stopPropagation(); centerChats(); };
-    }
-
-    function tileChats() {
-        const nodes = Array.from(chatDesktop.querySelectorAll('.chat-window'));
-        if (!nodes.length) return;
-        const pad = 16; let x=pad, y=pad, rowH=0;
-        const deskRect = chatDesktop.getBoundingClientRect();
-        nodes.forEach(el => {
-            el.style.transform='';
-            const w = el.offsetWidth; const h=el.offsetHeight;
-            if (x + w + pad > deskRect.width) { x = pad; y += rowH + pad; rowH = 0; }
-            el.style.left = `${x}px`; el.style.top = `${y}px`;
-            x += w + pad; rowH = Math.max(rowH, h);
-            persistFromElement(el);
-        });
-    }
-
-    function centerChats() {
-        const nodes = Array.from(chatDesktop.querySelectorAll('.chat-window'));
-        const deskRect = chatDesktop.getBoundingClientRect();
-        const pad = 16;
-        nodes.forEach(el => {
-            el.style.transform='';
-            el.style.left = `${Math.max(pad,(deskRect.width - el.offsetWidth)/2)}px`;
-            el.style.top = `${Math.max(pad,(deskRect.height - el.offsetHeight)/2)}px`;
-            persistFromElement(el);
-        });
-    }
-
-    bindTileCenter();
-
-    
 });
