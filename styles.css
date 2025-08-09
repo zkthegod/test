@@ -1370,6 +1370,13 @@ header::after {
 /* Ensure section headers are above page background and readable */
 .section-header { position: relative; z-index: 5; }
 
+.link-btn.danger, #clearAllChats.link-btn { color: #e74c3c; background: transparent; border: 1px solid rgba(231,76,60,0.25); padding: 8px 12px; border-radius: 8px; }
+.link-btn.danger:hover, #clearAllChats.link-btn:hover { background: rgba(231,76,60,0.15); }
+#chatStylesList { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap: 8px; width: 100%; }
+.chat-style-chip { display:flex; align-items:center; gap:8px; padding:8px; border: var(--border); border-radius: 10px; background: var(--card-bg); }
+.chat-style-chip .chip-title { font-weight:600; flex: 1; }
+.chat-style-chip input[type="color"] { width: 32px; height: 32px; border-radius: 6px; border: 1px solid rgba(0,0,0,0.15); }
+
 .link-btn.danger, #clearAllChats.link-btn { color: #fff; background: #e74c3c; padding: 8px 12px; border-radius: 8px; }
 .link-btn.danger:hover, #clearAllChats.link-btn:hover { background: #c0392b; }
 #effectsType { padding: 8px 10px; border-radius: 8px; border: var(--border); background: var(--bg); color: var(--text); }

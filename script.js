@@ -114,7 +114,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Effects minimal overlays
-    const effectsToggle = document.getElementById('effectsToggle');
     const effectsType = document.getElementById('effectsType');
     const effectsLayerId = 'effectsLayer';
 
@@ -139,7 +138,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function renderEffects(type) {
         clearEffects();
-        if (!effectsToggle || !effectsToggle.checked) return;
+        if (!effectsType || type === 'none') return;
         const layer = ensureEffectsLayer();
         if (type === 'snow') {
             for (let i = 0; i < 40; i++) {
@@ -204,10 +203,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    if (effectsToggle && effectsType) {
-        effectsToggle.addEventListener('change', () => renderEffects(effectsType.value));
-        effectsType.addEventListener('change', () => renderEffects(effectsType.value));
-    }
+    if (effectsType) effectsType.addEventListener('change', () => renderEffects(effectsType.value));
 
     // High-contrast overlay for extreme wallpapers
     function applyContrastMask(enabled) {
@@ -428,17 +424,15 @@ document.addEventListener('DOMContentLoaded', function() {
         let rafId = null;
         let dx = 0, dy = 0;
         let dragging = false;
-        let altResize = false;
+        let moved = false;
 
         const iframe = el.querySelector('iframe');
+        const START_THRESHOLD = 3; // pixels
 
         function onPointerDown(e) {
-            // Ignore drags starting from controls
             if (e.target.closest('.window-controls')) return;
             dragging = true;
-            altResize = false;
-            el.classList.add('dragging');
-            bringToFront(el);
+            moved = false;
             startX = e.clientX;
             startY = e.clientY;
             originLeft = parseFloat(el.style.left) || 0;
@@ -448,7 +442,16 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             tick();
         }
-        function onPointerMove(e) { if (dragging) { dx = e.clientX - startX; dy = e.clientY - startY; } }
+        function onPointerMove(e) {
+            if (!dragging) return;
+            dx = e.clientX - startX;
+            dy = e.clientY - startY;
+            if (!moved && (Math.abs(dx) > START_THRESHOLD || Math.abs(dy) > START_THRESHOLD)) {
+                el.classList.add('dragging');
+                bringToFront(el);
+                moved = true;
+            }
+        }
         function onPointerUp(e) {
             if (!dragging) return;
             dragging = false;
@@ -456,12 +459,11 @@ document.addEventListener('DOMContentLoaded', function() {
             el.classList.remove('dragging');
             iframe.style.pointerEvents = '';
 
-            // no alt-resize path; use handles for resizing
+            if (!moved) { dx = 0; dy = 0; el.style.transform = ''; return; }
 
             let newLeft = originLeft + dx;
             let newTop = originTop + dy;
 
-            // Constrain to viewport (not just canvas)
             const vpW = document.documentElement.clientWidth;
             const vpH = Math.max(window.innerHeight, document.documentElement.clientHeight);
             const w = el.offsetWidth; const h = el.offsetHeight;
@@ -476,7 +478,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         function tick() {
             rafId = requestAnimationFrame(() => {
-                el.style.transform = `translate(${dx}px, ${dy}px)`;
+                if (moved) el.style.transform = `translate(${dx}px, ${dy}px)`;
                 if (dragging) tick();
             });
         }
@@ -1389,4 +1391,65 @@ document.addEventListener('DOMContentLoaded', function() {
     initColorInputs();
     updateEffects();
     loadAvatars();
+
+    // Build per-chat style chips
+    const chatStylesList = document.getElementById('chatStylesList');
+    function rebuildChatStyleChips() {
+        if (!chatStylesList) return;
+        chatStylesList.innerHTML = '';
+        const windows = getWindowsState();
+        windows.forEach(w => {
+            const chip = document.createElement('div');
+            chip.className = 'chat-style-chip';
+            chip.innerHTML = `
+                <span class="chip-title">${w.name}</span>
+                <label>Border</label>
+                <input type="color" value="${w.style?.borderColor || '#6c5ce7'}" data-kind="border" data-id="${w.id}">
+                <label>Glow</label>
+                <input type="color" value="${w.style?.glowColor || '#6c5ce7'}" data-kind="glow" data-id="${w.id}">
+            `;
+            chatStylesList.appendChild(chip);
+        });
+    }
+
+    function applyChatStyleToElement(el, style) {
+        if (style?.borderColor) el.style.boxShadow = `0 0 0 2px ${style.borderColor}`;
+        else el.style.boxShadow = '';
+        if (style?.glowColor) el.style.filter = `drop-shadow(0 0 8px ${style.glowColor})`;
+        else el.style.filter = '';
+    }
+
+    function wireStyleChipListeners() {
+        if (!chatStylesList) return;
+        chatStylesList.addEventListener('input', (e) => {
+            const input = e.target;
+            if (!(input instanceof HTMLInputElement)) return;
+            const id = parseInt(input.dataset.id || '');
+            const kind = input.dataset.kind;
+            const windows = getWindowsState();
+            const idx = windows.findIndex(w => w.id === id);
+            if (idx < 0) return;
+            const style = windows[idx].style || {};
+            if (kind === 'border') style.borderColor = input.value;
+            if (kind === 'glow') style.glowColor = input.value;
+            windows[idx].style = style;
+            setWindowsState(windows);
+            const el = chatDesktop.querySelector(`.chat-window[data-id="${id}"]`);
+            if (el) applyChatStyleToElement(el, style);
+        });
+    }
+
+    function applyStylesToExistingWindows() {
+        const windows = getWindowsState();
+        windows.forEach(w => {
+            const el = chatDesktop.querySelector(`.chat-window[data-id="${w.id}"]`);
+            if (el) applyChatStyleToElement(el, w.style);
+        });
+    }
+
+    // Call after restoring windows
+    restoreWindows();
+    rebuildChatStyleChips();
+    wireStyleChipListeners();
+    applyStylesToExistingWindows();
 });
