@@ -14,13 +14,21 @@
       .container { min-height: 100vh; display: flex; flex-direction: column; }
       main { flex: 1; }
       /* Footer styling */
-      .site-footer { background: linear-gradient(to bottom, var(--card-bg), rgba(0,0,0,0.02)); border-top: var(--border); }
+      .site-footer { position: relative; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw; width: 100vw; background: linear-gradient(to bottom, var(--card-bg), rgba(0,0,0,0.02)); border-top: var(--border); }
       .site-footer .footer-inner { max-width: 1200px; width: 100%; margin: 0 auto; padding: 12px 20px; }
-      .site-footer .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; align-items: start; }
+      .site-footer .footer-grid { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; }
       .site-footer h4 { font-size: 0.95rem; margin-bottom: 8px; color: var(--text); }
       .site-footer p, .site-footer a { color: var(--text-light); font-size: 0.92rem; text-decoration: none; }
       .site-footer a:hover { color: var(--primary); }
-      .site-footer .footer-bottom { display: flex; justify-content: space-between; align-items: center; padding-top: 6px; margin-top: 8px; border-top: var(--border); color: var(--text-light); font-size: 0.86rem; }
+      .site-footer .quick-links { display: flex; flex-wrap: wrap; gap: 14px; justify-content: flex-end; }
+      .site-footer .quick-links a { padding: 6px 10px; border-radius: 999px; background: var(--nav-active); color: var(--text); }
+      .site-footer .quick-links a:hover { background: rgba(108, 92, 231, 0.18); }
+      .site-footer .footer-actions { display: flex; justify-content: center; margin-top: 10px; }
+      .site-footer .contact-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 999px; background: rgba(255,255,255,0.6); color: var(--text); text-decoration: none; transition: var(--transition); }
+      .site-footer .contact-btn:hover { background: rgba(255,255,255,0.8); transform: translateY(-1px); }
+      [data-theme="dark"] .site-footer .contact-btn { background: rgba(255,255,255,0.12); color: var(--text); }
+      [data-theme="dark"] .site-footer .contact-btn:hover { background: rgba(255,255,255,0.18); }
+      @media (max-width: 720px) { .site-footer .footer-grid { grid-template-columns: 1fr; gap: 8px; } .site-footer .quick-links { justify-content: flex-start; } }
     </style>
 </head>
 <body>
@@ -464,19 +472,16 @@
                         <h4>rexor.lol</h4>
                         <p>Premium tools for xat.com users.</p>
                     </div>
-                    <div>
-                        <h4>Quick Links</h4>
-                        <p><a href="#home"><i class="fas fa-home"></i> Home</a></p>
-                        <p><a href="#name-effects"><i class="fas fa-magic"></i> Name Effects</a></p>
-                        <p><a href="#simpsons-avatars"><i class="fas fa-user-astronaut"></i> Avatars</a></p>
-                    </div>
-                    <div>
-                        <h4>Connect</h4>
-                        <p><a href="https://github.com/zkthegod/test" target="_blank" rel="noopener"><i class="fab fa-github"></i> GitHub</a></p>
-                        <p><a href="#" target="_blank" rel="noopener"><i class="fab fa-discord"></i> Discord</a></p>
-                    </div>
+                    <nav class="quick-links" aria-label="Footer links">
+                        <a href="#home"><i class="fas fa-home"></i> Home</a>
+                        <a href="#name-effects"><i class="fas fa-magic"></i> Name Effects</a>
+                        <a href="#simpsons-avatars"><i class="fas fa-user-astronaut"></i> Avatars</a>
+                        <a href="#chat-embedder"><i class="fas fa-comment-dots"></i> Chat Embedder</a>
+                    </nav>
                 </div>
-
+                <div class="footer-actions">
+                    <a class="contact-btn" href="mailto:hi@rexor.lol"><i class="fas fa-envelope"></i> contact me hi@rexor.lol</a>
+                </div>
             </div>
         </footer>
     </div>
