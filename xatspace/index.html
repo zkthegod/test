@@ -1,95 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>xatspace Templates | rexor.lol</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root { --bg:#0f1220; --card:#14182b; --text:#e8ecf1; --muted:#a9b0bd; --primary:#6c5ce7; --radius:14px; }
-    *{box-sizing:border-box} body{margin:0; background:linear-gradient(180deg,#0f1220,#111425); color:var(--text); font-family:Inter,system-ui,sans-serif}
-    .wrap{max-width:1200px; margin:0 auto; padding:24px}
-    header{display:flex; justify-content:space-between; align-items:center; margin-bottom:16px}
-    h1{font-size:1.4rem; margin:0}
-    .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px}
-    .card{background:var(--card); border:1px solid rgba(255,255,255,.06); border-radius:var(--radius); overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,.25)}
-    .thumb{position:relative; padding-top:56%}
-    .thumb iframe{position:absolute; inset:0; width:100%; height:100%; border:0; background:#0b0e1a}
-    .body{padding:14px}
-    .title{display:flex; align-items:center; justify-content:space-between; gap:10px}
-    .title h3{margin:0; font-size:1rem}
-    .actions{display:flex; gap:8px; margin-top:10px}
-    .btn{appearance:none; border:1px solid rgba(255,255,255,.12); background:#1a1f37; color:var(--text); padding:8px 10px; border-radius:10px; font-size:.9rem; cursor:pointer; text-decoration:none}
-    .btn.primary{background:var(--primary); border-color:transparent}
-    .btn:hover{filter:brightness(1.1)}
-    footer{opacity:.7; text-align:center; margin-top:24px; font-size:.9rem; color:var(--muted)}
-  </style>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Holo Shards | xatspace</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#04060f;--text:#eaf0ff;--accent:#6c5ce7}
+  *{box-sizing:border-box}html,body{height:100%}body{margin:0;background:radial-gradient(1200px 600px at 10% -10%,rgba(108,92,231,.25),transparent),radial-gradient(800px 400px at 90% 10%,rgba(0,255,204,.18),transparent),var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;overflow:hidden}
+  #scene{position:fixed;inset:0;display:block}
+  .ui{position:fixed;inset:0;display:grid;place-items:center;pointer-events:none}
+  .panel{pointer-events:auto;backdrop-filter:blur(6px);background:rgba(10,14,26,.35);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:22px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+  .actions{display:flex;gap:10px;justify-content:center;margin-top:10px}
+  .btn{appearance:none;border:1px solid rgba(255,255,255,.2);background:#12182a;color:var(--text);padding:10px 14px;border-radius:999px;cursor:pointer;text-decoration:none}
+  .btn.primary{background:var(--accent);border-color:transparent}
+  .gallery-link{position:fixed;top:14px;right:14px}
+</style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <h1>xatspace Templates</h1>
-      <a class="btn" href="../index.html">← Back to site</a>
-    </header>
-
-    <div class="grid" id="tplGrid"></div>
-
-    <footer>All templates are standalone. Use “Download” for a one-file version with inline CSS/JS.</footer>
+  <canvas id="scene"></canvas>
+  <a class="btn gallery-link" href="./gallery.html">Open Gallery</a>
+  <div class="ui">
+    <div class="panel">
+      <h1>Rexor — Holo Shards</h1>
+      <p>Move your mouse. Click to dive or enter a portal.</p>
+      <div class="actions">
+        <a class="btn primary" href="./template-holo-shards/index.html">Open Holo Shards</a>
+      </div>
+    </div>
   </div>
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js"></script>
   <script>
-  const templates = [
-    { id:'neon',    name:'Neon Cards',       dir:'template-neon' },
-    { id:'holo-shards',   name:'Holo Shards Journey',    dir:'template-holo-shards' },
-    { id:'terminal',name:'Terminal/Cyber',   dir:'template-terminal' },
-    { id:'minimal', name:'Minimal Magazine', dir:'template-minimal' },
-    { id:'parallax',name:'Parallax Hero',    dir:'template-parallax' },
-    { id:'retro',   name:'Retro Pixel',      dir:'template-retro' },
-    { id:'holo',    name:'Holographic Panels', dir:'template-holo' },
-    { id:'gridwave',name:'Gridwave',           dir:'template-gridwave' },
-    { id:'orbit',   name:'Orbital Nodes',      dir:'template-orbit' },
-  ];
-
-  const grid = document.getElementById('tplGrid');
-  templates.forEach(t => {
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.innerHTML = `
-      <div class="thumb"><iframe src="./${t.dir}/index.html"></iframe></div>
-      <div class="body">
-        <div class="title"><h3>${t.name}</h3></div>
-        <div class="actions">
-          <a class="btn" target="_blank" href="./${t.dir}/index.html">Open</a>
-          <button class="btn primary" data-dl="${t.dir}">Download</button>
-          <a class="btn" target="_blank" href="./${t.dir}/styles.css">CSS</a>
-          <a class="btn" target="_blank" href="./${t.dir}/script.js">JS</a>
-        </div>
-      </div>`;
-    grid.appendChild(card);
-  });
-
-  async function buildSingleFile(dir){
-    const [html, css, js] = await Promise.all([
-      fetch(`./${dir}/index.html`).then(r=>r.text()),
-      fetch(`./${dir}/styles.css`).then(r=>r.text()),
-      fetch(`./${dir}/script.js`).then(r=>r.text()),
-    ]);
-    // Inline CSS/JS into HTML
-    const merged = html
-      .replace(/<link[^>]*styles\.css[^>]*>/i, `<style>\n${css}\n</style>`) 
-      .replace(/<script[^>]*src="script\.js"[^>]*><\/script>/i, `<script>\n${js}\n<\/script>`);
-    const blob = new Blob([merged], {type:'text/html'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = `${dir}.html`; a.click();
-    setTimeout(()=>URL.revokeObjectURL(url), 2000);
-  }
-
-  document.addEventListener('click', (e) => {
-    const btn = e.target.closest('button[data-dl]');
-    if (!btn) return;
-    buildSingleFile(btn.dataset.dl).catch(console.error);
-  });
+  const canvas = document.getElementById('scene');
+  const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
+  renderer.setPixelRatio(Math.min(2, window.devicePixelRatio||1));
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(55, 1, 0.1, 200);
+  camera.position.set(0, 0, 18);
+  const light = new THREE.DirectionalLight(0xffffff, 1.0); light.position.set(5,10,8); scene.add(light);
+  scene.add(new THREE.AmbientLight(0x8899ff, 0.5));
+  const shards=[]; const geo = new THREE.IcosahedronGeometry(1,0); const mat = new THREE.MeshStandardMaterial({color:0x99bbff,metalness:.7,roughness:.2,transparent:true,opacity:.65});
+  for(let i=0;i<36;i++){ const m = new THREE.Mesh(geo, mat.clone()); m.position.set((Math.random()-0.5)*20,(Math.random()-0.5)*12,(Math.random()-0.5)*18); m.rotation.set(Math.random()*Math.PI,Math.random()*Math.PI,Math.random()*Math.PI); const s=.6+Math.random()*1.4; m.scale.set(s,s,s); m.userData.v=new THREE.Vector3((Math.random()-0.5)*0.02,(Math.random()-0.5)*0.02,(Math.random()-0.5)*0.02); scene.add(m); shards.push(m);}  
+  function resize(){ const w=innerWidth,h=innerHeight; renderer.setSize(w,h,false); camera.aspect=w/h; camera.updateProjectionMatrix(); } window.addEventListener('resize',resize); resize();
+  let mx=0,my=0; addEventListener('mousemove',e=>{mx=(e.clientX/innerWidth)*2-1; my=(e.clientY/innerHeight)*2-1;});
+  (function loop(){ requestAnimationFrame(loop); camera.position.x += ((mx*2)-camera.position.x)*.04; camera.position.y += ((-my*1.2)-camera.position.y)*.04; camera.lookAt(0,0,0); shards.forEach(s=>{ s.rotation.x+=.004; s.rotation.y+=.003; s.position.add(s.userData.v); ['x','y','z'].forEach(k=>{ if(s.position[k]>12) s.position[k]=-12; if(s.position[k]<-12) s.position[k]=12;});}); renderer.render(scene,camera); })();
   </script>
 </body>
 </html>
