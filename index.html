@@ -45,22 +45,86 @@
                     <p class="description">Premium tools for xat.com users</p>
                 </div>
                 
-                <div class="status-grid">
-                    <div class="status-card" id="xatStatus">
+                <!-- Uptime Tracker (scoped to #home) -->
+                <style>
+                /* Scoped styles to avoid affecting other pages */
+                #home .uptime-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 16px; }
+                #home .uptime-card { background: var(--card-bg); border: var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px; position: relative; overflow: hidden; }
+                #home .uptime-card h3 { display: flex; align-items: center; gap: 10px; font-size: 1.05rem; margin-bottom: 12px; }
+                #home .uptime-meta { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 8px; margin-bottom: 12px; }
+                #home .status-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+                #home .status-text { font-weight: 600; color: var(--text); }
+                #home .status-sub { color: var(--text-light); font-size: 0.9rem; }
+                #home .latency { color: var(--text-light); font-size: 0.92rem; }
+                #home .latency strong { color: var(--text); }
+                #home .refresh-btn { --ring: 0deg; --ring-color: #2ecc71; position: relative; width: 42px; height: 42px; border-radius: 50%; border: none; background: conic-gradient(var(--ring-color) var(--ring), transparent 0); padding: 2px; cursor: pointer; transition: var(--transition); }
+                #home .refresh-btn .btn-inner { display: grid; place-items: center; width: 100%; height: 100%; border-radius: 50%; background: var(--card-bg); color: var(--text-light); }
+                #home .refresh-btn:hover .btn-inner { color: var(--text); }
+                #home .refresh-btn.ok { --ring-color: #2ecc71; }
+                #home .refresh-btn.warn { --ring-color: #f1c40f; }
+                #home .refresh-btn.danger { --ring-color: #e74c3c; }
+                #home .progress { height: 8px; background: var(--nav-active); border-radius: 999px; overflow: hidden; }
+                #home .progress .bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary), var(--primary-dark)); transition: width 0.4s ease; }
+                #home .row { display: grid; grid-template-columns: 100px 1fr; align-items: center; gap: 10px; margin: 8px 0; }
+                #home .row .label { color: var(--text-light); font-size: 0.9rem; }
+                #home .row .value { font-weight: 600; color: var(--text); justify-self: end; }
+                #home .foot { display: flex; justify-content: space-between; align-items: baseline; margin-top: 10px; font-size: 0.85rem; color: var(--text-light); }
+                #home .uptime-card .corner { position: absolute; top: -60px; right: -60px; width: 180px; height: 180px; border-radius: 50%; background: radial-gradient(closest-side, var(--nav-active), transparent 70%); filter: blur(6px); opacity: 0.6; }
+                </style>
+
+                <div class="uptime-grid" id="uptimeGrid">
+                    <div class="uptime-card" data-monitor="xat.com" data-url="https://xat.com/" data-asset="/favicon.ico">
+                        <div class="corner"></div>
                         <h3><i class="fas fa-comments"></i> xat.com</h3>
-                        <div class="status-indicator loading">
-                            <div class="dot"></div>
-                            <span>Checking...</span>
+                        <div class="uptime-meta">
+                            <div>
+                                <span class="status-dot" style="background:#bdc3c7"></span>
+                                <span class="status-text">Checking...</span>
+                                <div class="status-sub">Last check: —</div>
+                            </div>
+                            <button class="refresh-btn ok" aria-label="Refresh now"><span class="btn-inner"><i class="fas fa-clock"></i></span></button>
                         </div>
-                        <div class="uptime">Uptime: <span class="value">-</span></div>
+                        <div class="row"><span class="label">Monthly uptime</span><span class="value month-value">—</span></div>
+                        <div class="progress"><div class="bar month-bar"></div></div>
+                        <div class="row"><span class="label">Lifetime uptime</span><span class="value life-value">—</span></div>
+                        <div class="progress"><div class="bar life-bar"></div></div>
+                        <div class="foot"><span class="latency">Latency: <strong class="latency-ms">—</strong> ms · Avg: <strong class="latency-avg">—</strong> ms</span><span class="checks">Checks: <span class="checks-count">0</span></span></div>
                     </div>
-                    <div class="status-card" id="wikiStatus">
-                        <h3><i class="fas fa-book"></i> wiki.xat.com</h3>
-                        <div class="status-indicator loading">
-                            <div class="dot"></div>
-                            <span>Checking...</span>
+
+                    <div class="uptime-card" data-monitor="forum.xat.com" data-url="https://forum.xat.com/" data-asset="/favicon.ico">
+                        <div class="corner"></div>
+                        <h3><i class="fas fa-comments"></i> forum.xat.com</h3>
+                        <div class="uptime-meta">
+                            <div>
+                                <span class="status-dot" style="background:#bdc3c7"></span>
+                                <span class="status-text">Checking...</span>
+                                <div class="status-sub">Last check: —</div>
+                            </div>
+                            <button class="refresh-btn ok" aria-label="Refresh now"><span class="btn-inner"><i class="fas fa-clock"></i></span></button>
                         </div>
-                        <div class="uptime">Uptime: <span class="value">-</span></div>
+                        <div class="row"><span class="label">Monthly uptime</span><span class="value month-value">—</span></div>
+                        <div class="progress"><div class="bar month-bar"></div></div>
+                        <div class="row"><span class="label">Lifetime uptime</span><span class="value life-value">—</span></div>
+                        <div class="progress"><div class="bar life-bar"></div></div>
+                        <div class="foot"><span class="latency">Latency: <strong class="latency-ms">—</strong> ms · Avg: <strong class="latency-avg">—</strong> ms</span><span class="checks">Checks: <span class="checks-count">0</span></span></div>
+                    </div>
+
+                    <div class="uptime-card" data-monitor="wiki.xat.com" data-url="https://wiki.xat.com/" data-asset="/favicon.ico">
+                        <div class="corner"></div>
+                        <h3><i class="fas fa-book"></i> wiki.xat.com</h3>
+                        <div class="uptime-meta">
+                            <div>
+                                <span class="status-dot" style="background:#bdc3c7"></span>
+                                <span class="status-text">Checking...</span>
+                                <div class="status-sub">Last check: —</div>
+                            </div>
+                            <button class="refresh-btn ok" aria-label="Refresh now"><span class="btn-inner"><i class="fas fa-clock"></i></span></button>
+                        </div>
+                        <div class="row"><span class="label">Monthly uptime</span><span class="value month-value">—</span></div>
+                        <div class="progress"><div class="bar month-bar"></div></div>
+                        <div class="row"><span class="label">Lifetime uptime</span><span class="value life-value">—</span></div>
+                        <div class="progress"><div class="bar life-bar"></div></div>
+                        <div class="foot"><span class="latency">Latency: <strong class="latency-ms">—</strong> ms · Avg: <strong class="latency-avg">—</strong> ms</span><span class="checks">Checks: <span class="checks-count">0</span></span></div>
                     </div>
                 </div>
             </section>
@@ -362,5 +426,166 @@
     </div>
 
     <script src="script.js"></script>
+    <script>
+    // Uptime Tracker (scoped to #home only)
+    (function() {
+      const home = document.getElementById('home');
+      if (!home) return;
+      const grid = home.querySelector('#uptimeGrid');
+      if (!grid) return;
+
+      const CHECK_INTERVAL_MS = 60 * 1000; // 1 minute
+      const TIMEOUT_MS = 10000; // 10s
+      const STORAGE_KEY = 'uptimeTracker.v1';
+
+      function now() { return Date.now(); }
+      function clamp(n, a, b){ return Math.min(Math.max(n, a), b); }
+      function formatPct(p){ return `${p.toFixed(2)}%`; }
+      function timeAgo(ts){ if(!ts) return '—'; const s = Math.floor((now()-ts)/1000); if(s<60) return `${s}s ago`; const m=Math.floor(s/60); if(m<60) return `${m}m ago`; const h=Math.floor(m/60); if(h<24) return `${h}h ago`; const d=Math.floor(h/24); return `${d}d ago`; }
+
+      function loadStore(){ try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch { return {}; } }
+      function saveStore(store){ try { localStorage.setItem(STORAGE_KEY, JSON.stringify(store)); } catch {}
+      }
+
+      function getMonitorKey(host){ return host.replace(/[^a-z0-9.]+/gi,'_'); }
+
+      function recordResult(host, success, latency){
+        const store = loadStore();
+        const key = getMonitorKey(host);
+        const entry = store[key] || { history: [], totals: { checks: 0, up: 0, sumLatency: 0 } };
+        const ts = now();
+        entry.history.push({ ts, up: !!success, ms: Math.max(0, Math.round(latency||0)) });
+        // prune > 30 days
+        const cutoff = ts - 30*24*60*60*1000;
+        entry.history = entry.history.filter(it => it.ts >= cutoff).slice(-43200);
+        entry.totals.checks += 1;
+        if (success) entry.totals.up += 1;
+        entry.totals.sumLatency += Math.max(0, Math.round(latency||0));
+        store[key] = entry;
+        saveStore(store);
+        return entry;
+      }
+
+      function getStats(host){
+        const store = loadStore();
+        const key = getMonitorKey(host);
+        const entry = store[key];
+        if (!entry) return { monthUptime: null, lifeUptime: null, avgLatency: null, checks: 0 };
+        const checks = entry.totals.checks || 0;
+        const lifeUptime = checks ? (entry.totals.up / checks) * 100 : null;
+        const avgLatency = checks ? (entry.totals.sumLatency / checks) : null;
+        const monthUp = entry.history.length ? (entry.history.filter(h=>h.up).length / entry.history.length) * 100 : null;
+        const lastTs = entry.history.length ? entry.history[entry.history.length-1].ts : null;
+        const lastMs = entry.history.length ? entry.history[entry.history.length-1].ms : null;
+        const lastUp = entry.history.length ? entry.history[entry.history.length-1].up : null;
+        return { monthUptime: monthUp, lifeUptime, avgLatency, checks, lastTs, lastMs, lastUp };
+      }
+
+      async function ping(url, assetPath){
+        const target = (url || '').replace(/\/$/, '') + (assetPath || '/favicon.ico');
+        const start = now();
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort('timeout'), TIMEOUT_MS);
+        try {
+          // no-cors yields opaque response but still useful for timing
+          await fetch(target, { mode: 'no-cors', cache: 'no-store', signal: controller.signal });
+          const ms = now()-start; clearTimeout(timer); return { up: true, ms };
+        } catch (e) {
+          const ms = now()-start; clearTimeout(timer); return { up: false, ms };
+        }
+      }
+
+      function setCountdown(btn, pct){
+        const clamped = clamp(pct, 0, 1);
+        const deg = Math.round(clamped * 360);
+        btn.style.setProperty('--ring', deg + 'deg');
+        btn.classList.remove('ok','warn','danger');
+        if (clamped > 0.5) btn.classList.add('ok');
+        else if (clamped > 0.2) btn.classList.add('warn');
+        else btn.classList.add('danger');
+      }
+
+      function updateCard(card, stats){
+        const dot = card.querySelector('.status-dot');
+        const text = card.querySelector('.status-text');
+        const sub = card.querySelector('.status-sub');
+        const monthBar = card.querySelector('.month-bar');
+        const monthValue = card.querySelector('.month-value');
+        const lifeBar = card.querySelector('.life-bar');
+        const lifeValue = card.querySelector('.life-value');
+        const checksCount = card.querySelector('.checks-count');
+        const latMs = card.querySelector('.latency-ms');
+        const latAvg = card.querySelector('.latency-avg');
+
+        const isUp = stats.lastUp;
+        if (isUp === true){ dot.style.background = '#2ecc71'; text.textContent = 'Online'; }
+        else if (isUp === false){ dot.style.background = '#e74c3c'; text.textContent = 'Offline'; }
+        else { dot.style.background = '#bdc3c7'; text.textContent = 'Checking...'; }
+        sub.textContent = `Last check: ${timeAgo(stats.lastTs)}`;
+
+        if (stats.monthUptime == null) { monthBar.style.width = '0%'; monthValue.textContent = '—'; } else { monthBar.style.width = clamp(stats.monthUptime,0,100) + '%'; monthValue.textContent = formatPct(clamp(stats.monthUptime,0,100)); }
+        if (stats.lifeUptime == null) { lifeBar.style.width = '0%'; lifeValue.textContent = '—'; } else { lifeBar.style.width = clamp(stats.lifeUptime,0,100) + '%'; lifeValue.textContent = formatPct(clamp(stats.lifeUptime,0,100)); }
+        checksCount.textContent = String(stats.checks || 0);
+        latMs.textContent = stats.lastMs != null ? String(Math.max(0, Math.round(stats.lastMs))) : '—';
+        latAvg.textContent = stats.avgLatency != null && !isNaN(stats.avgLatency) ? String(Math.max(0, Math.round(stats.avgLatency))) : '—';
+      }
+
+      function initMonitor(card){
+        const host = card.getAttribute('data-monitor');
+        const url = card.getAttribute('data-url');
+        const asset = card.getAttribute('data-asset') || '/favicon.ico';
+        const refreshBtn = card.querySelector('.refresh-btn');
+
+        let lastTick = now();
+        let nextAt = lastTick + CHECK_INTERVAL_MS;
+        let rafId = 0;
+
+        function tick(){
+          const remaining = nextAt - now();
+          const pct = remaining <= 0 ? 0 : remaining / CHECK_INTERVAL_MS;
+          setCountdown(refreshBtn, pct);
+          if (remaining <= 0){
+            doCheck();
+            nextAt = now() + CHECK_INTERVALMS_SAFE;
+          }
+          rafId = requestAnimationFrame(tick);
+        }
+
+        const CHECK_INTERVALMS_SAFE = CHECK_INTERVAL_MS; // keep name distinct to avoid typo issues
+
+        async function doCheck(){
+          // Visual pre-state
+          const dot = card.querySelector('.status-dot');
+          const txt = card.querySelector('.status-text');
+          dot.style.background = '#bdc3c7';
+          txt.textContent = 'Checking...';
+
+          const res = await ping(url, asset);
+          const entry = recordResult(host, res.up, res.ms);
+          const stats = getStats(host);
+          updateCard(card, stats);
+        }
+
+        refreshBtn.addEventListener('click', () => { nextAt = now(); });
+
+        // Initial draw from stored stats then first check
+        updateCard(card, getStats(host));
+        doCheck();
+        rafId = requestAnimationFrame(tick);
+
+        // Clean up when navigating away from Home
+        const observer = new MutationObserver(() => {
+          if (!document.querySelector('#home.page.active')){
+            if (rafId) cancelAnimationFrame(rafId);
+            observer.disconnect();
+          }
+        });
+        observer.observe(document.body, { attributes: true, subtree: true, attributeFilter: ['class'] });
+      }
+
+      const cards = Array.from(grid.querySelectorAll('.uptime-card'));
+      cards.forEach(initMonitor);
+    })();
+    </script>
 </body>
 </html>
