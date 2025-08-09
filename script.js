@@ -592,6 +592,8 @@ document.addEventListener('DOMContentLoaded', function() {
         let dx = 0, dy = 0;
         let dragging = false;
         let moved = false;
+        let resizingViaDrag = false;
+        let startW = 0, startH = 0;
 
         const iframe = el.querySelector('iframe');
         const START_THRESHOLD = 3; // pixels
@@ -600,10 +602,12 @@ document.addEventListener('DOMContentLoaded', function() {
             if (e.target.closest('.window-controls')) return;
             dragging = true;
             moved = false;
+            resizingViaDrag = e.shiftKey; // hold Shift to resize while dragging
             startX = e.clientX;
             startY = e.clientY;
             originLeft = parseFloat(el.style.left) || 0;
             originTop = parseFloat(el.style.top) || 0;
+            if (resizingViaDrag) { startW = el.offsetWidth; startH = el.offsetHeight; el.classList.add('resizing'); }
             iframe.style.pointerEvents = 'none';
             handle.setPointerCapture(e.pointerId);
             e.preventDefault();
@@ -614,7 +618,7 @@ document.addEventListener('DOMContentLoaded', function() {
             dx = e.clientX - startX;
             dy = e.clientY - startY;
             if (!moved && (Math.abs(dx) > START_THRESHOLD || Math.abs(dy) > START_THRESHOLD)) {
-                el.classList.add('dragging');
+                if (!resizingViaDrag) el.classList.add('dragging');
                 bringToFront(el);
                 moved = true;
             }
@@ -624,28 +628,48 @@ document.addEventListener('DOMContentLoaded', function() {
             dragging = false;
             cancelAnimationFrame(rafId);
             el.classList.remove('dragging');
+            if (resizingViaDrag) el.classList.remove('resizing');
             iframe.style.pointerEvents = '';
 
             if (!moved) { dx = 0; dy = 0; el.style.transform = ''; return; }
 
-            let newLeft = originLeft + dx;
-            let newTop = originTop + dy;
+            if (resizingViaDrag) {
+                // finalize resize
+                const minW = 280, minH = 220, maxW = 2000, maxH = 1600;
+                const newW = clamp(startW + dx, minW, maxW);
+                const newH = clamp(startH + dy, minH, maxH);
+                el.style.width = `${newW}px`;
+                el.style.height = `${newH}px`;
+            } else {
+                let newLeft = originLeft + dx;
+                let newTop = originTop + dy;
 
-            const vpW = document.documentElement.clientWidth;
-            const vpH = Math.max(window.innerHeight, document.documentElement.clientHeight);
-            const w = el.offsetWidth; const h = el.offsetHeight;
-            newLeft = clamp(newLeft, -w + 60, vpW - 60);
-            newTop = clamp(newTop, -h + 40, vpH - 40);
+                const vpW = document.documentElement.clientWidth;
+                const vpH = Math.max(window.innerHeight, document.documentElement.clientHeight);
+                const w = el.offsetWidth; const h = el.offsetHeight;
+                newLeft = clamp(newLeft, -w + 60, vpW - 60);
+                newTop = clamp(newTop, -h + 40, vpH - 40);
 
-            el.style.transform = '';
-            el.style.left = `${newLeft}px`;
-            el.style.top = `${newTop}px`;
+                el.style.transform = '';
+                el.style.left = `${newLeft}px`;
+                el.style.top = `${newTop}px`;
+            }
 
             persistFromElement(el);
         }
         function tick() {
             rafId = requestAnimationFrame(() => {
-                if (moved) el.style.transform = `translate(${dx}px, ${dy}px)`;
+                if (moved) {
+                    if (resizingViaDrag) {
+                        const minW = 280, minH = 220, maxW = 2000, maxH = 1600;
+                        const newW = clamp(startW + dx, minW, maxW);
+                        const newH = clamp(startH + dy, minH, maxH);
+                        el.style.width = `${newW}px`;
+                        el.style.height = `${newH}px`;
+                    } else {
+                        el.style.transform = `translate(${dx}px, ${dy}px)`;
+                    }
+                }
                 if (dragging) tick();
             });
         }

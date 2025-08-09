@@ -1361,15 +1361,8 @@ body::before { content: none; }
 .chat-window.resizing, .chat-window.dragging { cursor: grabbing; }
 
 /* Header soft glow: extend slightly more and place under content */
-header { position: relative; z-index: 10; }
-header::after {
-    content: "";
-    position: absolute;
-    left: 0; right: 0; top: 0; height: 120px; /* +10px */
-    pointer-events: none;
-    background: radial-gradient(120% 70% at 50% 0%, rgba(108,92,231,0.10), rgba(0,0,0,0) 65%);
-    z-index: 0;
-}
+/* Replaced by header::before glow below */
+/* header::after removed */
 
 /* Ensure section headers are above page background and readable */
 .section-header { position: relative; z-index: 5; }
@@ -1424,3 +1417,80 @@ header::after {
 /* Keep chats above footer irrespective of overlays */
 .chat-desktop, .chat-window { z-index: 100; }
 footer { position: relative; z-index: 50; }
+
+/* Effects dropdown styles */
+#effectsType {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: var(--border);
+    background: var(--bg);
+    color: var(--text);
+    min-width: 220px;
+}
+#effectsType:focus { outline: none; box-shadow: 0 0 0 2px rgba(108,92,231,0.25); }
+
+/* Reset button styled like link buttons but red */
+#resetBackground.link-btn {
+    color: #e74c3c;
+    background: transparent;
+    border: 1px solid rgba(231,76,60,0.25);
+    padding: 6px 10px; /* align with link buttons */
+    border-radius: 8px;
+}
+#resetBackground.link-btn:hover { background: rgba(231,76,60,0.12); }
+
+/* Fully filled circular color swatches */
+.settings-drawer input[type="color"],
+.chat-style-chip input[type="color"],
+.color-picker-wrapper input[type="color"],
+.color-input .color-picker {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    padding: 0;
+    border: 1px solid rgba(0,0,0,0.2);
+    background: none;
+    -webkit-appearance: none;
+    appearance: none;
+    overflow: hidden;
+}
+.settings-drawer input[type="color"]::-webkit-color-swatch-wrapper,
+.chat-style-chip input[type="color"]::-webkit-color-swatch-wrapper,
+.color-picker-wrapper input[type="color"]::-webkit-color-swatch-wrapper,
+.color-input .color-picker::-webkit-color-swatch-wrapper { padding: 0; }
+.settings-drawer input[type="color"]::-webkit-color-swatch,
+.chat-style-chip input[type="color"]::-webkit-color-swatch,
+.color-picker-wrapper input[type="color"]::-webkit-color-swatch,
+.color-input .color-picker::-webkit-color-swatch {
+    border: none;
+    border-radius: 50%;
+}
+/* Ensure consistent size in first row */
+.settings-drawer .row:first-child input[type="color"] { flex: 0 0 32px; }
+
+/* Header elegant purple glow peeking from top */
+header { position: relative; z-index: 10; overflow: visible; }
+header::before {
+    content: "";
+    position: fixed;
+    left: 50%;
+    top: -40vh; /* most of the oval is off-screen */
+    transform: translateX(-50%);
+    width: 120vw;
+    height: 80vh;
+    pointer-events: none;
+    background: radial-gradient(closest-side, rgba(108,92,231,0.35), rgba(108,92,231,0.18) 40%, rgba(0,0,0,0) 70%);
+    filter: blur(18px);
+    opacity: 0.6;
+    z-index: 0;
+    animation: headerPulse 16s ease-in-out infinite alternate;
+}
+[data-theme="dark"] header::before {
+    background: radial-gradient(closest-side, rgba(108,92,231,0.45), rgba(108,92,231,0.22) 40%, rgba(0,0,0,0) 70%);
+    opacity: 0.5;
+}
+@keyframes headerPulse {
+    0% { opacity: 0.45; filter: blur(16px); }
+    50% { opacity: 0.6; filter: blur(18px); }
+    100% { opacity: 0.5; filter: blur(17px); }
+}
