@@ -258,6 +258,112 @@ document.addEventListener('DOMContentLoaded', function() {
                 line.style.background='rgba(255,255,255,0.05)';
                 layer.appendChild(line);
             }
+        } else if (type === 'constellations') {
+            const canvas = document.createElement('canvas');
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            canvas.style.width = '100%'; canvas.style.height = '100%';
+            layer.appendChild(canvas);
+            const ctx = canvas.getContext('2d');
+            const stars = Array.from({length: 120}, () => ({
+                x: Math.random()*canvas.width,
+                y: Math.random()*canvas.height,
+                r: Math.random()*1.5+0.5
+            }));
+            let mouse = {x:-9999,y:-9999};
+            canvas.addEventListener('mousemove', (e)=>{
+                const rect = canvas.getBoundingClientRect();
+                mouse = { x: e.clientX-rect.left, y: e.clientY-rect.top };
+            });
+            function draw(){
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                ctx.fillStyle = 'rgba(255,255,255,0.8)';
+                stars.forEach(s=>{ ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fill(); });
+                // connect near mouse
+                ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+                for(let i=0;i<stars.length;i++){
+                    const a = stars[i];
+                    const dx = a.x - mouse.x; const dy = a.y - mouse.y;
+                    if (dx*dx+dy*dy < 150*150){
+                        for(let j=i+1;j<stars.length;j++){
+                            const b = stars[j];
+                            const d2 = (a.x-b.x)**2 + (a.y-b.y)**2;
+                            if (d2 < 120*120){ ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke(); }
+                        }
+                    }
+                }
+                requestAnimationFrame(draw);
+            }
+            draw();
+        } else if (type === 'emoji-cloud') {
+            const cloud = document.createElement('div');
+            cloud.style.position='absolute'; cloud.style.inset='0'; cloud.style.perspective='800px';
+            const emojis = ['✨','🚀','🌌','🪐','⭐','🌟','💫','🌈'];
+            for(let i=0;i<36;i++){
+                const e = document.createElement('div');
+                e.textContent = emojis[i%emojis.length];
+                e.style.position='absolute';
+                const angle = (i/36)*360;
+                const radius = 160;
+                e.style.transform = `translate3d(${Math.cos(angle*Math.PI/180)*radius}px, ${Math.sin(angle*Math.PI/180)*radius}px, ${-100+Math.random()*200}px)`;
+                e.style.left='50%'; e.style.top='50%'; e.style.fontSize='22px';
+                cloud.appendChild(e);
+            }
+            cloud.style.animation = 'spinCloud 30s linear infinite';
+            layer.appendChild(cloud);
+        } else if (type === 'zoom-tunnel') {
+            for(let i=0;i<12;i++){
+                const ring = document.createElement('div');
+                ring.style.position='absolute'; ring.style.left='50%'; ring.style.top='50%';
+                ring.style.width = ring.style.height = `${80 + i*80}px`;
+                ring.style.border = '1px solid rgba(255,255,255,0.15)'; ring.style.borderRadius='50%';
+                ring.style.transform='translate(-50%,-50%)';
+                ring.style.animation = `zoomIn ${6+i*0.2}s linear ${i*0.4}s infinite`;
+                layer.appendChild(ring);
+            }
+        } else if (type === 'code-rain') {
+            const canvas = document.createElement('canvas');
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            canvas.style.width='100%'; canvas.style.height='100%'; layer.appendChild(canvas);
+            const ctx = canvas.getContext('2d');
+            const cols = Math.floor(canvas.width/14);
+            const ypos = Array(cols).fill(0);
+            const color = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#6c5ce7';
+            function draw(){
+                ctx.fillStyle='rgba(0,0,0,0.05)'; ctx.fillRect(0,0,canvas.width,canvas.height);
+                ctx.fillStyle=color; ctx.font='14px monospace';
+                ypos.forEach((y, ind)=>{ const text = String.fromCharCode(0x30A0 + Math.random()*96);
+                    const x = ind*14; ctx.fillText(text, x, y);
+                    if (y > canvas.height && Math.random()>0.975) ypos[ind]=0; else ypos[ind]=y+14; });
+                requestAnimationFrame(draw);
+            }
+            draw();
+        } else if (type === 'glass-orbs') {
+            for(let i=0;i<10;i++){
+                const orb = document.createElement('div');
+                const s = 40 + Math.random()*80; orb.style.width=orb.style.height=`${s}px`;
+                orb.style.position='absolute'; orb.style.left=`${Math.random()*100}%`; orb.style.top=`${Math.random()*100}%`;
+                orb.style.borderRadius='50%'; orb.style.backdropFilter='blur(8px)';
+                orb.style.background='radial-gradient(circle at 30% 30%, rgba(255,255,255,0.35), rgba(255,255,255,0.05))';
+                orb.style.boxShadow='0 10px 30px rgba(0,0,0,0.15)';
+                layer.appendChild(orb);
+            }
+        } else if (type === 'galaxy') {
+            const canvas = document.createElement('canvas'); canvas.width=window.innerWidth; canvas.height=window.innerHeight;
+            canvas.style.width='100%'; canvas.style.height='100%'; layer.appendChild(canvas);
+            const ctx = canvas.getContext('2d');
+            const particles = Array.from({length: 600}, (_,i)=>({
+                angle: Math.random()*Math.PI*2,
+                radius: 40 + Math.random()* (Math.min(canvas.width,canvas.height)/2 - 40),
+                speed: 0.0005 + Math.random()*0.0015,
+            }));
+            function draw(){
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                ctx.save(); ctx.translate(canvas.width/2, canvas.height/2);
+                ctx.fillStyle='rgba(255,255,255,0.7)';
+                particles.forEach(p=>{ p.angle += p.speed; const x=Math.cos(p.angle)*p.radius; const y=Math.sin(p.angle)*p.radius; ctx.fillRect(x,y,1,1); });
+                ctx.restore(); requestAnimationFrame(draw);
+            }
+            draw();
         }
     }
 
@@ -662,35 +768,35 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function alignTile() {
-        const list = readAllWindows();
-        if (!list.length) return;
+        const nodes = Array.from(chatDesktop.querySelectorAll('.chat-window'));
+        if (!nodes.length) return;
         const deskRect = chatDesktop.getBoundingClientRect();
-        const deskW = deskRect.width;
         const pad = 16;
         let x = pad, y = pad, rowH = 0;
-        list.forEach(el => {
+        nodes.forEach(el => {
+            el.style.transform = '';
             const w = el.offsetWidth; const h = el.offsetHeight;
-            if (x + w + pad > deskW) { x = pad; y += rowH + pad; rowH = 0; }
-            el.style.left = `${x}px`; el.style.top = `${y}px`;
+            if (x + w + pad > deskRect.width) { x = pad; y += rowH + pad; rowH = 0; }
+            el.style.left = `${x}px`;
+            el.style.top = `${y}px`;
             x += w + pad; rowH = Math.max(rowH, h);
             persistFromElement(el);
         });
     }
 
     function alignEdge(edge) {
-        const list = readAllWindows();
+        const nodes = Array.from(chatDesktop.querySelectorAll('.chat-window'));
         const deskRect = chatDesktop.getBoundingClientRect();
-        const deskW = deskRect.width;
-        const deskH = deskRect.height;
         const pad = 16;
-        list.forEach(el => {
+        nodes.forEach(el => {
+            el.style.transform = '';
             if (edge === 'left') el.style.left = `${pad}px`;
-            if (edge === 'right') el.style.left = `${Math.max(pad, deskW - el.offsetWidth - pad)}px`;
+            if (edge === 'right') el.style.left = `${Math.max(pad, deskRect.width - el.offsetWidth - pad)}px`;
             if (edge === 'top') el.style.top = `${pad}px`;
-            if (edge === 'bottom') el.style.top = `${Math.max(pad, deskH - el.offsetHeight - pad)}px`;
+            if (edge === 'bottom') el.style.top = `${Math.max(pad, deskRect.height - el.offsetHeight - pad)}px`;
             if (edge === 'center') {
-                el.style.left = `${Math.max(pad, (deskW - el.offsetWidth)/2)}px`;
-                el.style.top = `${Math.max(pad, (deskH - el.offsetHeight)/2)}px`;
+                el.style.left = `${Math.max(pad, (deskRect.width - el.offsetWidth)/2)}px`;
+                el.style.top = `${Math.max(pad, (deskRect.height - el.offsetHeight)/2)}px`;
             }
             persistFromElement(el);
         });
@@ -1514,4 +1620,22 @@ document.addEventListener('DOMContentLoaded', function() {
     rebuildChatStyleChips();
     wireStyleChipListeners();
     applyStylesToExistingWindows();
+
+    // Robust action delegation for settings drawer actions
+    const drawerActions = document.querySelector('.settings-drawer .actions');
+    if (drawerActions) {
+        drawerActions.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const btn = e.target.closest('button');
+            if (!btn) return;
+            if (btn.id === 'alignTile') { alignTile(); }
+            if (btn.id === 'alignCenter') { alignEdge('center'); }
+            if (btn.id === 'resizeAll') { saveDesktopSettings(); resizeAllToDefault(); }
+            if (btn.id === 'clearAllChats') {
+                localStorage.removeItem('chatWindows');
+                Array.from(chatDesktop.querySelectorAll('.chat-window')).forEach(el => el.remove());
+                rebuildChatStyleChips();
+            }
+        });
+    }
 });
