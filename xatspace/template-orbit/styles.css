@@ -1,0 +1,17 @@
+*{box-sizing:border-box}body{margin:0;background:#0b0f19;color:#eaf0ff;font-family:Inter,system-ui,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:24px}
+.orbit-head{display:flex;align-items:center;gap:16px}
+.center{position:relative;width:180px;height:180px}
+.avatar{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:84px;height:84px;border-radius:50%;border:2px solid rgba(255,255,255,.5)}
+.ring{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border:1px dashed rgba(255,255,255,.25);border-radius:50%}
+.r1{width:140px;height:140px;animation:spin 14s linear infinite}
+.r2{width:180px;height:180px;animation:spin 22s linear infinite reverse}
+.r3{width:220px;height:220px;animation:spin 30s linear infinite}
+@keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+.grid{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-top:16px}
+.card{background:#12182a;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:14px}
+.pics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.pics img{width:100%;height:160px;object-fit:cover;border-radius:10px}
+.kv{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.kv li{display:flex;justify-content:space-between;background:rgba(255,255,255,.05);padding:8px;border-radius:10px}
+@media(max-width:900px){.grid{grid-template-columns:1fr}.pics{grid-template-columns:repeat(2,1fr)}}
