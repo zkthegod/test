@@ -1586,21 +1586,57 @@ header::before {
 .window-controls .ctrl-btn[data-action="info"]:hover { background: var(--nav-active); color: var(--text); }
 
 /* Scrollbar styling - global */
-* { scrollbar-width: thin; scrollbar-color: rgba(108,92,231,0.6) transparent; }
+* { scrollbar-width: thin; scrollbar-color: rgba(108,92,231,0.7) transparent; }
 html, body { overscroll-behavior: none; }
 
-/* WebKit scrollbars */
-::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-track { background: transparent; }
+/* WebKit scrollbars (Chrome, Edge, Safari) */
+::-webkit-scrollbar { width: 12px; height: 12px; }
+::-webkit-scrollbar-track { background: rgba(108,92,231,0.08); border-radius: 10px; }
 ::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, rgba(108,92,231,0.6), rgba(108,92,231,0.35));
+    background: linear-gradient(180deg, rgba(108,92,231,0.8), rgba(108,92,231,0.5));
     border-radius: 10px;
     border: 2px solid transparent;
     background-clip: content-box;
 }
-::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, rgba(108,92,231,0.75), rgba(108,92,231,0.45)); }
+::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, rgba(108,92,231,0.95), rgba(108,92,231,0.6)); }
+
+[data-theme="dark"] ::-webkit-scrollbar-track { background: rgba(255,255,255,0.06); }
+[data-theme="dark"] ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, rgba(108,92,231,0.85), rgba(108,92,231,0.55)); }
 
 /* Scrollbar within settings drawer (slimmer) */
-.settings-drawer { scrollbar-width: thin; scrollbar-color: rgba(108,92,231,0.6) transparent; }
-.settings-drawer::-webkit-scrollbar { width: 8px; }
-.settings-drawer::-webkit-scrollbar-thumb { background: rgba(108,92,231,0.6); border-radius: 8px; border: 2px solid transparent; background-clip: content-box; }
+.settings-drawer { scrollbar-width: thin; scrollbar-color: rgba(108,92,231,0.7) transparent; }
+.settings-drawer::-webkit-scrollbar { width: 10px; }
+.settings-drawer::-webkit-scrollbar-thumb { background: rgba(108,92,231,0.8); border-radius: 8px; border: 2px solid transparent; background-clip: content-box; }
+
+/* Custom effects dropdown (themed and scrollable) */
+.effects-select {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: var(--border);
+    background: var(--bg);
+    color: var(--text);
+    cursor: pointer;
+    user-select: none;
+}
+.effects-select .label { flex: 1; min-width: 140px; }
+.effects-select .chev { opacity: 0.7; }
+.effects-menu {
+    position: absolute;
+    margin-top: 6px;
+    min-width: 240px;
+    max-height: 280px;
+    overflow: auto;
+    border: var(--border);
+    border-radius: 10px;
+    background: var(--card-bg);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+    z-index: 210; /* above settings drawer */
+    display: none;
+}
+.effects-menu.open { display: block; }
+.effects-option { padding: 8px 10px; cursor: pointer; color: var(--text); }
+.effects-option:hover { background: var(--nav-active); }
+.effects-option.active { background: rgba(108,92,231,0.18); }
