@@ -93,6 +93,13 @@
                         <input type="number" id="chatHeight" min="220" max="1600" value="495" placeholder="Height" />
                     </div>
                     <div class="row">
+                        <label>Size</label>
+                        <div class="size-slider">
+                            <input type="range" id="sizeScale" min="0.5" max="2" value="1" step="0.05" aria-label="Chat size scale">
+                            <span id="sizeOut" class="size-out">730x495</span>
+                        </div>
+                    </div>
+                    <div class="row">
                         <label>Effects</label>
                         <select id="effectsType" onclick="event.stopPropagation()">
                             <option value="none">None</option>

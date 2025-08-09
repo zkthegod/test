@@ -50,6 +50,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const saveSettingsBtn = document.getElementById('applyDesktopSettings');
     const chatWidthInput = document.getElementById('chatWidth');
     const chatHeightInput = document.getElementById('chatHeight');
+    const sizeScaleInput = document.getElementById('sizeScale');
+    const sizeOut = document.getElementById('sizeOut');
     const desktopBgColor = document.getElementById('desktopBgColor');
     const desktopBgImage = document.getElementById('desktopBgImage');
     const clearAllBtn = document.getElementById('clearAllChats');
@@ -79,6 +81,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const saved = JSON.parse(localStorage.getItem('desktopSettings')) || defaultDesktopSettings;
         chatWidthInput.value = saved.width;
         chatHeightInput.value = saved.height;
+        if (sizeScaleInput && sizeOut) {
+            sizeScaleInput.value = '1';
+            sizeOut.textContent = `${saved.width}x${saved.height}`;
+        }
         desktopBgColor.value = saved.bgColor || defaultDesktopSettings.bgColor;
         desktopBgImage.value = saved.bgImage || '';
         applyDesktopSettings(saved);
@@ -98,6 +104,8 @@ document.addEventListener('DOMContentLoaded', function() {
         };
         localStorage.setItem('desktopSettings', JSON.stringify(newSettings));
         applyDesktopSettings(newSettings);
+        // Update size output to reflect saved base
+        if (sizeOut) sizeOut.textContent = `${newSettings.width}x${newSettings.height}`;
     }
 
     function applyDesktopSettings(settings) {
@@ -893,6 +901,29 @@ document.addEventListener('DOMContentLoaded', function() {
             el.style.width = `${settings.width}px`;
             el.style.height = `${settings.height}px`;
             persistFromElement(el);
+        });
+    }
+
+    // Unified size slider: scales all chat windows with preserved aspect ratio
+    function applyScaleToChats(scale) {
+        const settings = JSON.parse(localStorage.getItem('desktopSettings')) || defaultDesktopSettings;
+        const baseW = settings.width;
+        const baseH = settings.height;
+        const newW = Math.round(baseW * scale);
+        const newH = Math.round(baseH * scale);
+        readAllWindows().forEach(el => {
+            el.style.width = `${newW}px`;
+            el.style.height = `${newH}px`;
+            persistFromElement(el);
+        });
+        if (sizeOut) sizeOut.textContent = `${newW}x${newH}`;
+    }
+    if (sizeScaleInput) {
+        let scaleRAF = null;
+        sizeScaleInput.addEventListener('input', () => {
+            const scale = parseFloat(sizeScaleInput.value || '1');
+            if (scaleRAF) cancelAnimationFrame(scaleRAF);
+            scaleRAF = requestAnimationFrame(() => applyScaleToChats(scale));
         });
     }
 
