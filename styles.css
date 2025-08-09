@@ -1354,7 +1354,7 @@ body::before { content: none; }
 .settings-dropdown.active { display: block; }
 .settings-dropdown .row { display: flex; align-items: center; gap: 10px; margin: 6px 0; flex-wrap: wrap; }
 .settings-dropdown label { color: var(--text-light); font-size: 0.9rem; }
-.settings-dropdown input[type="color"] { width: 40px; height: 40px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.15); padding: 0; }
+.settings-dropdown input[type="color"],
 .settings-dropdown input[type="text"],
 .settings-dropdown input[type="number"] { padding: 8px 10px; border: var(--border); border-radius: 8px; background: var(--bg); color: var(--text); }
 .settings-dropdown .primary-btn.small { padding: 8px 12px; }
@@ -1410,8 +1410,9 @@ header, .embed-controls, .section-header { position: relative; z-index: 10; }
 
 .settings-drawer .row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 8px 0; }
 .settings-drawer label { color: var(--text-light); font-size: 0.9rem; min-width: 88px; }
-.settings-drawer input[type="color"] { width: 44px; height: 44px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.15); padding: 0; }
-.settings-drawer input[type="text"], .settings-drawer input[type="number"] { padding: 10px 12px; border: var(--border); border-radius: 8px; background: var(--bg); color: var(--text); flex: 1; }
+.settings-drawer input[type="color"],
+.settings-drawer input[type="text"],
+.settings-drawer input[type="number"] { padding: 10px 12px; border: var(--border); border-radius: 8px; background: var(--bg); color: var(--text); flex: 1; }
 .settings-drawer .row:first-child input[type="color"] { flex: 0 0 44px; }
 .settings-drawer .row:first-child input[type="text"] { flex: 1 1 auto; min-width: 140px; }
 .settings-drawer .row:nth-child(2) input[type="number"] { width: 140px; }
@@ -1446,3 +1447,15 @@ header, .embed-controls, .section-header { position: relative; z-index: 10; }
 .settings-drawer #clearAllChats.link-btn { padding: 6px 10px; }
 .settings-drawer .custom-select select { padding: 8px 12px; }
 .settings-drawer .custom-select { width: 200px; max-width: 200px; flex: 0 0 200px; }
+
+.color-input input[type="color"],
+.color-picker-wrapper input[type="color"],
+.settings-dropdown input[type="color"],
+.settings-drawer input[type="color"] {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid rgba(0,0,0,0.12);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    padding: 0;
+}

@@ -664,10 +664,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function addChatFromInput() {
         const name = (chatNameInput.value || '').trim();
-        if (!name) { chatNameInput.focus(); return; }
-        const desktop = JSON.parse(localStorage.getItem('desktopSettings')) || defaultDesktopSettings;
+        if (!name) return;
+        const existing = readAllWindows();
+        const desktop = getDesktopSettings();
         const id = Date.now();
-        const existing = getWindowsState();
         const initialState = {
             id,
             name,
@@ -676,12 +676,14 @@ document.addEventListener('DOMContentLoaded', function() {
             width: desktop.width,
             height: desktop.height,
             z: ++zCounter,
-            collapsed: false
+            collapsed: false,
+            style: { borderColor: '#6c5ce7', glowColor: '#6c5ce7' }
         };
         createChatWindow(initialState);
         upsertWindowState(initialState);
         chatNameInput.value = '';
         rebuildChatStyleChips();
+        applyStylesToExistingWindows();
     }
 
     function createChatWindow(state) {
@@ -1757,7 +1759,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function wireStyleChipListeners() {
         if (!chatStylesList) return;
-        chatStylesList.addEventListener('input', (e) => {
+        chatStylesList.replaceWith(chatStylesList.cloneNode(true));
+        const freshList = document.getElementById('chatStylesList');
+        if (!freshList) return;
+        freshList.addEventListener('input', (e) => {
             const input = e.target;
             if (!(input instanceof HTMLInputElement)) return;
             const id = parseInt(input.dataset.id || '');
