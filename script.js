@@ -341,6 +341,66 @@ document.addEventListener('DOMContentLoaded', function() {
                 requestAnimationFrame(draw);
             }
             draw();
+        } else if (type === 'gradient-drift') {
+            const canvas = document.createElement('canvas');
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight; layer.appendChild(canvas);
+            const ctx = canvas.getContext('2d'); let t = 0;
+            function draw(){
+                const w = canvas.width, h = canvas.height; const g = ctx.createLinearGradient(0,0,w,h);
+                const hue = (t%360); const hue2 = ((t+60)%360);
+                g.addColorStop(0, `hsla(${hue},65%,55%,0.16)`);
+                g.addColorStop(1, `hsla(${hue2},65%,55%,0.08)`);
+                ctx.fillStyle=g; ctx.fillRect(0,0,w,h); t+=0.03; requestAnimationFrame(draw);
+            }
+            draw();
+        } else if (type === 'wave-lines') {
+            const canvas = document.createElement('canvas'); canvas.width=window.innerWidth; canvas.height=window.innerHeight; layer.appendChild(canvas);
+            const ctx = canvas.getContext('2d'); let t = 0;
+            function draw(){
+                const w=canvas.width, h=canvas.height; ctx.clearRect(0,0,w,h); ctx.lineWidth=1; ctx.globalAlpha=0.5;
+                for(let i=0;i<6;i++){
+                    const y0 = h*0.2 + i*24;
+                    ctx.beginPath(); ctx.strokeStyle='rgba(108,92,231,0.28)';
+                    for(let x=0;x<=w;x+=3){ const y = y0 + Math.sin((x*0.012)+(t*0.6)+i)*6; ctx.lineTo(x,y); }
+                    ctx.stroke();
+                }
+                t+=0.016; requestAnimationFrame(draw);
+            }
+            draw();
+        } else if (type === 'quote-dust') {
+            const words = ['create','build','learn','focus','ship','iterate','enjoy'];
+            for(let i=0;i<30;i++){
+                const p = document.createElement('div');
+                p.textContent = Math.random()<0.18 ? words[Math.floor(Math.random()*words.length)] : '·';
+                p.style.position='absolute'; p.style.left=`${Math.random()*100}%`; p.style.top=`${Math.random()*100}%`;
+                p.style.fontSize = Math.random()<0.2 ? '11px' : '8px'; p.style.letterSpacing='1px'; p.style.opacity='0.0'; p.style.color='rgba(255,255,255,0.55)';
+                p.style.animation = `quoteDust ${6+Math.random()*8}s ease-in-out ${Math.random()*6}s infinite`;
+                layer.appendChild(p);
+            }
+        } else if (type === 'pixel-explosion') {
+            const canvas = document.createElement('canvas'); canvas.width=window.innerWidth; canvas.height=window.innerHeight; layer.appendChild(canvas);
+            const ctx = canvas.getContext('2d'); let sparks=[]; let last=0;
+            function spawn(){
+                const cx = Math.random()*canvas.width, cy = Math.random()*canvas.height*0.8;
+                for(let i=0;i<60;i++){ sparks.push({x:cx,y:cy,vx:(Math.random()-0.5)*2,vy:(Math.random()-0.5)*2,life:80+Math.random()*40}); }
+            }
+            function draw(){
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                sparks = sparks.filter(s=>s.life>0);
+                ctx.fillStyle='rgba(255,255,255,0.7)';
+                sparks.forEach(s=>{ s.x+=s.vx; s.y+=s.vy; s.life-=1; ctx.fillRect(s.x,s.y,1,1); });
+                requestAnimationFrame(draw);
+            }
+            setInterval(spawn, 4500); draw();
+        } else if (type === 'lens-flare') {
+            for(let i=0;i<4;i++){
+                const f = document.createElement('div');
+                f.style.position='absolute'; f.style.width=f.style.height=`${40+Math.random()*60}px`;
+                f.style.left=`${Math.random()*100}%`; f.style.top=`${Math.random()*100}%`;
+                f.style.borderRadius='50%'; f.style.background='radial-gradient(circle, rgba(255,255,255,0.75), rgba(255,255,255,0))';
+                f.style.filter='blur(6px)'; f.style.opacity='0.0'; f.style.animation=`flareDrift ${22+Math.random()*14}s linear ${Math.random()*8}s infinite`;
+                layer.appendChild(f);
+            }
         } else if (type === 'glass-orbs') {
             for(let i=0;i<10;i++){
                 const orb = document.createElement('div');
@@ -818,7 +878,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (alignCascadeBtn) alignCascadeBtn.addEventListener('click', alignCascade);
     if (alignTileBtn) alignTileBtn.addEventListener('click', alignTile);
     if (alignCenterBtn) alignCenterBtn.addEventListener('click', () => alignEdge('center'));
-    if (resizeAllBtn) resizeAllBtn.addEventListener('click', () => { saveDesktopSettings(); resizeAllToDefault(); });
+    if (resizeAllBtn) resizeAllBtn.addEventListener('click', () => { resizeAllToDefault(); });
 
     loadDesktopSettings();
     restoreWindows();
@@ -1663,7 +1723,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!btn) return;
             if (btn.id === 'alignTile') { alignTile(); }
             if (btn.id === 'alignCenter') { alignEdge('center'); }
-            if (btn.id === 'resizeAll') { saveDesktopSettings(); resizeAllToDefault(); }
+            if (btn.id === 'resizeAll') { resizeAllToDefault(); }
             if (btn.id === 'clearAllChats') {
                 localStorage.removeItem('chatWindows');
                 Array.from(chatDesktop.querySelectorAll('.chat-window')).forEach(el => el.remove());
