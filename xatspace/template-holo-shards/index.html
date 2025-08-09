@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Holo Shards Journey</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <canvas id="scene"></canvas>
+  <div class="ui">
+    <div class="start" id="startUI">
+      <h1>Rexor</h1>
+      <p>Float among holographic shards. Move your mouse.</p>
+      <div class="actions">
+        <button id="btnFall" class="btn primary">Dive</button>
+        <button id="btnPortal" class="btn">Enter Portal</button>
+      </div>
+    </div>
+    <div class="section" id="sectionA">
+      <h2>Chapter I — The Descent</h2>
+      <p>You fell through a crystal storm. Echoes of images linger in the glass.</p>
+      <button class="btn" data-return>Return</button>
+    </div>
+    <div class="section" id="sectionB">
+      <h2>Chapter II — The Rift</h2>
+      <p>Space warped as shards exploded into portals, revealing hidden paths.</p>
+      <button class="btn" data-return>Return</button>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
