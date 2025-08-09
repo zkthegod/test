@@ -92,9 +92,10 @@
                         <input type="number" id="chatWidth" min="280" max="2000" value="730" placeholder="Width" />
                         <input type="number" id="chatHeight" min="220" max="1600" value="495" placeholder="Height" />
                     </div>
-                    <div class="row effects-box">
+                    <div class="row">
                         <label>Effects</label>
-                        <select id="effectsType" onclick="event.stopPropagation()">
+                        <div class="custom-select">
+                            <select id="effectsType" onclick="event.stopPropagation()">
                             <option value="none">None</option>
                             <option value="snow">Snow</option>
                             <option value="sparkles">Sparkles</option>
@@ -113,7 +114,9 @@
                             <option value="code-rain">Code Rain</option>
                             <option value="glass-orbs">Glass Orbs</option>
                             <option value="galaxy">Particle Galaxy</option>
-                        </select>
+                            </select>
+                            <div class="select-arrow"><i class="fas fa-chevron-down"></i></div>
+                        </div>
                     </div>
                     <div class="row" id="chatStylesList"></div>
                     <div class="row actions">

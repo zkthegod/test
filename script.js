@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function() {
             layer.style.position = 'fixed';
             layer.style.pointerEvents = 'none';
             layer.style.inset = '0';
-            layer.style.zIndex = '3'; // behind header/buttons
+            layer.style.zIndex = '0'; // behind header, footer, chats, settings
             document.body.appendChild(layer);
         }
         return layer;
