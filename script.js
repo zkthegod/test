@@ -471,9 +471,6 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (type === 'neon-grid') {
             const grid=document.createElement('div'); grid.style.position='absolute'; grid.style.inset='0'; grid.style.background='linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)'; grid.style.backgroundSize='40px 40px';
             grid.style.boxShadow='inset 0 0 80px rgba(108,92,231,0.15)'; layer.appendChild(grid);
-        } else if (type === 'prismatic-noise') {
-            const canvas=document.createElement('canvas'); canvas.width=window.innerWidth; canvas.height=window.innerHeight; canvas.style.width='100%'; canvas.style.height='100%'; layer.appendChild(canvas);
-            const ctx=canvas.getContext('2d'); let t=0; function draw(){ t+=0.003; const img=ctx.createImageData(canvas.width, canvas.height); const d=img.data; for(let y=0;y<canvas.height;y++){ for(let x=0;x<canvas.width;x++){ const i=(y*canvas.width+x)*4; const n=Math.sin(x*0.01+y*0.01+t)*0.5+0.5; d[i]=n*200; d[i+1]=Math.sin(n*6.28)*70+130; d[i+2]=255-n*180; d[i+3]=28; } } ctx.putImageData(img,0,0); requestAnimationFrame(draw);} draw();
         } else if (type === 'sine-rings') {
             const canvas=document.createElement('canvas'); canvas.width=window.innerWidth; canvas.height=window.innerHeight; canvas.style.width='100%'; canvas.style.height='100%'; layer.appendChild(canvas);
             const ctx=canvas.getContext('2d'); let t=0; function draw(){ t+=0.01; ctx.clearRect(0,0,canvas.width,canvas.height); ctx.strokeStyle='rgba(255,255,255,0.25)'; for(let r=0;r<12;r++){ ctx.beginPath(); const rad=40+r*40 + Math.sin(t+r)*8; ctx.arc(canvas.width/2, canvas.height/2, rad, 0, Math.PI*2); ctx.stroke(); } requestAnimationFrame(draw);} draw();

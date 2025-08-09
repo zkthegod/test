@@ -1584,3 +1584,23 @@ header::before {
 
 .window-controls .ctrl-btn[data-action="info"] { color: var(--text-light); }
 .window-controls .ctrl-btn[data-action="info"]:hover { background: var(--nav-active); color: var(--text); }
+
+/* Scrollbar styling - global */
+* { scrollbar-width: thin; scrollbar-color: rgba(108,92,231,0.6) transparent; }
+html, body { overscroll-behavior: none; }
+
+/* WebKit scrollbars */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgba(108,92,231,0.6), rgba(108,92,231,0.35));
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, rgba(108,92,231,0.75), rgba(108,92,231,0.45)); }
+
+/* Scrollbar within settings drawer (slimmer) */
+.settings-drawer { scrollbar-width: thin; scrollbar-color: rgba(108,92,231,0.6) transparent; }
+.settings-drawer::-webkit-scrollbar { width: 8px; }
+.settings-drawer::-webkit-scrollbar-thumb { background: rgba(108,92,231,0.6); border-radius: 8px; border: 2px solid transparent; background-clip: content-box; }
