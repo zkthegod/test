@@ -1755,8 +1755,19 @@ document.addEventListener('DOMContentLoaded', function() {
     function rebuildChatStyleChips() {
         if (!chatStylesList) return;
         chatStylesList.innerHTML = '';
-        const windows = getWindowsState();
-        if (!windows.length) {
+        let windows = getWindowsState();
+        // Fallback to DOM if storage empty
+        if (!Array.isArray(windows) || windows.length === 0) {
+            const domWins = Array.from(chatDesktop.querySelectorAll('.chat-window'));
+            if (domWins.length) {
+                windows = domWins.map(el => ({
+                    id: parseInt(el.dataset.id || `${Date.now()}`),
+                    name: el.querySelector('.window-titlebar .title')?.textContent?.trim() || 'Chat',
+                    style: { borderColor: '', glowColor: '' }
+                }));
+            }
+        }
+        if (!windows || !windows.length) {
             const empty = document.createElement('div');
             empty.className = 'chat-style-placeholder';
             empty.innerHTML = `
@@ -1773,7 +1784,8 @@ document.addEventListener('DOMContentLoaded', function() {
             chip.innerHTML = `
                 <span class="chip-title">${w.name}</span>
                 <label>Glow</label>
-                <input type="color" value="${value}" data-kind="both" data-id="${w.id}">
+                <input type="color" value="${value}" data-kind="both" data-id="${w.id}" class="chip-color">
+                <input type="text" value="${value}" maxlength="7" class="chip-hex" data-id="${w.id}" placeholder="#000000">
             `;
             chatStylesList.appendChild(chip);
         });
@@ -1793,15 +1805,27 @@ document.addEventListener('DOMContentLoaded', function() {
     function wireStyleChipListeners() {
         if (!chatStylesList || styleChipsWired) return;
         chatStylesList.addEventListener('input', (e) => {
-            const input = e.target;
-            if (!(input instanceof HTMLInputElement)) return;
+            const target = e.target;
+            // Synchronize inputs
+            if (target.classList.contains('chip-hex')) {
+                const hex = target.value;
+                if (/^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})$/.test(hex)) {
+                    const colorInput = target.parentElement.querySelector('.chip-color');
+                    if (colorInput) colorInput.value = hex;
+                } else {
+                    return; // do not apply invalid hex
+                }
+            }
+            const input = target.classList.contains('chip-color') ? target : target.classList.contains('chip-hex') ? target : null;
+            if (!input) return;
             const id = parseInt(input.dataset.id || '');
-            const kind = input.dataset.kind;
             const windows = getWindowsState();
             const idx = windows.findIndex(w => w.id === id);
             if (idx < 0) return;
             const style = windows[idx].style || {};
-            if (kind === 'both') { style.borderColor = input.value; style.glowColor = input.value; }
+            const newVal = target.classList.contains('chip-hex') ? target.value : input.value;
+            style.borderColor = newVal;
+            style.glowColor = newVal;
             windows[idx].style = style;
             setWindowsState(windows);
             const el = chatDesktop.querySelector(`.chat-window[data-id="${id}"]`);
