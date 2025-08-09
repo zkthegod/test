@@ -1547,3 +1547,35 @@ header::before {
     cursor: pointer;
 }
 .size-out { color: var(--text-light); min-width: 90px; text-align: right; }
+
+/* Titlebar size slider */
+.title-size { display: flex; align-items: center; gap: 8px; margin-left: 12px; }
+.title-size .size-scale {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 160px;
+    height: 2px;
+    background: linear-gradient(90deg, rgba(108,92,231,0.35), rgba(108,92,231,0.15));
+    border-radius: 999px;
+    outline: none;
+}
+.title-size .size-scale::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px; height: 12px; border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid rgba(108,92,231,0.8);
+    box-shadow: 0 0 0 3px rgba(108,92,231,0.16);
+    cursor: pointer;
+}
+.title-size .size-scale::-moz-range-thumb {
+    width: 12px; height: 12px; border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid rgba(108,92,231,0.8);
+    box-shadow: 0 0 0 3px rgba(108,92,231,0.16);
+    cursor: pointer;
+}
+.title-size .size-out { color: var(--text-light); font-size: 0.8rem; min-width: 78px; text-align: right; }
+
+/* Allow dragging without interfering with slider */
+.window-titlebar { gap: 10px; }

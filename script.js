@@ -538,16 +538,17 @@ document.addEventListener('DOMContentLoaded', function() {
         el.innerHTML = `
             <div class="window-titlebar" data-drag-handle>
                 <div class="title"><i class="fas fa-comment-dots" style="margin-right:6px;color:var(--primary)"></i>${escapeHtml(state.name)}</div>
+                <div class="title-size">
+                    <input type="range" class="size-scale" min="0.5" max="2" value="1" step="0.05" aria-label="Chat size scale">
+                    <span class="size-out">${state.width}x${state.height}</span>
+                </div>
                 <div class="window-controls">
-                    <button class="ctrl-btn" data-action="zoom" title="Zoom/Pan (hold)"><i class="fas fa-search"></i></button>
                     <button class="ctrl-btn" data-action="toggle" title="Show/Hide content"><i class="fas fa-minus"></i></button>
                     <button class="ctrl-btn" data-action="close" title="Close"><i class="fas fa-times"></i></button>
                 </div>
             </div>
             <div class="chat-content">
-                <div class="zoom-wrapper">
-                    <iframe src="https://xat.com/embed/chat.php#gn=${encodeURIComponent(state.name)}" frameborder="0" scrolling="no"></iframe>
-                </div>
+                <iframe src="https://xat.com/embed/chat.php#gn=${encodeURIComponent(state.name)}" frameborder="0" scrolling="no"></iframe>
             </div>
             <div class="resize-handle ne" data-resize="ne"></div>
             <div class="resize-handle nw" data-resize="nw"></div>
@@ -589,60 +590,21 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Zoom interactions (hold on zoom button and drag)
-        const zoomBtn = el.querySelector('[data-action="zoom"]');
-        const zoomWrapper = el.querySelector('.zoom-wrapper');
-        let zDown = false, zStartX = 0, zStartY = 0, zScale = 1, zTx = 0, zTy = 0;
-        let zRaf = null;
-
-        function applyZoom() {
-            zoomWrapper.style.transform = `translate(${zTx}px, ${zTy}px) scale(${zScale})`;
-        }
-        function zoomLoop() {
-            zRaf = requestAnimationFrame(zoomLoop);
-            applyZoom();
-        }
-        function startZoom(e) {
-            zDown = true;
-            el.classList.add('zooming');
-            zStartX = e.clientX;
-            zStartY = e.clientY;
-            bringToFront(el);
-            zoomWrapper.style.transition = 'transform 40ms linear';
-            zoomLoop();
-            e.preventDefault();
-        }
-        function endZoom() {
-            if (!zDown) return;
-            zDown = false;
-            cancelAnimationFrame(zRaf);
-            zScale = 1; zTx = 0; zTy = 0;
-            zoomWrapper.style.transition = 'transform 220ms ease';
-            applyZoom();
-            el.classList.remove('zooming');
-        }
-        function onZoomMove(e) {
-            if (!zDown) return;
-            const dx = e.clientX - zStartX;
-            const dy = e.clientY - zStartY;
-            // Vertical drag controls scale; horizontal controls pan X; vertical also pans Y when scaled
-            const targetScale = clamp(1 + (-dy / 400), 1, 2.5);
-            const effectiveScale = targetScale;
-            // Pan proportional to movement when scaled
-            const panFactor = 0.7 * (effectiveScale - 1);
-            zScale = effectiveScale;
-            zTx = dx * panFactor;
-            zTy = dy * panFactor;
-        }
-        if (zoomBtn) {
-            zoomBtn.addEventListener('pointerdown', (e) => {
-                startZoom(e);
-                zoomBtn.setPointerCapture(e.pointerId);
+        // Per-chat size slider scaling with aspect ratio
+        const sizeScale = el.querySelector('.size-scale');
+        const sizeOut = el.querySelector('.size-out');
+        if (sizeScale) {
+            // Base on current saved defaults to keep consistent aspect
+            const base = getDesktopSettings();
+            sizeScale.addEventListener('input', () => {
+                const s = parseFloat(sizeScale.value || '1');
+                const newW = Math.round(base.width * s);
+                const newH = Math.round(base.height * s);
+                el.style.width = `${newW}px`;
+                el.style.height = `${newH}px`;
+                if (sizeOut) sizeOut.textContent = `${newW}x${newH}`;
+                persistFromElement(el, state.id);
             });
-            zoomBtn.addEventListener('pointermove', onZoomMove);
-            zoomBtn.addEventListener('pointerup', endZoom);
-            zoomBtn.addEventListener('pointercancel', endZoom);
-            zoomBtn.addEventListener('lostpointercapture', endZoom);
         }
 
         if (state.collapsed) el.classList.add('hidden-content');
