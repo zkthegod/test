@@ -987,8 +987,13 @@ document.addEventListener('DOMContentLoaded', function() {
     if (alignCenterBtn) alignCenterBtn.addEventListener('click', () => alignEdge('center'));
     if (resizeAllBtn) resizeAllBtn.addEventListener('click', () => { resizeAllToDefault(); });
 
+    // Initial setup once
     loadDesktopSettings();
     restoreWindows();
+    rebuildChatStyleChips();
+    wireStyleChipListeners();
+    applyStylesToExistingWindows();
+    setupAlignmentButtons();
 
     // Status monitoring
     const services = [
@@ -1739,12 +1744,11 @@ document.addEventListener('DOMContentLoaded', function() {
         windows.forEach(w => {
             const chip = document.createElement('div');
             chip.className = 'chat-style-chip';
+            const value = w.style?.borderColor || w.style?.glowColor || '#000000';
             chip.innerHTML = `
                 <span class="chip-title">${w.name}</span>
-                <label>Border</label>
-                <input type="color" value="${w.style?.borderColor || '#000000'}" data-kind="border" data-id="${w.id}">
-                <label>Glow</label>
-                <input type="color" value="${w.style?.glowColor || '#000000'}" data-kind="glow" data-id="${w.id}">
+                <label>Color</label>
+                <input type="color" value="${value}" data-kind="both" data-id="${w.id}">
             `;
             chatStylesList.appendChild(chip);
         });
@@ -1769,8 +1773,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const idx = windows.findIndex(w => w.id === id);
             if (idx < 0) return;
             const style = windows[idx].style || {};
-            if (kind === 'border') style.borderColor = input.value;
-            if (kind === 'glow') style.glowColor = input.value;
+            if (kind === 'both') { style.borderColor = input.value; style.glowColor = input.value; }
             windows[idx].style = style;
             setWindowsState(windows);
             const el = chatDesktop.querySelector(`.chat-window[data-id="${id}"]`);
@@ -1796,6 +1799,8 @@ document.addEventListener('DOMContentLoaded', function() {
     function setupAlignmentButtons() {
         const tileBtn = document.getElementById('alignTile');
         const centerBtn = document.getElementById('alignCenter');
+        const tileBtn2 = document.getElementById('alignTile');
+        const centerBtn2 = document.getElementById('alignCenter');
         if (tileBtn && !tileBtn.dataset.bound) {
             tileBtn.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -1815,13 +1820,6 @@ document.addEventListener('DOMContentLoaded', function() {
             centerBtn.dataset.bound = 'true';
         }
     }
-
-    // Call after restoring windows
-    restoreWindows();
-    rebuildChatStyleChips();
-    wireStyleChipListeners();
-    applyStylesToExistingWindows();
-    setupAlignmentButtons();
 
     // Robust action delegation for settings drawer actions
     const drawerActions = document.querySelector('.settings-drawer .actions');
