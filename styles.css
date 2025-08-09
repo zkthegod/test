@@ -1398,3 +1398,6 @@ footer { position: relative; z-index: 1; }
 /* Red hover consistency */
 #clearAllChats.link-btn{transition:background .2s ease,opacity .2s ease}
 #clearAllChats.link-btn:hover{opacity:.9}
+
+.settings-drawer input#chatWidth, .settings-drawer input#chatHeight { width: 110px; }
+.settings-drawer input#desktopBgImage { min-width: 160px; max-width: 380px; flex: 1 1 220px; }

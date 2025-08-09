@@ -200,6 +200,75 @@ document.addEventListener('DOMContentLoaded', function() {
                 c.style.animation = `fall ${5 + Math.random()*4}s linear ${Math.random()*2}s infinite`;
                 layer.appendChild(c);
             }
+        } else if (type === 'meteor') {
+            for (let i = 0; i < 6; i++) {
+                const m = document.createElement('div');
+                m.style.position = 'absolute';
+                m.style.top = `${Math.random() * 30}%`;
+                m.style.left = `${Math.random() * 100}%`;
+                m.style.width = '2px'; m.style.height = '80px';
+                m.style.background = 'linear-gradient(transparent, rgba(255,255,255,0.8))';
+                m.style.transform = `rotate(45deg)`;
+                m.style.animation = `fall ${2 + Math.random()*2}s linear ${Math.random()}s infinite`;
+                layer.appendChild(m);
+            }
+        } else if (type === 'rainbow-rays') {
+            for (let i = 0; i < 12; i++) {
+                const r = document.createElement('div');
+                r.style.position = 'absolute';
+                r.style.top = '0'; r.style.left = '50%';
+                r.style.width = '2px'; r.style.height = '100%';
+                r.style.background = `linear-gradient(${i*30}deg, transparent, hsla(${i*30},80%,60%,0.4))`;
+                r.style.transform = `rotate(${i*30}deg)`;
+                layer.appendChild(r);
+            }
+        } else if (type === 'nebula') {
+            for (let i = 0; i < 8; i++) {
+                const n = document.createElement('div');
+                n.style.position = 'absolute';
+                n.style.top = `${Math.random()*100}%`; n.style.left = `${Math.random()*100}%`;
+                const s = 80 + Math.random()*120; n.style.width = n.style.height = `${s}px`;
+                n.style.borderRadius = '50%'; n.style.filter = 'blur(20px)';
+                n.style.background = `radial-gradient(circle, hsla(${Math.random()*360},70%,60%,0.18), transparent 60%)`;
+                layer.appendChild(n);
+            }
+        } else if (type === 'aurora') {
+            const a = document.createElement('div');
+            a.style.position = 'absolute'; a.style.inset = '0';
+            a.style.background = 'linear-gradient(120deg, rgba(0,255,150,0.15), transparent, rgba(150,80,255,0.15))';
+            a.style.filter = 'blur(8px)';
+            layer.appendChild(a);
+        } else if (type === 'rain') {
+            for (let i = 0; i < 80; i++) {
+                const drop = document.createElement('div');
+                drop.style.position = 'absolute';
+                drop.style.top = `${Math.random() * -80}px`;
+                drop.style.left = `${Math.random() * 100}%`;
+                drop.style.width = '1px'; drop.style.height = '12px';
+                drop.style.background = 'rgba(255,255,255,0.35)';
+                drop.style.animation = `fall ${3 + Math.random() * 2}s linear ${Math.random() * 2}s infinite`;
+                layer.appendChild(drop);
+            }
+        } else if (type === 'grid-glow') {
+            for (let i=0; i<20; i++) {
+                const line = document.createElement('div');
+                line.style.position = 'absolute';
+                line.style.top = `${i*5}%`; line.style.left='0';
+                line.style.width='100%'; line.style.height='1px';
+                line.style.background='rgba(255,255,255,0.05)';
+                layer.appendChild(line);
+            }
+        } else if (type === 'comet') {
+            for (let i=0; i<3; i++) {
+                const c = document.createElement('div');
+                c.style.position='absolute';
+                c.style.top = `${Math.random()*50}%`;
+                c.style.left = `${Math.random()*100}%`;
+                c.style.width = '120px'; c.style.height='2px';
+                c.style.background='linear-gradient(90deg, rgba(255,255,255,0.8), transparent)';
+                c.style.animation=`fall ${3+Math.random()*2}s linear ${Math.random()}s infinite`;
+                layer.appendChild(c);
+            }
         }
     }
 
@@ -348,6 +417,7 @@ document.addEventListener('DOMContentLoaded', function() {
         createChatWindow(initialState);
         upsertWindowState(initialState);
         chatNameInput.value = '';
+        rebuildChatStyleChips();
     }
 
     function createChatWindow(state) {
@@ -604,7 +674,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function alignTile() {
         const list = readAllWindows();
         if (!list.length) return;
-        const vpW = chatDesktop.clientWidth;
+        const vpW = document.documentElement.clientWidth;
         const pad = 16;
         let x = pad, y = pad, rowH = 0;
         list.forEach(el => {
@@ -618,8 +688,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function alignEdge(edge) {
         const list = readAllWindows();
-        const vpW = chatDesktop.clientWidth;
-        const vpH = chatDesktop.clientHeight;
+        const vpW = document.documentElement.clientWidth;
+        const vpH = Math.max(window.innerHeight, document.documentElement.clientHeight);
         const pad = 16;
         list.forEach(el => {
             if (edge === 'left') el.style.left = `${pad}px`;
