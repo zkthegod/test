@@ -1376,6 +1376,8 @@ body::before { content: none; }
     right: 16px;
     width: 520px;
     max-width: calc(100% - 32px);
+    max-height: calc(100vh - 90px);
+    overflow: auto;
     background: var(--card-bg);
     border: var(--border);
     border-radius: 12px;
@@ -1481,3 +1483,4 @@ header, .embed-controls, .section-header { position: relative; z-index: 10; }
 .chat-style-chip .chip-title { font-weight: 600; color: var(--text); min-width: 120px; }
 .chat-style-chip label { color: var(--text-light); font-size: 0.9rem; }
 .chat-style-chip input[type="color"] { flex: 0 0 auto; width: 40px; height: 32px; padding: 0; border: none; border-radius: 6px; }
+.chat-style-placeholder { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 10px; border: var(--border); border-radius: 10px; color: var(--text-light); background: var(--card-bg); }

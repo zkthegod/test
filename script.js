@@ -684,6 +684,17 @@ document.addEventListener('DOMContentLoaded', function() {
         chatNameInput.value = '';
         rebuildChatStyleChips();
         applyStylesToExistingWindows();
+        // Auto-open settings and scroll to glow controls to make them visible
+        const panel = document.getElementById('settingsPanel');
+        const overlay = document.getElementById('settingsOverlay');
+        if (panel && !panel.classList.contains('active')) {
+            panel.classList.add('active');
+            if (overlay) overlay.classList.add('active');
+        }
+        const list = document.getElementById('chatStylesList');
+        if (list && panel && panel.classList.contains('active')) {
+            list.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
     }
 
     function createChatWindow(state) {
@@ -1742,6 +1753,16 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!chatStylesList) return;
         chatStylesList.innerHTML = '';
         const windows = getWindowsState();
+        if (!windows.length) {
+            const empty = document.createElement('div');
+            empty.className = 'chat-style-placeholder';
+            empty.innerHTML = `
+                <span>No chats yet. Add a chat to customize its glow.</span>
+                <button class="primary-btn small" data-action="focus-add">Add Chat</button>
+            `;
+            chatStylesList.appendChild(empty);
+            return;
+        }
         windows.forEach(w => {
             const chip = document.createElement('div');
             chip.className = 'chat-style-chip';
@@ -1782,6 +1803,14 @@ document.addEventListener('DOMContentLoaded', function() {
             setWindowsState(windows);
             const el = chatDesktop.querySelector(`.chat-window[data-id="${id}"]`);
             if (el) applyChatStyleToElement(el, style);
+        });
+        chatStylesList.addEventListener('click', (e) => {
+            const btn = e.target.closest('button');
+            if (!btn) return;
+            if (btn.dataset.action === 'focus-add') {
+                const input = document.getElementById('chatName');
+                if (input) input.focus();
+            }
         });
         styleChipsWired = true;
     }
