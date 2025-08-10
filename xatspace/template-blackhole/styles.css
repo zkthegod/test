@@ -1,9 +1,23 @@
 *{box-sizing:border-box}
 html,body{height:100%}
-body{margin:0;background:radial-gradient(1200px 600px at 10% -10%,rgba(108,92,231,.12),transparent),radial-gradient(800px 400px at 90% 10%,rgba(0,255,204,.10),transparent),#050710;color:#eaf0ff;font-family:Inter,system-ui,sans-serif;overflow:hidden}
+body{margin:0;background:
+  radial-gradient(1400px 900px at 20% -10%, rgba(139,124,246,0.18), transparent 60%),
+  radial-gradient(1200px 700px at 90% 10%, rgba(0,245,212,0.12), transparent 60%),
+  radial-gradient(1000px 800px at 60% 80%, rgba(255,110,199,0.10), transparent 60%),
+  #050710;
+  color:#eaf0ff;font-family:Inter,system-ui,sans-serif;overflow:hidden}
 #universe{position:fixed;inset:0;display:block}
-.hud{position:fixed;left:50%;top:14%;transform:translateX(-50%);text-align:center;pointer-events:none}
-.float-name{font-weight:900;font-size:2.2rem;letter-spacing:.15em;text-transform:uppercase;text-shadow:0 6px 30px rgba(0,0,0,.6), 0 0 40px rgba(139,124,246,.35)}
-.subtitle{margin-top:6px;opacity:.75}
+.hud{position:fixed;left:50%;top:16%;transform:translateX(-50%);text-align:center;pointer-events:none}
+.float-name{font-weight:900;font-size:2.6rem;letter-spacing:.18em;text-transform:uppercase;
+  text-shadow:0 0 20px rgba(139,124,246,.7), 0 0 40px rgba(0,245,212,.25), 0 8px 40px rgba(0,0,0,.7);
+  filter:drop-shadow(0 6px 20px rgba(0,0,0,.6));
+}
+.subtitle{margin-top:6px;opacity:.8}
 /* vignette */
-body:after{content:"";position:fixed;inset:-10%;pointer-events:none;background:radial-gradient(120% 90% at 50% 50%, transparent 50%, rgba(0,0,0,.55) 100%)}
+body:after{content:"";position:fixed;inset:-10%;pointer-events:none;background:
+  radial-gradient(120% 90% at 50% 50%, transparent 55%, rgba(0,0,0,.55) 100%)}
+
+@media (max-width: 600px){
+  .float-name{font-size:1.8rem;letter-spacing:.12em}
+  .hud{top:12%}
+}
