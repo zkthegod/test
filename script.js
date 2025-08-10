@@ -802,6 +802,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function createChatWindow(state) {
+        if (chatDesktop.querySelector(`.chat-window[data-id="${state.id}"]`)) {
+            return; // already exists
+        }
         const el = document.createElement('div');
         el.className = 'chat-window';
         el.dataset.id = String(state.id);
@@ -2006,11 +2009,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Call after restoring windows
-    restoreWindows();
-    rebuildChatStyleChips();
-    wireStyleChipListeners();
-    applyStylesToExistingWindows();
     setupAlignmentButtons();
 
     // Robust action delegation for settings drawer actions
