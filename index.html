@@ -363,6 +363,14 @@
                   #xatspace-templates .template-preview iframe::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#6c5ce7,#8b7cf6);border-radius:999px}
                   #xatspace-templates .template-preview iframe::-webkit-scrollbar-track{background:rgba(255,255,255,.06)}
                   #xatspace-templates .template-preview iframe{scrollbar-width:thin; scrollbar-color:#6c5ce7 rgba(255,255,255,.06)}
+                  /* Global modal styles for xatspace downloads */
+                  .xat-modal-backdrop{position:fixed; inset:0; background:rgba(0,0,0,.6); display:none; align-items:center; justify-content:center; opacity:0; transition:opacity .2s ease; z-index:9999}
+                  .xat-modal-backdrop.open{display:flex; opacity:1}
+                  .xat-modal{background:var(--card-bg); border:var(--border); border-radius:14px; width:min(680px, 92vw); padding:16px; box-shadow:0 20px 60px rgba(0,0,0,.5); transform:scale(.96); opacity:0; transition:transform .2s ease, opacity .2s ease; position:relative}
+                  .xat-modal-backdrop.open .xat-modal{transform:scale(1); opacity:1}
+                  .xat-codebox{background: #0f1429; border:1px solid rgba(255,255,255,.08); border-radius:8px; padding:10px; max-height:260px; overflow:auto; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size:.85rem; color: var(--text)}
+                  .xat-row{display:flex; gap:8px; justify-content:flex-end; margin-top:10px}
+                  .xat-modal-x{position:absolute; top:8px; right:10px; background:transparent; border:0; color:var(--text); font-size:20px; cursor:pointer}
                 </style>
                 <div class="templates-grid" id="xatspaceTemplatesGrid">
                     <div class="template-card">
@@ -483,43 +491,52 @@
                         </div>
                     </div>
                 </div>
-                <div class="modal-backdrop" id="xatDlBackdrop">
-                  <div class="modal">
-                    <button class="modal-x" id="xatDlClose" aria-label="Close">×</button>
-                    <h3>Template Code</h3>
-                    <div class="codebox" id="xatDlCode">Preparing...</div>
-                    <div class="row">
-                      <button class="primary-btn" id="xatDlCopy">COPY</button>
-                    </div>
-                  </div>
-                </div>
                 <script>
-                // xatspace: build single-file code viewer (scoped to #xatspace-templates)
+                // xatspace: build single-file code viewer (modal appended to body)
                 document.addEventListener('DOMContentLoaded', function(){
                   const grid = document.getElementById('xatspaceTemplatesGrid');
                   if (!grid) return;
-                  const backdrop = document.getElementById('xatDlBackdrop');
-                  const codebox = document.getElementById('xatDlCode');
-                  const btnClose = document.getElementById('xatDlClose');
-                  const btnCopy = document.getElementById('xatDlCopy');
-                  let lastHtml = '', lastName = '';
-                  function openModal(){ backdrop.style.display = 'flex'; backdrop.classList.add('open'); document.documentElement.style.overflow='hidden'; document.body.style.overflow='hidden'; }
+
+                  // Create modal once and append to body to avoid clipping/stacking issues
+                  const backdrop = document.createElement('div');
+                  backdrop.className = 'xat-modal-backdrop';
+                  backdrop.innerHTML = `
+                    <div class="xat-modal">
+                      <button class="xat-modal-x" aria-label="Close">×</button>
+                      <h3>Template Code</h3>
+                      <div class="xat-codebox">Preparing...</div>
+                      <div class="xat-row">
+                        <button class="primary-btn" id="xatDlCopyBtn">Copy</button>
+                      </div>
+                    </div>`;
+                  document.body.appendChild(backdrop);
+
+                  const codebox = backdrop.querySelector('.xat-codebox');
+                  const btnClose = backdrop.querySelector('.xat-modal-x');
+                  const btnCopy = backdrop.querySelector('#xatDlCopyBtn');
+                  let lastHtml = '';
+
+                  function openModal(){ backdrop.style.display = 'flex'; requestAnimationFrame(()=>backdrop.classList.add('open')); document.documentElement.style.overflow='hidden'; document.body.style.overflow='hidden'; }
                   function closeModal(){ backdrop.classList.remove('open'); setTimeout(()=>{ if(!backdrop.classList.contains('open')) backdrop.style.display='none'; }, 200); document.documentElement.style.overflow=''; document.body.style.overflow=''; }
+
                   async function buildSingleFile(dir){
                     const base = `xatspace/${dir}`;
                     const [html, css, js] = await Promise.all([
                       fetch(`${base}/index.html`).then(r=>r.text()),
-                      fetch(`${base}/styles.css`).then(r=>r.text()),
-                      fetch(`${base}/script.js`).then(r=>r.text()),
+                      fetch(`${base}/styles.css`).then(r=>r.ok ? r.text() : '').catch(()=>''),
+                      fetch(`${base}/script.js`).then(r=>r.ok ? r.text() : '').catch(()=>''),
                     ]);
                     return html
                       .replace(/<link[^>]*styles\\.css[^>]*>/i, `<style>\n${css}\n<\/style>`) 
-                      .replace(/<script[^>]*src=\"script\\.js\"[^>]*><\\/script>/i, `<script>\n${js}\n<\\/script>`);
+                      .replace(/<script[^>]*src=\"script\\.js\"[^>]*><\\/script>/i, `<script>\n${js}\n<\/script>`);
                   }
+
                   async function openCodeFor(dir){
-                    lastName = dir; codebox.textContent = 'Preparing...'; openModal();
-                    try { lastHtml = await buildSingleFile(lastName); codebox.textContent = lastHtml; } catch(err){ codebox.textContent = 'Error preparing code.'; }
+                    codebox.textContent = 'Preparing...';
+                    openModal();
+                    try { lastHtml = await buildSingleFile(dir); codebox.textContent = lastHtml; } catch(err){ codebox.textContent = 'Error preparing code.'; }
                   }
+
                   // Direct binding
                   Array.from(document.querySelectorAll('#xatspaceTemplatesGrid button[data-code]')).forEach(b => {
                     b.addEventListener('click', (e)=>{ e.preventDefault(); e.stopPropagation(); openCodeFor(b.dataset.code); }, { passive:false });
@@ -527,7 +544,7 @@
                   // Delegation fallback
                   grid.addEventListener('click', (e)=>{ const t = e.target.closest('button[data-code]'); if (t){ e.preventDefault(); e.stopPropagation(); openCodeFor(t.dataset.code);} });
                   backdrop.addEventListener('click', (e)=>{ if (e.target === backdrop || e.target === btnClose) { closeModal(); } });
-                  btnCopy.addEventListener('click', ()=>{ navigator.clipboard.writeText(lastHtml || '').then(()=>{ btnCopy.textContent='COPIED'; setTimeout(()=>btnCopy.textContent='COPY',1200); }); });
+                  btnCopy.addEventListener('click', ()=>{ navigator.clipboard.writeText(lastHtml || '').then(()=>{ btnCopy.textContent='COPIED'; setTimeout(()=>btnCopy.textContent='Copy',1200); }); });
                   document.addEventListener('keydown', (e)=>{ if (e.key==='Escape' && backdrop.classList.contains('open')) closeModal(); });
                 });
                 </script>
