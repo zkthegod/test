@@ -351,6 +351,13 @@
                   #xatspace-templates .templates-grid { display:grid; grid-template-columns: repeat(auto-fit,minmax(320px,1fr)); gap:16px; }
                   #xatspace-templates .template-card .template-preview { position:relative; padding-top:56%; border-radius:12px; overflow:hidden; background:var(--preview-bg); border: var(--border); }
                   #xatspace-templates .template-card .template-preview iframe { position:absolute; inset:0; width:100%; height:100%; border:0; }
+                  /* Modal */
+                  #xatspace-templates .modal-backdrop{position:fixed; inset:0; background:rgba(0,0,0,.6); display:none; align-items:center; justify-content:center; opacity:0; transition:opacity .2s ease; z-index:9999}
+                  #xatspace-templates .modal-backdrop.open{display:flex; opacity:1}
+                  #xatspace-templates .modal{background:var(--card-bg); border:var(--border); border-radius:14px; width:min(680px, 92vw); padding:16px; box-shadow:0 20px 60px rgba(0,0,0,.5); transform:scale(.96); opacity:0; transition:transform .2s ease, opacity .2s ease}
+                  #xatspace-templates .modal-backdrop.open .modal{transform:scale(1); opacity:1}
+                  #xatspace-templates .codebox{background: #0f1429; border:1px solid rgba(255,255,255,.08); border-radius:8px; padding:10px; max-height:260px; overflow:auto; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size:.85rem; color: var(--text)}
+                  #xatspace-templates .row{display:flex; gap:8px; justify-content:flex-end; margin-top:10px}
                 </style>
                 <div class="templates-grid" id="xatspaceTemplatesGrid">
                     <div class="template-card">
@@ -361,8 +368,8 @@
                             <h3>Neon Cards</h3>
                             <p>Synthwave neon glow with gallery lightbox</p>
                             <div class="template-actions">
-                                <a href="xatspace/template-neon/index.html" class="primary-btn no-underline" target="_blank"><i class="fas fa-eye"></i> Open Demo</a>
-                                <button class="primary-btn" data-xat-dl="template-neon"><i class="fas fa-download"></i> Download Single File</button>
+                                <a href="xatspace/template-neon/index.html" class="primary-btn no-underline" target="_blank"><i class="fas fa-eye"></i> View Live</a>
+                                <button class="link-btn" data-xat-dl="template-neon"><i class="fas fa-download"></i> Download</button>
                             </div>
                         </div>
                     </div>
@@ -374,8 +381,8 @@
                             <h3>Holo Shards Journey</h3>
                             <p>Interactive holographic crystals with cinematic transitions</p>
                             <div class="template-actions">
-                                <a href="xatspace/template-holo-shards/index.html" class="primary-btn no-underline" target="_blank"><i class="fas fa-eye"></i> Open Demo</a>
-                                <button class="primary-btn" data-xat-dl="template-holo-shards"><i class="fas fa-download"></i> Download Single File</button>
+                                <a href="xatspace/template-holo-shards/index.html" class="primary-btn no-underline" target="_blank"><i class="fas fa-eye"></i> View Live</a>
+                                <button class="link-btn" data-xat-dl="template-holo-shards"><i class="fas fa-download"></i> Download</button>
                             </div>
                         </div>
                     </div>
@@ -387,8 +394,8 @@
                             <h3>Terminal/Cyber</h3>
                             <p>CRT scanlines, typing cursor headings</p>
                             <div class="template-actions">
-                                <a href="xatspace/template-terminal/index.html" class="primary-btn no-underline" target="_blank"><i class="fas fa-eye"></i> Open Demo</a>
-                                <button class="primary-btn" data-xat-dl="template-terminal"><i class="fas fa-download"></i> Download Single File</button>
+                                <a href="xatspace/template-terminal/index.html" class="primary-btn no-underline" target="_blank"><i class="fas fa-eye"></i> View Live</a>
+                                <button class="link-btn" data-xat-dl="template-terminal"><i class="fas fa-download"></i> Download</button>
                             </div>
                         </div>
                     </div>
@@ -400,8 +407,8 @@
                             <h3>Minimal Magazine</h3>
                             <p>Content-first with clean typography</p>
                             <div class="template-actions">
-                                <a href="xatspace/template-minimal/index.html" class="primary-btn no-underline" target="_blank"><i class="fas fa-eye"></i> Open Demo</a>
-                                <button class="primary-btn" data-xat-dl="template-minimal"><i class="fas fa-download"></i> Download Single File</button>
+                                <a href="xatspace/template-minimal/index.html" class="primary-btn no-underline" target="_blank"><i class="fas fa-eye"></i> View Live</a>
+                                <button class="link-btn" data-xat-dl="template-minimal"><i class="fas fa-download"></i> Download</button>
                             </div>
                         </div>
                     </div>
@@ -413,8 +420,8 @@
                             <h3>Parallax Hero</h3>
                             <p>Layered gradient blobs with parallax</p>
                             <div class="template-actions">
-                                <a href="xatspace/template-parallax/index.html" class="primary-btn no-underline" target="_blank"><i class="fas fa-eye"></i> Open Demo</a>
-                                <button class="primary-btn" data-xat-dl="template-parallax"><i class="fas fa-download"></i> Download Single File</button>
+                                <a href="xatspace/template-parallax/index.html" class="primary-btn no-underline" target="_blank"><i class="fas fa-eye"></i> View Live</a>
+                                <button class="link-btn" data-xat-dl="template-parallax"><i class="fas fa-download"></i> Download</button>
                             </div>
                         </div>
                     </div>
@@ -426,8 +433,8 @@
                             <h3>Retro Pixel</h3>
                             <p>8-bit pixel borders with bitmap font</p>
                             <div class="template-actions">
-                                <a href="xatspace/template-retro/index.html" class="primary-btn no-underline" target="_blank"><i class="fas fa-eye"></i> Open Demo</a>
-                                <button class="primary-btn" data-xat-dl="template-retro"><i class="fas fa-download"></i> Download Single File</button>
+                                <a href="xatspace/template-retro/index.html" class="primary-btn no-underline" target="_blank"><i class="fas fa-eye"></i> View Live</a>
+                                <button class="link-btn" data-xat-dl="template-retro"><i class="fas fa-download"></i> Download</button>
                             </div>
                         </div>
                     </div>
@@ -439,8 +446,8 @@
                             <h3>Holographic Panels</h3>
                             <p>Prism borders and tilt hypercards</p>
                             <div class="template-actions">
-                                <a href="xatspace/template-holo/index.html" class="primary-btn no-underline" target="_blank"><i class="fas fa-eye"></i> Open Demo</a>
-                                <button class="primary-btn" data-xat-dl="template-holo"><i class="fas fa-download"></i> Download Single File</button>
+                                <a href="xatspace/template-holo/index.html" class="primary-btn no-underline" target="_blank"><i class="fas fa-eye"></i> View Live</a>
+                                <button class="link-btn" data-xat-dl="template-holo"><i class="fas fa-download"></i> Download</button>
                             </div>
                         </div>
                     </div>
@@ -452,8 +459,8 @@
                             <h3>Gridwave</h3>
                             <p>Animated wave-grid background</p>
                             <div class="template-actions">
-                                <a href="xatspace/template-gridwave/index.html" class="primary-btn no-underline" target="_blank"><i class="fas fa-eye"></i> Open Demo</a>
-                                <button class="primary-btn" data-xat-dl="template-gridwave"><i class="fas fa-download"></i> Download Single File</button>
+                                <a href="xatspace/template-gridwave/index.html" class="primary-btn no-underline" target="_blank"><i class="fas fa-eye"></i> View Live</a>
+                                <button class="link-btn" data-xat-dl="template-gridwave"><i class="fas fa-download"></i> Download</button>
                             </div>
                         </div>
                     </div>
@@ -465,17 +472,36 @@
                             <h3>Orbital Nodes</h3>
                             <p>Orbiting friend nodes around avatar</p>
                             <div class="template-actions">
-                                <a href="xatspace/template-orbit/index.html" class="primary-btn no-underline" target="_blank"><i class="fas fa-eye"></i> Open Demo</a>
-                                <button class="primary-btn" data-xat-dl="template-orbit"><i class="fas fa-download"></i> Download Single File</button>
+                                <a href="xatspace/template-orbit/index.html" class="primary-btn no-underline" target="_blank"><i class="fas fa-eye"></i> View Live</a>
+                                <button class="link-btn" data-xat-dl="template-orbit"><i class="fas fa-download"></i> Download</button>
                             </div>
                         </div>
                     </div>
+                </div>
+                <div class="modal-backdrop" id="xatDlBackdrop">
+                  <div class="modal">
+                    <h3>Download Template</h3>
+                    <div class="codebox" id="xatDlCode">Preparing...</div>
+                    <div class="row">
+                      <button class="btn" id="xatDlClose">Close</button>
+                      <button class="btn" id="xatDlCopy">Copy</button>
+                      <button class="primary-btn" id="xatDlSave">Download .html</button>
+                    </div>
+                  </div>
                 </div>
                 <script>
                 // xatspace: build single-file download (scoped to #xatspace-templates)
                 (function(){
                   const grid = document.getElementById('xatspaceTemplatesGrid');
                   if (!grid) return;
+                  const backdrop = document.getElementById('xatDlBackdrop');
+                  const codebox = document.getElementById('xatDlCode');
+                  const btnClose = document.getElementById('xatDlClose');
+                  const btnCopy = document.getElementById('xatDlCopy');
+                  const btnSave = document.getElementById('xatDlSave');
+                  let lastHtml = '', lastName = '';
+                  function openModal(){ backdrop.classList.add('open'); document.documentElement.style.overflow='hidden'; document.body.style.overflow='hidden'; }
+                  function closeModal(){ backdrop.classList.remove('open'); setTimeout(()=>{ if(!backdrop.classList.contains('open')) backdrop.style.display='none'; }, 200); document.documentElement.style.overflow=''; document.body.style.overflow=''; }
                   async function buildSingleFile(dir){
                     const base = `xatspace/${dir}`;
                     const [html, css, js] = await Promise.all([
@@ -486,17 +512,25 @@
                     const merged = html
                       .replace(/<link[^>]*styles\\.css[^>]*>/i, `<style>\n${css}\n<\/style>`) 
                       .replace(/<script[^>]*src=\"script\\.js\"[^>]*><\\/script>/i, `<script>\n${js}\n<\\/script>`);
-                    const blob = new Blob([merged], {type:'text/html'});
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url; a.download = `${dir}.html`; a.click();
-                    setTimeout(()=>URL.revokeObjectURL(url), 2000);
+                    return merged;
                   }
-                  grid.addEventListener('click', (e) => {
+                  document.addEventListener('click', async (e) => {
                     const btn = e.target.closest('button[data-xat-dl]');
-                    if (!btn) return;
-                    buildSingleFile(btn.dataset.xatDl).catch(console.error);
+                    if (btn) {
+                      lastName = btn.dataset.xatDl;
+                      backdrop.style.display = 'flex'; openModal(); codebox.textContent = 'Preparing...';
+                      try { lastHtml = await buildSingleFile(lastName); codebox.textContent = lastHtml; } catch(err){ codebox.textContent = 'Error preparing download.'; }
+                      return;
+                    }
+                    if (e.target === backdrop || e.target === btnClose) { closeModal(); }
+                    if (e.target === btnCopy) { navigator.clipboard.writeText(lastHtml || '').then(()=>{ btnCopy.textContent='Copied!'; setTimeout(()=>btnCopy.textContent='Copy',1200); }); }
+                    if (e.target === btnSave) {
+                      const blob = new Blob([lastHtml || ''], {type:'text/html'});
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement('a'); a.href=url; a.download = `${lastName||'template'}.html`; a.click(); setTimeout(()=>URL.revokeObjectURL(url),1500);
+                    }
                   });
+                  document.addEventListener('keydown', (e)=>{ if (e.key==='Escape' && backdrop.classList.contains('open')) closeModal(); });
                 })();
                 </script>
             </section>
