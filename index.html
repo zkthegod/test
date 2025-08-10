@@ -354,10 +354,19 @@
                   /* Modal */
                   #xatspace-templates .modal-backdrop{position:fixed; inset:0; background:rgba(0,0,0,.6); display:none; align-items:center; justify-content:center; opacity:0; transition:opacity .2s ease; z-index:9999}
                   #xatspace-templates .modal-backdrop.open{display:flex; opacity:1}
-                  #xatspace-templates .modal{background:var(--card-bg); border:var(--border); border-radius:14px; width:min(680px, 92vw); padding:16px; box-shadow:0 20px 60px rgba(0,0,0,.5); transform:scale(.96); opacity:0; transition:transform .2s ease, opacity .2s ease}
+                  #xatspace-templates .modal{background:var(--card-bg); border:var(--border); border-radius:14px; width:min(680px, 92vw); padding:24px; box-shadow:0 20px 60px rgba(0,0,0,.5); transform:scale(.96); opacity:0; transition:transform .2s ease, opacity .2s ease; position:relative; max-height:90vh; display:flex; flex-direction:column}
                   #xatspace-templates .modal-backdrop.open .modal{transform:scale(1); opacity:1}
-                  #xatspace-templates .codebox{background: #0f1429; border:1px solid rgba(255,255,255,.08); border-radius:8px; padding:10px; max-height:260px; overflow:auto; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size:.85rem; color: var(--text)}
-                  #xatspace-templates .row{display:flex; gap:8px; justify-content:flex-end; margin-top:10px}
+                  #xatspace-templates .modal-x{position:absolute; top:12px; right:12px; width:32px; height:32px; border:none; background:rgba(255,255,255,.08); color:var(--text-light); border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:18px; line-height:1; transition:var(--transition); z-index:1}
+                  #xatspace-templates .modal-x:hover{background:rgba(255,255,255,.15); color:var(--text); transform:scale(1.05)}
+                  #xatspace-templates .modal h3{margin:0 32px 16px 0; font-size:1.2rem; color:var(--text)}
+                  #xatspace-templates .codebox{background: #0f1429; border:1px solid rgba(255,255,255,.08); border-radius:8px; padding:16px; flex:1; overflow:auto; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size:.85rem; color: var(--text); line-height:1.5; white-space:pre-wrap; word-break:break-all}
+                  #xatspace-templates .row{display:flex; gap:8px; justify-content:flex-end; margin-top:16px; flex-shrink:0}
+                  @media (max-width: 600px) { #xatspace-templates .modal{width:95vw; padding:20px; max-height:85vh} #xatspace-templates .codebox{font-size:.8rem; padding:12px} }
+                  /* Scrollbar styling for codebox */
+                  #xatspace-templates .codebox::-webkit-scrollbar{width:8px;height:8px}
+                  #xatspace-templates .codebox::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#6c5ce7,#8b7cf6);border-radius:999px}
+                  #xatspace-templates .codebox::-webkit-scrollbar-track{background:rgba(255,255,255,.06)}
+                  #xatspace-templates .codebox{scrollbar-width:thin; scrollbar-color:#6c5ce7 rgba(255,255,255,.06)}
                   /* Match site scrollbar style inside previews */
                   #xatspace-templates .template-preview iframe::-webkit-scrollbar{width:8px;height:8px}
                   #xatspace-templates .template-preview iframe::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#6c5ce7,#8b7cf6);border-radius:999px}
