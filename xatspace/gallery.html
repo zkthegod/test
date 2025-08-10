@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>xatspace Templates | rexor.lol</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
   <style>
     :root { --bg:#0f1220; --card:#14182b; --text:#e8ecf1; --muted:#a9b0bd; --primary:#6c5ce7; --success:#2ecc71; --radius:14px; }
     *{box-sizing:border-box} body{margin:0; background:linear-gradient(180deg,#0f1220,#111425); color:var(--text); font-family:Inter,system-ui,sans-serif}
@@ -24,15 +25,49 @@
     .btn.download{background:#0f1429}
     .btn:hover{filter:brightness(1.06)}
     footer{opacity:.7; text-align:center; margin-top:24px; font-size:.9rem; color:var(--muted)}
-    /* Modal */
-    .modal-backdrop{position:fixed; inset:0; background:rgba(0,0,0,.6); display:none; align-items:center; justify-content:center; opacity:0; transition:opacity .2s ease;}
+    
+    /* Enhanced Modal */
+    .modal-backdrop{position:fixed; inset:0; background:rgba(0,0,0,.8); display:none; align-items:center; justify-content:center; opacity:0; transition:opacity .3s ease; z-index:1000;}
     .modal-backdrop.open{display:flex; opacity:1;}
-    .modal{background:var(--card); border:1px solid rgba(255,255,255,.1); border-radius:14px; width:min(680px, 92vw); padding:16px; box-shadow:0 20px 60px rgba(0,0,0,.5); transform:scale(.96); opacity:0; transition:transform .2s ease, opacity .2s ease;}
+    .modal{background:var(--card); border:1px solid rgba(255,255,255,.1); border-radius:16px; width:min(90vw, 1200px); height:min(90vh, 800px); box-shadow:0 20px 60px rgba(0,0,0,.5); transform:scale(.96); opacity:0; transition:transform .3s ease, opacity .3s ease; display:flex; flex-direction:column;}
     .modal-backdrop.open .modal{transform:scale(1); opacity:1;}
-    .modal h3{margin:0 0 10px}
-    .codebox{background:#0f1429; border:1px solid rgba(255,255,255,.08); border-radius:8px; padding:10px; max-height:260px; overflow:auto; font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-size:.85rem; color:#eaf0ff}
-    .row{display:flex; gap:8px; justify-content:flex-end; margin-top:10px}
-    .btn.success{background:var(--success); border-color:transparent}
+    .modal-header{padding:20px 24px; border-bottom:1px solid rgba(255,255,255,.1); display:flex; justify-content:space-between; align-items:center;}
+    .modal-header h3{margin:0; font-size:1.2rem; color:var(--text);}
+    .modal-close{background:none; border:none; color:var(--muted); font-size:1.5rem; cursor:pointer; padding:0; width:32px; height:32px; display:flex; align-items:center; justify-content:center; border-radius:6px; transition:all .2s;}
+    .modal-close:hover{background:rgba(255,255,255,.1); color:var(--text);}
+    .modal-body{flex:1; padding:0; overflow:hidden; display:flex; flex-direction:column;}
+    .code-container{flex:1; overflow:hidden; position:relative;}
+    .codebox{height:100%; overflow:auto; background:#0a0e1a; border-radius:0; padding:0; font-family:'Fira Code', 'Monaco', 'Consolas', monospace; font-size:13px; line-height:1.5;}
+    .codebox pre{margin:0; padding:20px; background:none;}
+    .codebox code{background:none; padding:0; color:var(--text);}
+    .modal-footer{padding:16px 24px; border-top:1px solid rgba(255,255,255,.1); display:flex; gap:12px; justify-content:flex-end;}
+    .btn.success{background:var(--success); border-color:transparent; color:white;}
+    .btn.primary{background:var(--primary); border-color:transparent; color:white;}
+    .btn:hover{transform:translateY(-1px); box-shadow:0 4px 12px rgba(0,0,0,.3);}
+    
+    /* Syntax highlighting overrides */
+    .token.comment{color:#6a737d !important;}
+    .token.string{color:#9ecbff !important;}
+    .token.keyword{color:#ff7b72 !important;}
+    .token.function{color:#d2a8ff !important;}
+    .token.number{color:#79c0ff !important;}
+    .token.operator{color:#ff7b72 !important;}
+    .token.punctuation{color:#c9d1d9 !important;}
+    .token.tag{color:#7ee787 !important;}
+    .token.attr-name{color:#ffa657 !important;}
+    .token.attr-value{color:#a5d6ff !important;}
+    
+    /* Loading animation */
+    .loading-spinner{display:inline-block; width:20px; height:20px; border:2px solid rgba(255,255,255,.3); border-radius:50%; border-top-color:var(--primary); animation:spin 1s ease-in-out infinite;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+    
+    /* Responsive */
+    @media (max-width:768px) {
+      .modal{width:95vw; height:95vh;}
+      .modal-header{padding:16px 20px;}
+      .modal-footer{padding:12px 20px; flex-wrap:wrap;}
+      .btn{flex:1; min-width:120px;}
+    }
   </style>
 </head>
 <body>
@@ -44,21 +79,34 @@
 
     <div class="grid" id="tplGrid"></div>
 
-    <footer>All templates are standalone. Use “Download” for a one-file version with inline CSS/JS.</footer>
+    <footer>All templates are standalone. Click "View Code" to see the complete source.</footer>
   </div>
 
   <div class="modal-backdrop" id="dlBackdrop">
     <div class="modal">
-      <h3>Download Template</h3>
-      <div class="codebox" id="dlCode">Preparing...</div>
-      <div class="row">
-        <button class="btn" id="dlClose">Close</button>
-        <button class="btn" id="dlCopy">Copy</button>
+      <div class="modal-header">
+        <h3 id="modalTitle">Template Code</h3>
+        <button class="modal-close" id="dlClose">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="code-container">
+          <div class="codebox" id="dlCode">
+            <div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted);">
+              <div class="loading-spinner"></div>
+              <span style="margin-left:12px;">Preparing code...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" id="dlCopy">Copy Code</button>
         <button class="btn success" id="dlSave">Download .html</button>
       </div>
     </div>
   </div>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
   <script>
   const templates = [
     { id:'neon',    name:'Neon Cards',       dir:'template-neon' },
@@ -82,7 +130,7 @@
         <div class="title"><h3>${t.name}</h3></div>
         <div class="actions">
           <a class="btn view" target="_blank" href="./${t.dir}/index.html">View Live</a>
-          <button class="btn download" data-dl="${t.dir}">Download</button>
+          <button class="btn download" data-dl="${t.dir}">View Code</button>
           <a class="btn" target="_blank" href="./${t.dir}/styles.css">CSS</a>
           <a class="btn" target="_blank" href="./${t.dir}/script.js">JS</a>
         </div>
@@ -105,38 +153,79 @@
 
   const backdrop = document.getElementById('dlBackdrop');
   const codebox = document.getElementById('dlCode');
+  const modalTitle = document.getElementById('modalTitle');
   const btnClose = document.getElementById('dlClose');
   const btnCopy = document.getElementById('dlCopy');
   const btnSave = document.getElementById('dlSave');
   let lastHtml = ''; let lastName = '';
 
-  function openModal(){ backdrop.classList.add('open'); document.documentElement.style.overflow='hidden'; document.body.style.overflow='hidden'; }
-  function closeModal(){ backdrop.classList.remove('open'); setTimeout(()=>{ if(!backdrop.classList.contains('open')) backdrop.style.display='none'; }, 200); document.documentElement.style.overflow=''; document.body.style.overflow=''; }
+  function openModal(){ 
+    backdrop.classList.add('open'); 
+    document.documentElement.style.overflow='hidden'; 
+    document.body.style.overflow='hidden'; 
+  }
+  
+  function closeModal(){ 
+    backdrop.classList.remove('open'); 
+    setTimeout(()=>{ 
+      if(!backdrop.classList.contains('open')) backdrop.style.display='none'; 
+    }, 300); 
+    document.documentElement.style.overflow=''; 
+    document.body.style.overflow=''; 
+  }
 
   document.addEventListener('click', async (e) => {
     const btn = e.target.closest('button[data-dl]');
     if (btn) {
       const dir = btn.dataset.dl;
+      const template = templates.find(t => t.dir === dir);
       lastName = dir;
-      backdrop.style.display = 'flex'; openModal();
-      codebox.textContent = 'Preparing...';
+      modalTitle.textContent = `${template.name} - Source Code`;
+      backdrop.style.display = 'flex'; 
+      openModal();
+      
+      // Show loading state
+      codebox.innerHTML = `
+        <div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted);">
+          <div class="loading-spinner"></div>
+          <span style="margin-left:12px;">Preparing code...</span>
+        </div>
+      `;
+      
       try {
         lastHtml = await buildSingleFile(dir);
-        codebox.textContent = lastHtml;
-      } catch(err){ codebox.textContent = 'Error preparing download.'; }
+        // Format with syntax highlighting
+        codebox.innerHTML = `<pre><code class="language-html">${Prism.highlight(lastHtml, Prism.languages.html, 'html')}</code></pre>`;
+      } catch(err){ 
+        codebox.innerHTML = `
+          <div style="display:flex;align-items:center;justify-content:center;height:100%;color:#ff6b6b;">
+            <span>Error loading template code.</span>
+          </div>
+        `; 
+      }
       return;
     }
     if (e.target === backdrop || e.target === btnClose) { closeModal(); }
     if (e.target === btnCopy) {
-      navigator.clipboard.writeText(lastHtml || '').then(()=>{ btnCopy.textContent='Copied!'; setTimeout(()=>btnCopy.textContent='Copy', 1200); });
+      navigator.clipboard.writeText(lastHtml || '').then(()=>{
+        btnCopy.textContent='Copied!'; 
+        setTimeout(()=>btnCopy.textContent='Copy Code', 1200);
+      });
     }
     if (e.target === btnSave) {
       const blob = new Blob([lastHtml || ''], {type:'text/html'});
       const url = URL.createObjectURL(blob);
-      const a = document.createElement('a'); a.href=url; a.download = `${lastName||'template'}.html`; a.click(); setTimeout(()=>URL.revokeObjectURL(url),1500);
+      const a = document.createElement('a'); 
+      a.href=url; 
+      a.download = `${lastName||'template'}.html`; 
+      a.click(); 
+      setTimeout(()=>URL.revokeObjectURL(url),1500);
     }
   });
-  document.addEventListener('keydown', (e)=>{ if (e.key === 'Escape' && backdrop.classList.contains('open')) closeModal(); });
+  
+  document.addEventListener('keydown', (e)=>{
+    if (e.key === 'Escape' && backdrop.classList.contains('open')) closeModal(); 
+  });
   </script>
 </body>
 </html>

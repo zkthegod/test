@@ -13,7 +13,7 @@
 // Global variables
 const canvas = document.getElementById('scene');
 const particlesContainer = document.getElementById('particles');
-let renderer, scene, camera, composer;
+let renderer, scene, camera;
 let shards = [];
 let particles = [];
 let mouseX = 0, mouseY = 0;
@@ -26,8 +26,7 @@ function initThree() {
     renderer = new THREE.WebGLRenderer({ 
       canvas, 
       antialias: true, 
-      alpha: true,
-      powerPreference: "high-performance"
+      alpha: true
     });
   } catch(e) {
     console.error('Failed to init WebGLRenderer', e);
@@ -38,8 +37,6 @@ function initThree() {
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.2;
 
   scene = new THREE.Scene();
   scene.fog = new THREE.Fog(0x04060f, 10, 50);
@@ -87,19 +84,13 @@ function createShardGeometry() {
 
 // Create holographic material
 function createHolographicMaterial() {
-  const material = new THREE.MeshPhysicalMaterial({
+  const material = new THREE.MeshStandardMaterial({
     color: 0xffffff,
     metalness: 0.8,
     roughness: 0.1,
     transparent: true,
     opacity: 0.7,
-    side: THREE.DoubleSide,
-    envMapIntensity: 1.0,
-    clearcoat: 1.0,
-    clearcoatRoughness: 0.1,
-    ior: 1.5,
-    transmission: 0.9,
-    thickness: 0.5
+    side: THREE.DoubleSide
   });
 
   // Add holographic texture
