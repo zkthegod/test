@@ -9,17 +9,20 @@
     :root { 
       --bg:#0f1220; --bg2:#111425; --card:#14182b; --text:#e8ecf1; --muted:#a9b0bd; 
       --primary:#6c5ce7; --radius:14px; --border:1px solid rgba(255,255,255,.08);
+      --primary2:#8b7cf6;
     }
     *{box-sizing:border-box}
     body{margin:0; background:linear-gradient(180deg,var(--bg),var(--bg2)); color:var(--text); font-family:Inter,system-ui,sans-serif}
     .wrap{max-width:1200px; margin:0 auto; padding:20px}
-    header{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:16px}
+    header{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:16px; position:relative}
+    header:after{content:""; position:absolute; inset:auto 0 -8px 0; height:1px; background:linear-gradient(90deg, transparent, rgba(255,255,255,.1), transparent)}
     .left, .right{display:flex; align-items:center; gap:8px}
     h1{font-size:1.1rem; margin:0}
     .muted{color:var(--muted)}
 
-    .btn{appearance:none; border:1px solid rgba(255,255,255,.12); background:#1a1f37; color:var(--text); padding:8px 12px; border-radius:10px; font-size:.9rem; cursor:pointer; text-decoration:none}
-    .btn.primary{background:var(--primary); border-color:transparent}
+    .btn{appearance:none; border:1px solid rgba(255,255,255,.12); background:#1a1f37; color:var(--text); padding:8px 12px; border-radius:999px; font-size:.9rem; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; gap:8px}
+    .btn.primary{background:linear-gradient(90deg,var(--primary),var(--primary2)); border-color:transparent; box-shadow:0 6px 20px rgba(108,92,231,.35)}
+    .btn svg{width:16px; height:16px; opacity:.95}
     .btn:active{transform:translateY(1px)}
 
     .grid{display:grid; grid-template-columns:1fr; gap:16px}
@@ -29,13 +32,14 @@
     .card h2{margin:0 0 10px 0; font-size:1rem}
     .section-head{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:8px}
 
-    .codebox{background:#0f1429; border:var(--border); border-radius:10px; padding:12px; max-height:60vh; overflow:auto; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size:.9rem; color:var(--text); white-space:pre;}
+    .codebox{background:#0f1429; border:var(--border); border-radius:10px; padding:12px; max-height:60vh; overflow:auto; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size:.9rem; color:var(--text); white-space:pre-wrap; word-break:break-word;}
     .filename{opacity:.8; font-size:.85rem}
     .row{display:flex; gap:8px; align-items:center}
 
-    .tutorial ul{margin:8px 0 0 18px; padding:0}
-    .tutorial li{margin:6px 0}
-    .note{font-size:.85rem; opacity:.9}
+    .tutorial ol{margin:10px 0 0 18px; padding:0}
+    .tutorial li{margin:8px 0; line-height:1.55}
+    .note{font-size:.92rem; opacity:.95}
+    .callout{background:rgba(255,255,255,.04); border:var(--border); padding:10px; border-radius:10px; margin-top:10px}
   </style>
 </head>
 <body>
@@ -46,21 +50,27 @@
         <h1 id="title">xatspace Template Code</h1>
       </div>
       <div class="right">
-        <a class="btn" id="openLive" target="_blank" href="#">Open Live</a>
+        <a class="btn" id="openLive" target="_blank" href="#">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14 3h7v7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 3l-9 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 7H7a4 4 0 0 0-4 4v6a4 4 0 0 0 4 4h6a4 4 0 0 0 4-4v-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Open Live
+        </a>
       </div>
     </header>
 
     <div class="grid">
       <div class="card tutorial" style="grid-column:1 / -1">
-        <h2>How to publish on GitHub Pages</h2>
+        <h2>Publish your xatspace with GitHub Pages</h2>
         <ol class="note">
-          <li>Create a GitHub repository. Name can be anything (e.g., <span class="muted">my-xatspace</span>).</li>
-          <li>Click Add file → Upload files. Drag the three files from your chosen template: <span class="muted">index.html</span>, <span class="muted">styles.css</span>, <span class="muted">script.js</span>.</li>
-          <li>Commit the changes.</li>
-          <li>Open Settings → Pages. Under “Build and deployment”, select “Deploy from branch”. Branch: <span class="muted">main</span>. Folder: <span class="muted">/root</span>. Save.</li>
-          <li>Wait 1–2 minutes for deployment. Your site will be available at the URL displayed in the Pages section.</li>
-          <li>If you want different pages per template, create subfolders (e.g., <span class="muted">neon/</span>) and place each template’s 3 files in its own folder. Navigate to <span class="muted">.../neon/</span> to open that page.</li>
+          <li>Sign in to GitHub. Create a new repository (e.g., <span class="muted">my-xatspace</span>). Keep it Public.</li>
+          <li>Add files: Click “Add file” → “Upload files”. Upload these three files from this template: <span class="muted">index.html</span>, <span class="muted">styles.css</span>, <span class="muted">script.js</span>.</li>
+          <li>Commit changes at the bottom of the page.</li>
+          <li>Enable Pages: Go to Settings → Pages. Under “Build and deployment” choose “Deploy from branch”. Select branch <span class="muted">main</span> and folder <span class="muted">/root</span>, then Save.</li>
+          <li>Wait ~1–2 minutes. A green success will show your site URL. Click it to open your xatspace.</li>
+          <li>Multiple templates: create a folder per template (e.g., <span class="muted">neon/</span>, <span class="muted">retro/</span>) and place that template’s three files inside. Access them at <span class="muted">.../neon/</span>, <span class="muted">.../retro/</span>.</li>
+          <li>Editing later: open files on GitHub and click the pencil to edit. Commit to redeploy.</li>
+          <li>Custom domain (optional): In Pages, add your domain. Create a CNAME at your DNS pointing to <span class="muted">username.github.io.</span></li>
         </ol>
+        <div class="callout note">Tip: Copy each section below into its matching file name. Don’t paste CSS/JS into HTML unless you want a single-file version.</div>
       </div>
 
       <div class="card" style="grid-column:1 / -1">
@@ -70,7 +80,10 @@
             <span class="filename" id="nameHtml">index.html</span>
           </div>
           <div class="row">
-            <button class="btn primary" id="copyHtml">Copy HTML</button>
+            <button class="btn primary" id="copyHtml">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.5"/><path d="M7 13H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5a2 2 0 0 1 2 2v1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              Copy HTML
+            </button>
           </div>
         </div>
         <pre class="codebox" id="codeHtml">Loading...</pre>
@@ -83,7 +96,10 @@
             <span class="filename" id="nameCss">styles.css</span>
           </div>
           <div class="row">
-            <button class="btn" id="copyCss">Copy CSS</button>
+            <button class="btn" id="copyCss">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.5"/><path d="M7 13H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5a2 2 0 0 1 2 2v1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              Copy CSS
+            </button>
           </div>
         </div>
         <pre class="codebox" id="codeCss">Loading...</pre>
@@ -96,7 +112,10 @@
             <span class="filename" id="nameJs">script.js</span>
           </div>
           <div class="row">
-            <button class="btn" id="copyJs">Copy JS</button>
+            <button class="btn" id="copyJs">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.5"/><path d="M7 13H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5a2 2 0 0 1 2 2v1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              Copy JS
+            </button>
           </div>
         </div>
         <pre class="codebox" id="codeJs">Loading...</pre>
@@ -132,20 +151,26 @@
 
     async function loadAll(dir){
       const base = `./${dir}`;
-      const [html, css, js] = await Promise.all([
-        fetchText(`${base}/index.html`, 'HTML not found.'),
-        fetchText(`${base}/styles.css`, 'No CSS file in this template.', true),
-        fetchText(`${base}/script.js`, 'No JS file in this template.', true),
-      ]);
-      codeHtml.textContent = html;
-      codeCss.textContent = css;
-      codeJs.textContent = js;
+      try{
+        const [html, css, js] = await Promise.all([
+          fetchText(`${base}/index.html`, 'HTML not found.'),
+          fetchText(`${base}/styles.css`, 'No CSS file in this template.'),
+          fetchText(`${base}/script.js`, 'No JS file in this template.'),
+        ]);
+        codeHtml.textContent = html;
+        codeCss.textContent = css;
+        codeJs.textContent = js;
+      }catch(e){
+        codeHtml.textContent = 'HTML not found.';
+        codeCss.textContent = 'No CSS file in this template.';
+        codeJs.textContent = 'No JS file in this template.';
+      }
     }
 
-    async function fetchText(url, fallback, optional){
+    async function fetchText(url, fallback){
       try{
         const r = await fetch(url, { cache:'no-cache' });
-        if (!r.ok){ if (optional) return fallback; throw new Error(fallback); }
+        if (!r.ok){ return fallback; }
         return await r.text();
       }catch(e){ return fallback; }
     }
