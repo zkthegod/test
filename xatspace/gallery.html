@@ -44,17 +44,22 @@
 
     <div class="grid" id="tplGrid"></div>
 
-    <footer>All templates are standalone. Use “Download” for a one-file version with inline CSS/JS.</footer>
+    <footer>All templates are standalone. Click "View Code" to see the complete source.</footer>
   </div>
 
   <div class="modal-backdrop" id="dlBackdrop">
     <div class="modal">
-      <h3>Download Template</h3>
-      <div class="codebox" id="dlCode">Preparing...</div>
-      <div class="row">
-        <button class="btn" id="dlClose">Close</button>
-        <button class="btn" id="dlCopy">Copy</button>
-        <button class="btn success" id="dlSave">Download .html</button>
+      <div class="modal-header">
+        <h3 id="modalTitle">Template Code</h3>
+        <button class="modal-close" id="dlClose">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="code-container">
+          <div class="codebox" id="dlCode">Preparing...</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" id="dlCopy">COPY</button>
       </div>
     </div>
   </div>
@@ -62,12 +67,12 @@
   <script>
   const templates = [
     { id:'neon',    name:'Neon Cards',       dir:'template-neon' },
-    { id:'holo-shards',   name:'Holo Shards Journey',    dir:'template-holo-shards' },
+    { id:'blackhole',   name:'Blackhole Drift',    dir:'template-blackhole' },
     { id:'terminal',name:'Terminal/Cyber',   dir:'template-terminal' },
     { id:'minimal', name:'Minimal Magazine', dir:'template-minimal' },
     { id:'parallax',name:'Parallax Hero',    dir:'template-parallax' },
     { id:'retro',   name:'Retro Pixel',      dir:'template-retro' },
-    { id:'holo',    name:'Holographic Panels', dir:'template-holo' },
+    // legacy holographic hidden
     { id:'gridwave',name:'Gridwave',           dir:'template-gridwave' },
     { id:'orbit',   name:'Orbital Nodes',      dir:'template-orbit' },
   ];
@@ -82,7 +87,7 @@
         <div class="title"><h3>${t.name}</h3></div>
         <div class="actions">
           <a class="btn view" target="_blank" href="./${t.dir}/index.html">View Live</a>
-          <button class="btn download" data-dl="${t.dir}">Download</button>
+          <button class="btn download" data-dl="${t.dir}">View Code</button>
           <a class="btn" target="_blank" href="./${t.dir}/styles.css">CSS</a>
           <a class="btn" target="_blank" href="./${t.dir}/script.js">JS</a>
         </div>
@@ -107,7 +112,6 @@
   const codebox = document.getElementById('dlCode');
   const btnClose = document.getElementById('dlClose');
   const btnCopy = document.getElementById('dlCopy');
-  const btnSave = document.getElementById('dlSave');
   let lastHtml = ''; let lastName = '';
 
   function openModal(){ backdrop.classList.add('open'); document.documentElement.style.overflow='hidden'; document.body.style.overflow='hidden'; }
@@ -128,12 +132,10 @@
     }
     if (e.target === backdrop || e.target === btnClose) { closeModal(); }
     if (e.target === btnCopy) {
-      navigator.clipboard.writeText(lastHtml || '').then(()=>{ btnCopy.textContent='Copied!'; setTimeout(()=>btnCopy.textContent='Copy', 1200); });
-    }
-    if (e.target === btnSave) {
-      const blob = new Blob([lastHtml || ''], {type:'text/html'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a'); a.href=url; a.download = `${lastName||'template'}.html`; a.click(); setTimeout(()=>URL.revokeObjectURL(url),1500);
+      navigator.clipboard.writeText(lastHtml || '').then(()=>{
+        btnCopy.textContent='COPIED'; 
+        setTimeout(()=>btnCopy.textContent='COPY', 1200);
+      });
     }
   });
   document.addEventListener('keydown', (e)=>{ if (e.key === 'Escape' && backdrop.classList.contains('open')) closeModal(); });

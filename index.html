@@ -375,14 +375,14 @@
                     </div>
                     <div class="template-card">
                         <div class="template-preview">
-                            <iframe src="xatspace/template-holo-shards/index.html" title="Holo Shards Journey"></iframe>
+                            <iframe src="xatspace/template-blackhole/index.html" title="Blackhole Drift"></iframe>
                         </div>
                         <div class="template-info">
-                            <h3>Holo Shards Journey</h3>
-                            <p>Interactive holographic crystals with cinematic transitions</p>
+                            <h3>Blackhole Drift</h3>
+                            <p>Stars and debris swirl into a cursor-driven singularity</p>
                             <div class="template-actions">
-                                <a href="xatspace/template-holo-shards/index.html" class="primary-btn no-underline" target="_blank"><i class="fas fa-eye"></i> View Live</a>
-                                <button class="link-btn" data-xat-dl="template-holo-shards"><i class="fas fa-download"></i> Download</button>
+                                <a href="xatspace/template-blackhole/index.html" class="primary-btn no-underline" target="_blank"><i class="fas fa-eye"></i> View Live</a>
+                                <button class="link-btn" data-xat-dl="template-blackhole"><i class="fas fa-download"></i> Download</button>
                             </div>
                         </div>
                     </div>
@@ -438,7 +438,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="template-card">
+                    <div class="template-card" style="display:none">
                         <div class="template-preview">
                             <iframe src="xatspace/template-holo/index.html" title="Holographic Panels"></iframe>
                         </div>
@@ -480,12 +480,11 @@
                 </div>
                 <div class="modal-backdrop" id="xatDlBackdrop">
                   <div class="modal">
-                    <h3>Download Template</h3>
+                    <button class="modal-x" id="xatDlClose" aria-label="Close">×</button>
+                    <h3>Template Code</h3>
                     <div class="codebox" id="xatDlCode">Preparing...</div>
                     <div class="row">
-                      <button class="btn" id="xatDlClose">Close</button>
-                      <button class="btn" id="xatDlCopy">Copy</button>
-                      <button class="primary-btn" id="xatDlSave">Download .html</button>
+                      <button class="primary-btn" id="xatDlCopy">COPY</button>
                     </div>
                   </div>
                 </div>
@@ -498,7 +497,6 @@
                   const codebox = document.getElementById('xatDlCode');
                   const btnClose = document.getElementById('xatDlClose');
                   const btnCopy = document.getElementById('xatDlCopy');
-                  const btnSave = document.getElementById('xatDlSave');
                   let lastHtml = '', lastName = '';
                   function openModal(){ backdrop.classList.add('open'); document.documentElement.style.overflow='hidden'; document.body.style.overflow='hidden'; }
                   function closeModal(){ backdrop.classList.remove('open'); setTimeout(()=>{ if(!backdrop.classList.contains('open')) backdrop.style.display='none'; }, 200); document.documentElement.style.overflow=''; document.body.style.overflow=''; }
@@ -523,12 +521,7 @@
                       return;
                     }
                     if (e.target === backdrop || e.target === btnClose) { closeModal(); }
-                    if (e.target === btnCopy) { navigator.clipboard.writeText(lastHtml || '').then(()=>{ btnCopy.textContent='Copied!'; setTimeout(()=>btnCopy.textContent='Copy',1200); }); }
-                    if (e.target === btnSave) {
-                      const blob = new Blob([lastHtml || ''], {type:'text/html'});
-                      const url = URL.createObjectURL(blob);
-                      const a = document.createElement('a'); a.href=url; a.download = `${lastName||'template'}.html`; a.click(); setTimeout(()=>URL.revokeObjectURL(url),1500);
-                    }
+                    if (e.target === btnCopy) { navigator.clipboard.writeText(lastHtml || '').then(()=>{ btnCopy.textContent='COPIED'; setTimeout(()=>btnCopy.textContent='COPY',1200); }); }
                   });
                   document.addEventListener('keydown', (e)=>{ if (e.key==='Escape' && backdrop.classList.contains('open')) closeModal(); });
                 })();
