@@ -99,8 +99,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn" id="dlCopy">Copy Code</button>
-        <button class="btn success" id="dlSave">Download .html</button>
+        <button class="btn" id="dlCopy">Copy All</button>
       </div>
     </div>
   </div>
@@ -110,12 +109,12 @@
   <script>
   const templates = [
     { id:'neon',    name:'Neon Cards',       dir:'template-neon' },
-    { id:'holo-shards',   name:'Holo Shards Journey',    dir:'template-holo-shards' },
+    { id:'holo',    name:'Holographic',    dir:'template-holo-shards' },
     { id:'terminal',name:'Terminal/Cyber',   dir:'template-terminal' },
     { id:'minimal', name:'Minimal Magazine', dir:'template-minimal' },
     { id:'parallax',name:'Parallax Hero',    dir:'template-parallax' },
     { id:'retro',   name:'Retro Pixel',      dir:'template-retro' },
-    { id:'holo',    name:'Holographic Panels', dir:'template-holo' },
+    // legacy holo panels hidden
     { id:'gridwave',name:'Gridwave',           dir:'template-gridwave' },
     { id:'orbit',   name:'Orbital Nodes',      dir:'template-orbit' },
   ];
@@ -156,7 +155,6 @@
   const modalTitle = document.getElementById('modalTitle');
   const btnClose = document.getElementById('dlClose');
   const btnCopy = document.getElementById('dlCopy');
-  const btnSave = document.getElementById('dlSave');
   let lastHtml = ''; let lastName = '';
 
   function openModal(){ 
@@ -180,7 +178,7 @@
       const dir = btn.dataset.dl;
       const template = templates.find(t => t.dir === dir);
       lastName = dir;
-      modalTitle.textContent = `${template.name} - Source Code`;
+      modalTitle.textContent = `${template ? template.name : 'Template'} - Source Code`;
       backdrop.style.display = 'flex'; 
       openModal();
       
@@ -209,17 +207,8 @@
     if (e.target === btnCopy) {
       navigator.clipboard.writeText(lastHtml || '').then(()=>{
         btnCopy.textContent='Copied!'; 
-        setTimeout(()=>btnCopy.textContent='Copy Code', 1200);
+        setTimeout(()=>btnCopy.textContent='Copy All', 1200);
       });
-    }
-    if (e.target === btnSave) {
-      const blob = new Blob([lastHtml || ''], {type:'text/html'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a'); 
-      a.href=url; 
-      a.download = `${lastName||'template'}.html`; 
-      a.click(); 
-      setTimeout(()=>URL.revokeObjectURL(url),1500);
     }
   });
   
