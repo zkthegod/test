@@ -1377,19 +1377,16 @@ document.addEventListener('DOMContentLoaded', function() {
         if (codeOutput) codeOutput.textContent = code;
     }
 
-    // Xatspace Templates - Download Code functionality
-    document.querySelectorAll('.template-actions button').forEach(button => {
-        button.addEventListener('click', function() {
-            const templateName = this.closest('.template-card').querySelector('h3').textContent;
-            const templateCode = `<!-- ${templateName} xatspace Template -->\n<div class="xatspace-template ${templateName.toLowerCase().replace(/\s+/g, '-')}">\n    <!-- Your xatspace content here -->\n</div>\n\n<style>\n.xatspace-template.${templateName.toLowerCase().replace(/\s+/g, '-')} {\n    background: #f5f6fa;\n    color: #2d3436;\n    max-width: 1000px;\n    margin: 0 auto;\n    padding: 20px;\n    border-radius: 12px;\n}\n</style>`;
-            /* Removed auto-copy; code now shown in modal for manual copy */
-            // navigator.clipboard.writeText(templateCode).then(() => {
-            const originalText = this.innerHTML;
-            this.innerHTML = '<i class="fas fa-code"></i> View Code';
-                setTimeout(() => { this.innerHTML = originalText; }, 2000);
-            });
-        });
-    });
+    // Xatspace Templates - legacy copy removed (handled in page-specific inline scripts)
+    // document.querySelectorAll('.template-actions button').forEach(button => {
+    //     button.addEventListener('click', function() {
+    //         const templateName = this.closest('.template-card').querySelector('h3').textContent;
+    //         const templateCode = `<!-- ${templateName} xatspace Template -->\n<div class="xatspace-template ${templateName.toLowerCase().replace(/\s+/g, '-')}">\n    <!-- Your xatspace content here -->\n</div>\n\n<style>\n.xatspace-template.${templateName.toLowerCase().replace(/\s+/g, '-') } {\n    background: #f5f6fa;\n    color: #2d3436;\n    max-width: 1000px;\n    margin: 0 auto;\n    padding: 20px;\n    border-radius: 12px;\n}\n</style>`;
+    //         const originalText = this.innerHTML;
+    //         this.innerHTML = '<i class="fas fa-code"></i> View Code';
+    //         setTimeout(() => { this.innerHTML = originalText; }, 2000);
+    //     });
+    // });
 
     // Avatars functionality
     const avatarGrid = document.getElementById('avatarGrid');
