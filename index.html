@@ -347,116 +347,156 @@
                 </div>
                 
                 <style>
-                  /* Scoped full-screen holographic shard scene for xatspace tab */
-                  #xatspace-templates { position: relative; }
-                  #xatspace-templates .holo-host { position: relative; height: 70vh; border: var(--border); border-radius: var(--radius); overflow: hidden; background: radial-gradient(1000px 500px at 10% -10%, rgba(108,92,231,0.18), transparent), radial-gradient(800px 400px at 90% 10%, rgba(0,255,204,0.12), transparent); }
-                  #xatspace-templates canvas.holo-canvas { position: absolute; inset: 0; display: block; }
-                  #xatspace-templates .holo-ui { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; }
-                  #xatspace-templates .panel { pointer-events: auto; backdrop-filter: blur(6px); background: rgba(10,14,26,0.35); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 16px 18px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
-                  #xatspace-templates .actions { display: flex; gap: 10px; justify-content: center; margin-top: 8px; }
-                  #xatspace-templates .btn { appearance: none; border: 1px solid rgba(255,255,255,0.2); background: #12182a; color: var(--text); padding: 8px 12px; border-radius: 999px; cursor: pointer; text-decoration: none; }
-                  #xatspace-templates .btn.primary { background: var(--primary); border-color: transparent; }
+                  /* Scoped preview styles for xatspace templates */
+                  #xatspace-templates .templates-grid { display:grid; grid-template-columns: repeat(auto-fit,minmax(320px,1fr)); gap:16px; }
+                  #xatspace-templates .template-card .template-preview { position:relative; padding-top:56%; border-radius:12px; overflow:hidden; background:var(--preview-bg); border: var(--border); }
+                  #xatspace-templates .template-card .template-preview iframe { position:absolute; inset:0; width:100%; height:100%; border:0; }
                 </style>
-                <div class="holo-host" id="holoHost">
-                  <canvas class="holo-canvas" id="holoCanvas" aria-label="Holographic shards scene"></canvas>
-                  <div class="holo-ui">
-                    <div class="panel">
-                      <h3>Holo Shards</h3>
-                      <p>Move your mouse. Dive or Enter a Portal.</p>
-                      <div class="actions">
-                        <button class="btn primary" id="holoDive">Dive</button>
-                        <button class="btn" id="holoPortal">Enter Portal</button>
-                        <a class="btn" href="xatspace/gallery.html" target="_blank">Open Gallery</a>
-                      </div>
-                      <div class="actions" style="margin-top:6px; display:none" id="holoReturnRow">
-                        <button class="btn" id="holoReturn">Return</button>
-                      </div>
+                <div class="templates-grid" id="xatspaceTemplatesGrid">
+                    <div class="template-card">
+                        <div class="template-preview">
+                            <iframe src="xatspace/template-neon/index.html" title="Neon Cards"></iframe>
+                        </div>
+                        <div class="template-info">
+                            <h3>Neon Cards</h3>
+                            <p>Synthwave neon glow with gallery lightbox</p>
+                            <div class="template-actions">
+                                <a href="xatspace/template-neon/index.html" class="primary-btn no-underline" target="_blank"><i class="fas fa-eye"></i> Open Demo</a>
+                                <button class="primary-btn" data-xat-dl="template-neon"><i class="fas fa-download"></i> Download Single File</button>
+                            </div>
+                        </div>
                     </div>
-                  </div>
+                    <div class="template-card">
+                        <div class="template-preview">
+                            <iframe src="xatspace/template-holo-shards/index.html" title="Holo Shards Journey"></iframe>
+                        </div>
+                        <div class="template-info">
+                            <h3>Holo Shards Journey</h3>
+                            <p>Interactive holographic crystals with cinematic transitions</p>
+                            <div class="template-actions">
+                                <a href="xatspace/template-holo-shards/index.html" class="primary-btn no-underline" target="_blank"><i class="fas fa-eye"></i> Open Demo</a>
+                                <button class="primary-btn" data-xat-dl="template-holo-shards"><i class="fas fa-download"></i> Download Single File</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="template-card">
+                        <div class="template-preview">
+                            <iframe src="xatspace/template-terminal/index.html" title="Terminal/Cyber"></iframe>
+                        </div>
+                        <div class="template-info">
+                            <h3>Terminal/Cyber</h3>
+                            <p>CRT scanlines, typing cursor headings</p>
+                            <div class="template-actions">
+                                <a href="xatspace/template-terminal/index.html" class="primary-btn no-underline" target="_blank"><i class="fas fa-eye"></i> Open Demo</a>
+                                <button class="primary-btn" data-xat-dl="template-terminal"><i class="fas fa-download"></i> Download Single File</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="template-card">
+                        <div class="template-preview">
+                            <iframe src="xatspace/template-minimal/index.html" title="Minimal Magazine"></iframe>
+                        </div>
+                        <div class="template-info">
+                            <h3>Minimal Magazine</h3>
+                            <p>Content-first with clean typography</p>
+                            <div class="template-actions">
+                                <a href="xatspace/template-minimal/index.html" class="primary-btn no-underline" target="_blank"><i class="fas fa-eye"></i> Open Demo</a>
+                                <button class="primary-btn" data-xat-dl="template-minimal"><i class="fas fa-download"></i> Download Single File</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="template-card">
+                        <div class="template-preview">
+                            <iframe src="xatspace/template-parallax/index.html" title="Parallax Hero"></iframe>
+                        </div>
+                        <div class="template-info">
+                            <h3>Parallax Hero</h3>
+                            <p>Layered gradient blobs with parallax</p>
+                            <div class="template-actions">
+                                <a href="xatspace/template-parallax/index.html" class="primary-btn no-underline" target="_blank"><i class="fas fa-eye"></i> Open Demo</a>
+                                <button class="primary-btn" data-xat-dl="template-parallax"><i class="fas fa-download"></i> Download Single File</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="template-card">
+                        <div class="template-preview">
+                            <iframe src="xatspace/template-retro/index.html" title="Retro Pixel"></iframe>
+                        </div>
+                        <div class="template-info">
+                            <h3>Retro Pixel</h3>
+                            <p>8-bit pixel borders with bitmap font</p>
+                            <div class="template-actions">
+                                <a href="xatspace/template-retro/index.html" class="primary-btn no-underline" target="_blank"><i class="fas fa-eye"></i> Open Demo</a>
+                                <button class="primary-btn" data-xat-dl="template-retro"><i class="fas fa-download"></i> Download Single File</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="template-card">
+                        <div class="template-preview">
+                            <iframe src="xatspace/template-holo/index.html" title="Holographic Panels"></iframe>
+                        </div>
+                        <div class="template-info">
+                            <h3>Holographic Panels</h3>
+                            <p>Prism borders and tilt hypercards</p>
+                            <div class="template-actions">
+                                <a href="xatspace/template-holo/index.html" class="primary-btn no-underline" target="_blank"><i class="fas fa-eye"></i> Open Demo</a>
+                                <button class="primary-btn" data-xat-dl="template-holo"><i class="fas fa-download"></i> Download Single File</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="template-card">
+                        <div class="template-preview">
+                            <iframe src="xatspace/template-gridwave/index.html" title="Gridwave"></iframe>
+                        </div>
+                        <div class="template-info">
+                            <h3>Gridwave</h3>
+                            <p>Animated wave-grid background</p>
+                            <div class="template-actions">
+                                <a href="xatspace/template-gridwave/index.html" class="primary-btn no-underline" target="_blank"><i class="fas fa-eye"></i> Open Demo</a>
+                                <button class="primary-btn" data-xat-dl="template-gridwave"><i class="fas fa-download"></i> Download Single File</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="template-card">
+                        <div class="template-preview">
+                            <iframe src="xatspace/template-orbit/index.html" title="Orbital Nodes"></iframe>
+                        </div>
+                        <div class="template-info">
+                            <h3>Orbital Nodes</h3>
+                            <p>Orbiting friend nodes around avatar</p>
+                            <div class="template-actions">
+                                <a href="xatspace/template-orbit/index.html" class="primary-btn no-underline" target="_blank"><i class="fas fa-eye"></i> Open Demo</a>
+                                <button class="primary-btn" data-xat-dl="template-orbit"><i class="fas fa-download"></i> Download Single File</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <script>
+                // xatspace: build single-file download (scoped to #xatspace-templates)
                 (function(){
-                  const tab = document.getElementById('xatspace-templates');
-                  if (!tab) return;
-                  let initialized = false, rafId = 0, renderer, scene, camera, shards = [];
-                  let threeLoaded = false, gsapLoaded = false;
-                  const host = document.getElementById('holoHost');
-                  const canvas = document.getElementById('holoCanvas');
-                  const btnDive = document.getElementById('holoDive');
-                  const btnPortal = document.getElementById('holoPortal');
-                  const btnReturn = document.getElementById('holoReturn');
-                  const rowReturn = document.getElementById('holoReturnRow');
-
-                  function loadScript(src){ return new Promise((res, rej)=>{ const s=document.createElement('script'); s.src=src; s.onload=res; s.onerror=rej; document.body.appendChild(s); }); }
-
-                  function isActive(){ return tab.classList.contains('active'); }
-
-                  function resize(){ if (!renderer || !camera) return; const r = host.getBoundingClientRect(); renderer.setSize(r.width, r.height, false); camera.aspect = r.width / r.height; camera.updateProjectionMatrix(); }
-
-                  function animate(){ rafId = requestAnimationFrame(animate); camera.position.x += ((mx*2) - camera.position.x) * 0.04; camera.position.y += ((-my*1.2) - camera.position.y) * 0.04; camera.lookAt(0,0,0); shards.forEach(s=>{ s.rotation.x += 0.004; s.rotation.y += 0.003; s.position.add(s.userData.v); ['x','y','z'].forEach(k=>{ if (s.position[k] > 12) s.position[k] = -12; if (s.position[k] < -12) s.position[k] = 12; });}); renderer.render(scene, camera); }
-
-                  let mx=0, my=0;
-                  function onMouse(e){ const rect = host.getBoundingClientRect(); const x = (e.clientX - rect.left) / rect.width * 2 - 1; const y = (e.clientY - rect.top) / rect.height * 2 - 1; mx = x; my = y; }
-
-                  function buildScene(){
-                    renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
-                    renderer.setPixelRatio(Math.min(2, window.devicePixelRatio||1));
-                    scene = new THREE.Scene();
-                    camera = new THREE.PerspectiveCamera(55, 1, 0.1, 200); camera.position.set(0,0,18);
-                    scene.add(new THREE.DirectionalLight(0xffffff, 1.0)).position.set(5,10,8);
-                    scene.add(new THREE.AmbientLight(0x8899ff, 0.5));
-                    const geo = new THREE.IcosahedronGeometry(1,0);
-                    for (let i=0;i<36;i++){
-                      const mat = new THREE.MeshStandardMaterial({ color:0x99bbff, metalness:0.7, roughness:0.2, transparent:true, opacity:0.65 });
-                      const m = new THREE.Mesh(geo, mat);
-                      m.position.set((Math.random()-0.5)*20,(Math.random()-0.5)*12,(Math.random()-0.5)*18);
-                      m.rotation.set(Math.random()*Math.PI, Math.random()*Math.PI, Math.random()*Math.PI);
-                      const s = 0.6 + Math.random()*1.4; m.scale.set(s,s,s);
-                      m.userData.v = new THREE.Vector3((Math.random()-0.5)*0.02,(Math.random()-0.5)*0.02,(Math.random()-0.5)*0.02);
-                      scene.add(m); shards.push(m);
-                    }
-                    resize(); animate();
+                  const grid = document.getElementById('xatspaceTemplatesGrid');
+                  if (!grid) return;
+                  async function buildSingleFile(dir){
+                    const base = `xatspace/${dir}`;
+                    const [html, css, js] = await Promise.all([
+                      fetch(`${base}/index.html`).then(r=>r.text()),
+                      fetch(`${base}/styles.css`).then(r=>r.text()),
+                      fetch(`${base}/script.js`).then(r=>r.text()),
+                    ]);
+                    const merged = html
+                      .replace(/<link[^>]*styles\\.css[^>]*>/i, `<style>\n${css}\n<\/style>`) 
+                      .replace(/<script[^>]*src=\"script\\.js\"[^>]*><\\/script>/i, `<script>\n${js}\n<\\/script>`);
+                    const blob = new Blob([merged], {type:'text/html'});
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url; a.download = `${dir}.html`; a.click();
+                    setTimeout(()=>URL.revokeObjectURL(url), 2000);
                   }
-
-                  function teardown(){ cancelAnimationFrame(rafId); rafId = 0; window.removeEventListener('resize', resize); host.removeEventListener('mousemove', onMouse); if (renderer) { renderer.dispose?.(); }
-                    renderer = null; scene = null; camera = null; shards = []; rowReturn.style.display='none'; }
-
-                  function setupTransitions(){
-                    if (!window.gsap) return;
-                    btnDive?.addEventListener('click', () => {
-                      if (!shards.length) return;
-                      gsap.to(shards.map(s=>s.position), { z: "+= -80", duration: 1.2, ease: "expo.in" });
-                      gsap.to(camera, { z: 6, duration: 1.2, ease: "expo.in", onComplete: ()=>{ rowReturn.style.display='flex'; }});
-                    });
-                    btnPortal?.addEventListener('click', () => {
-                      if (!shards.length) return;
-                      gsap.to(shards, { duration: 1.0, ease: "power3.out", onUpdate: function(){ shards.forEach(s=>{ s.position.multiplyScalar(1.04); s.rotation.x += 0.06; s.rotation.y += 0.04; }); }});
-                      gsap.to(shards.map(s=>s.material), { opacity: 0.0, duration: 0.5, delay: 0.9, onComplete: ()=>{ rowReturn.style.display='flex'; }});
-                    });
-                    btnReturn?.addEventListener('click', () => {
-                      // reset shards
-                      shards.forEach(s=>{ s.material.opacity = 0.65; s.position.set((Math.random()-0.5)*20,(Math.random()-0.5)*12,(Math.random()-0.5)*18); });
-                      camera.position.set(0,0,18);
-                      rowReturn.style.display='none';
-                    });
-                  }
-
-                  async function init(){
-                    if (initialized) return; initialized = true;
-                    // lazy-load libs
-                    if (!window.THREE){ await loadScript('https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js'); }
-                    if (!window.gsap){ await loadScript('https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js'); }
-                    buildScene(); setupTransitions();
-                    window.addEventListener('resize', resize); host.addEventListener('mousemove', onMouse);
-                  }
-
-                  // Observe tab activation
-                  const obs = new MutationObserver(() => {
-                    if (isActive()) { init(); } else { if (initialized) teardown(); initialized = false; }
+                  grid.addEventListener('click', (e) => {
+                    const btn = e.target.closest('button[data-xat-dl]');
+                    if (!btn) return;
+                    buildSingleFile(btn.dataset.xatDl).catch(console.error);
                   });
-                  obs.observe(tab, { attributes: true, attributeFilter: ['class'] });
-                  // Initialize if already active on load
-                  if (isActive()) init();
                 })();
                 </script>
             </section>
