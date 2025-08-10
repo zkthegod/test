@@ -37,6 +37,11 @@
     .modal-x{position:absolute; top:10px; right:14px; background:transparent; border:0; color:var(--text); font-size:20px; cursor:pointer}
     .codebox{background:#0f1429; border:1px solid rgba(255,255,255,.08); border-radius:10px; padding:10px; max-height:55vh; overflow:auto; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size:.85rem; color:var(--text)}
     .row{display:flex; gap:8px; justify-content:flex-end; margin-top:10px}
+    /* Page scrollbars */
+    body::-webkit-scrollbar{width:10px;height:10px}
+    body::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#6c5ce7,#8b7cf6);border-radius:999px}
+    body::-webkit-scrollbar-track{background:rgba(255,255,255,.06)}
+    html{scrollbar-width:thin; scrollbar-color:#6c5ce7 rgba(255,255,255,.06)}
   </style>
 </head>
 <body>
