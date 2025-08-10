@@ -140,23 +140,37 @@ function drawSats(){
   });
 }
 
+function drawRock(cx, cy, baseR, seed){
+  // Generate irregular outline
+  const points = 24; const rands = [];
+  for(let i=0;i<points;i++){ rands.push((Math.sin(i*12.9898+seed)*43758.5453)%1); }
+  ctx.beginPath();
+  for(let i=0;i<points;i++){
+    const t = (i/points)*Math.PI*2;
+    const rr = baseR * (0.75 + rands[i]*0.6);
+    const x = cx + Math.cos(t)*rr; const y = cy + Math.sin(t)*rr*0.9;
+    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  }
+  ctx.closePath();
+  // Shading
+  const lx = 0.6, ly = -0.8; // light dir
+  const grad = ctx.createRadialGradient(cx - lx*baseR*0.6, cy - ly*baseR*0.6, baseR*0.2, cx, cy, baseR*1.2);
+  grad.addColorStop(0, 'rgba(180,190,210,0.9)');
+  grad.addColorStop(1, 'rgba(80,90,110,0.9)');
+  ctx.fillStyle = grad; ctx.fill();
+}
+
 function drawDebris(){
   debris.forEach((d,i)=>{
     d.a += d.s;
     const x = hole.x + Math.cos(d.a)*d.R;
     const y = hole.y + Math.sin(d.a)*(i%2? d.R*0.7 : d.R);
-    ctx.save(); ctx.translate(x,y); ctx.rotate(d.a*1.1);
-    ctx.strokeStyle = `hsla(${d.hue},80%,70%,.8)`; ctx.lineWidth = 1.2*dpr;
-    ctx.beginPath();
-    for(let k=0;k<d.sides;k++){
-      const t = (k/d.sides)*Math.PI*2; const px = Math.cos(t)*d.size; const py = Math.sin(t)*d.size* (i%2?0.8:1);
-      if(k===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
-    }
-    ctx.closePath(); ctx.stroke();
+    ctx.save(); ctx.translate(x,y); ctx.rotate(d.a*0.8);
+    drawRock(0,0, (d.size||8)*dpr, i*13.37);
     ctx.restore();
   });
 
-  // tiny sprite dots
+  // tiny sprite stars
   for (let i=0;i<18;i++){
     const a = Date.now()*0.0002 + i; const R = (140 + i*10)*dpr;
     const x = hole.x + Math.cos(a)*R; const y = hole.y + Math.sin(a)*R* (i%2? 0.6:1);
