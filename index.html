@@ -382,7 +382,7 @@
                             <p>Synthwave neon glow with gallery lightbox</p>
                             <div class="template-actions">
                                 <a href="xatspace/template-neon/index.html" class="primary-btn no-underline" target="_blank"><i class="fas fa-eye"></i> View Live</a>
-                                <button class="link-btn" data-code="template-neon"><i class="fas fa-download"></i> Download</button>
+                                <a class="link-btn" href="xatspace/code.html?dir=template-neon" target="_blank"><i class="fas fa-download"></i> Download</a>
                             </div>
                         </div>
                     </div>
@@ -395,7 +395,7 @@
                             <p>Stars and debris swirl into a cursor-driven singularity</p>
                             <div class="template-actions">
                                 <a href="xatspace/template-blackhole/index.html" class="primary-btn no-underline" target="_blank"><i class="fas fa-eye"></i> View Live</a>
-                                <button class="link-btn" data-code="template-blackhole"><i class="fas fa-download"></i> Download</button>
+                                <a class="link-btn" href="xatspace/code.html?dir=template-blackhole" target="_blank"><i class="fas fa-download"></i> Download</a>
                             </div>
                         </div>
                     </div>
@@ -408,7 +408,7 @@
                             <p>CRT scanlines, typing cursor headings</p>
                             <div class="template-actions">
                                 <a href="xatspace/template-terminal/index.html" class="primary-btn no-underline" target="_blank"><i class="fas fa-eye"></i> View Live</a>
-                                <button class="link-btn" data-code="template-terminal"><i class="fas fa-download"></i> Download</button>
+                                <a class="link-btn" href="xatspace/code.html?dir=template-terminal" target="_blank"><i class="fas fa-download"></i> Download</a>
                             </div>
                         </div>
                     </div>
@@ -421,7 +421,7 @@
                             <p>Content-first with clean typography</p>
                             <div class="template-actions">
                                 <a href="xatspace/template-minimal/index.html" class="primary-btn no-underline" target="_blank"><i class="fas fa-eye"></i> View Live</a>
-                                <button class="link-btn" data-code="template-minimal"><i class="fas fa-download"></i> Download</button>
+                                <a class="link-btn" href="xatspace/code.html?dir=template-minimal" target="_blank"><i class="fas fa-download"></i> Download</a>
                             </div>
                         </div>
                     </div>
@@ -434,7 +434,7 @@
                             <p>Layered gradient blobs with parallax</p>
                             <div class="template-actions">
                                 <a href="xatspace/template-parallax/index.html" class="primary-btn no-underline" target="_blank"><i class="fas fa-eye"></i> View Live</a>
-                                <button class="link-btn" data-code="template-parallax"><i class="fas fa-download"></i> Download</button>
+                                <a class="link-btn" href="xatspace/code.html?dir=template-parallax" target="_blank"><i class="fas fa-download"></i> Download</a>
                             </div>
                         </div>
                     </div>
@@ -447,7 +447,7 @@
                             <p>8-bit pixel borders with bitmap font</p>
                             <div class="template-actions">
                                 <a href="xatspace/template-retro/index.html" class="primary-btn no-underline" target="_blank"><i class="fas fa-eye"></i> View Live</a>
-                                <button class="link-btn" data-code="template-retro"><i class="fas fa-download"></i> Download</button>
+                                <a class="link-btn" href="xatspace/code.html?dir=template-retro" target="_blank"><i class="fas fa-download"></i> Download</a>
                             </div>
                         </div>
                     </div>
@@ -460,7 +460,7 @@
                             <p>Prism borders and tilt hypercards</p>
                             <div class="template-actions">
                                 <a href="xatspace/template-holo/index.html" class="primary-btn no-underline" target="_blank"><i class="fas fa-eye"></i> View Live</a>
-                                <button class="link-btn" data-code="template-holo"><i class="fas fa-download"></i> Download</button>
+                                <a class="link-btn" href="xatspace/code.html?dir=template-holo" target="_blank"><i class="fas fa-download"></i> Download</a>
                             </div>
                         </div>
                     </div>
@@ -473,7 +473,7 @@
                             <p>Animated wave-grid background</p>
                             <div class="template-actions">
                                 <a href="xatspace/template-gridwave/index.html" class="primary-btn no-underline" target="_blank"><i class="fas fa-eye"></i> View Live</a>
-                                <button class="link-btn" data-code="template-gridwave"><i class="fas fa-download"></i> Download</button>
+                                <a class="link-btn" href="xatspace/code.html?dir=template-gridwave" target="_blank"><i class="fas fa-download"></i> Download</a>
                             </div>
                         </div>
                     </div>
@@ -486,67 +486,13 @@
                             <p>Orbiting friend nodes around avatar</p>
                             <div class="template-actions">
                                 <a href="xatspace/template-orbit/index.html" class="primary-btn no-underline" target="_blank"><i class="fas fa-eye"></i> View Live</a>
-                                <button class="link-btn" data-code="template-orbit"><i class="fas fa-download"></i> Download</button>
+                                <a class="link-btn" href="xatspace/code.html?dir=template-orbit" target="_blank"><i class="fas fa-download"></i> Download</a>
                             </div>
                         </div>
                     </div>
                 </div>
                 <script>
-                // xatspace: build single-file code viewer (modal appended to body)
-                document.addEventListener('DOMContentLoaded', function(){
-                  const grid = document.getElementById('xatspaceTemplatesGrid');
-                  if (!grid) return;
-
-                  // Create modal once and append to body to avoid clipping/stacking issues
-                  const backdrop = document.createElement('div');
-                  backdrop.className = 'xat-modal-backdrop';
-                  backdrop.innerHTML = `
-                    <div class="xat-modal">
-                      <button class="xat-modal-x" aria-label="Close">×</button>
-                      <h3>Template Code</h3>
-                      <div class="xat-codebox">Preparing...</div>
-                      <div class="xat-row">
-                        <button class="primary-btn" id="xatDlCopyBtn">Copy</button>
-                      </div>
-                    </div>`;
-                  document.body.appendChild(backdrop);
-
-                  const codebox = backdrop.querySelector('.xat-codebox');
-                  const btnClose = backdrop.querySelector('.xat-modal-x');
-                  const btnCopy = backdrop.querySelector('#xatDlCopyBtn');
-                  let lastHtml = '';
-
-                  function openModal(){ backdrop.style.display = 'flex'; requestAnimationFrame(()=>backdrop.classList.add('open')); document.documentElement.style.overflow='hidden'; document.body.style.overflow='hidden'; }
-                  function closeModal(){ backdrop.classList.remove('open'); setTimeout(()=>{ if(!backdrop.classList.contains('open')) backdrop.style.display='none'; }, 200); document.documentElement.style.overflow=''; document.body.style.overflow=''; }
-
-                  async function buildSingleFile(dir){
-                    const base = `xatspace/${dir}`;
-                    const [html, css, js] = await Promise.all([
-                      fetch(`${base}/index.html`).then(r=>r.text()),
-                      fetch(`${base}/styles.css`).then(r=>r.ok ? r.text() : '').catch(()=>''),
-                      fetch(`${base}/script.js`).then(r=>r.ok ? r.text() : '').catch(()=>''),
-                    ]);
-                    return html
-                      .replace(/<link[^>]*styles\\.css[^>]*>/i, `<style>\n${css}\n<\/style>`) 
-                      .replace(/<script[^>]*src=\"script\\.js\"[^>]*><\\/script>/i, `<script>\n${js}\n<\/script>`);
-                  }
-
-                  async function openCodeFor(dir){
-                    codebox.textContent = 'Preparing...';
-                    openModal();
-                    try { lastHtml = await buildSingleFile(dir); codebox.textContent = lastHtml; } catch(err){ codebox.textContent = 'Error preparing code.'; }
-                  }
-
-                  // Direct binding
-                  Array.from(document.querySelectorAll('#xatspaceTemplatesGrid button[data-code]')).forEach(b => {
-                    b.addEventListener('click', (e)=>{ e.preventDefault(); e.stopPropagation(); openCodeFor(b.dataset.code); }, { passive:false });
-                  });
-                  // Delegation fallback
-                  grid.addEventListener('click', (e)=>{ const t = e.target.closest('button[data-code]'); if (t){ e.preventDefault(); e.stopPropagation(); openCodeFor(t.dataset.code);} });
-                  backdrop.addEventListener('click', (e)=>{ if (e.target === backdrop || e.target === btnClose) { closeModal(); } });
-                  btnCopy.addEventListener('click', ()=>{ navigator.clipboard.writeText(lastHtml || '').then(()=>{ btnCopy.textContent='COPIED'; setTimeout(()=>btnCopy.textContent='Copy',1200); }); });
-                  document.addEventListener('keydown', (e)=>{ if (e.key==='Escape' && backdrop.classList.contains('open')) closeModal(); });
-                });
+                // xatspace: Download opens dedicated code page; no modal needed
                 </script>
             </section>
 

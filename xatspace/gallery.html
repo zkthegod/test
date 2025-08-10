@@ -74,58 +74,11 @@
         <div class="title"><h3>${t.name}</h3></div>
         <div class="actions">
           <a class="btn view" target="_blank" href="./${t.dir}/index.html">View Live</a>
-          <button class="btn" data-download="${t.dir}">Download</button>
+          <a class="btn" target="_blank" href="./code.html?dir=${t.dir}">Download</a>
         </div>
       </div>`;
     grid.appendChild(card);
   });
-
-  // Modal + download behavior
-  const backdrop = document.createElement('div');
-  backdrop.className = 'modal-backdrop';
-  backdrop.innerHTML = `
-    <div class="modal">
-      <button class="modal-x" aria-label="Close">×</button>
-      <h3>Template Code</h3>
-      <div class="codebox" id="dlCode">Preparing...</div>
-      <div class="row">
-        <button class="btn view" id="dlCopy">Copy</button>
-      </div>
-    </div>`;
-  document.body.appendChild(backdrop);
-  const codebox = backdrop.querySelector('#dlCode');
-  const btnClose = backdrop.querySelector('.modal-x');
-  const btnCopy = backdrop.querySelector('#dlCopy');
-
-  function openModal(){ backdrop.style.display='flex'; requestAnimationFrame(()=>backdrop.classList.add('open')); document.documentElement.style.overflow='hidden'; document.body.style.overflow='hidden'; }
-  function closeModal(){ backdrop.classList.remove('open'); setTimeout(()=>{ if(!backdrop.classList.contains('open')) backdrop.style.display='none'; }, 200); document.documentElement.style.overflow=''; document.body.style.overflow=''; }
-
-  async function buildSingleFile(dir){
-    const base = `./${dir}`;
-    const [html, css, js] = await Promise.all([
-      fetch(`${base}/index.html`).then(r=>r.text()),
-      fetch(`${base}/styles.css`).then(r=>r.text()).catch(()=>''),
-      fetch(`${base}/script.js`).then(r=>r.text()).catch(()=>''),
-    ]);
-    return html
-      .replace(/<link[^>]*styles\.css[^>]*>/i, `<style>\n${css}\n<\/style>`) 
-      .replace(/<script[^>]*src=\"script\.js\"[^>]*><\/script>/i, `<script>\n${js}\n<\/script>`);
-  }
-
-  let lastHtml = '';
-  grid.addEventListener('click', async (e)=>{
-    const btn = e.target.closest('button[data-download]');
-    if (!btn) return;
-    e.preventDefault();
-    const dir = btn.getAttribute('data-download');
-    codebox.textContent = 'Preparing...';
-    openModal();
-    try { lastHtml = await buildSingleFile(dir); codebox.textContent = lastHtml; }
-    catch(err){ codebox.textContent = 'Error preparing code.'; }
-  });
-  backdrop.addEventListener('click', (e)=>{ if (e.target === backdrop || e.target === btnClose) closeModal(); });
-  document.addEventListener('keydown', (e)=>{ if (e.key === 'Escape' && backdrop.classList.contains('open')) closeModal(); });
-  btnCopy.addEventListener('click', ()=>{ navigator.clipboard.writeText(lastHtml).then(()=>{ btnCopy.textContent='Copied'; setTimeout(()=>btnCopy.textContent='Copy', 1200); }); });
   </script>
 </body>
 </html>
