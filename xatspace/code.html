@@ -6,73 +6,160 @@
   <title>xatspace Template Code</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    :root { --bg:#0f1220; --card:#14182b; --text:#e8ecf1; --muted:#a9b0bd; --primary:#6c5ce7; --radius:14px; }
+    :root { 
+      --bg:#0f1220; --bg2:#111425; --card:#14182b; --text:#e8ecf1; --muted:#a9b0bd; 
+      --primary:#6c5ce7; --radius:14px; --border:1px solid rgba(255,255,255,.08);
+    }
     *{box-sizing:border-box}
-    body{margin:0; background:linear-gradient(180deg,#0f1220,#111425); color:var(--text); font-family:Inter,system-ui,sans-serif}
-    .wrap{max-width:1100px; margin:0 auto; padding:20px}
-    header{display:flex; gap:10px; align-items:center; justify-content:space-between; margin-bottom:12px}
-    h1{font-size:1.15rem; margin:0}
-    .btn{appearance:none; border:1px solid rgba(255,255,255,.12); background:#1a1f37; color:var(--text); padding:8px 10px; border-radius:10px; font-size:.9rem; cursor:pointer; text-decoration:none}
-    .btn.primary{background:var(--primary); border-color:transparent}
-    .card{background:var(--card); border:1px solid rgba(255,255,255,.08); border-radius:var(--radius); padding:14px; box-shadow:0 10px 30px rgba(0,0,0,.25)}
-    .meta{display:flex; gap:8px; align-items:center; justify-content:space-between; margin-bottom:10px}
-    .filename{opacity:.8; font-size:.9rem}
-    .codebox{background:#0f1429; border:1px solid rgba(255,255,255,.08); border-radius:10px; padding:12px; max-height:70vh; overflow:auto; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size:.9rem; color:var(--text); white-space:pre-wrap; word-break:break-word}
+    body{margin:0; background:linear-gradient(180deg,var(--bg),var(--bg2)); color:var(--text); font-family:Inter,system-ui,sans-serif}
+    .wrap{max-width:1200px; margin:0 auto; padding:20px}
+    header{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:16px}
+    .left, .right{display:flex; align-items:center; gap:8px}
+    h1{font-size:1.1rem; margin:0}
     .muted{color:var(--muted)}
+
+    .btn{appearance:none; border:1px solid rgba(255,255,255,.12); background:#1a1f37; color:var(--text); padding:8px 12px; border-radius:10px; font-size:.9rem; cursor:pointer; text-decoration:none}
+    .btn.primary{background:var(--primary); border-color:transparent}
+    .btn:active{transform:translateY(1px)}
+
+    .grid{display:grid; grid-template-columns:1fr; gap:16px}
+    @media (min-width: 980px){ .grid{ grid-template-columns: 1fr 1fr; } }
+
+    .card{background:var(--card); border:var(--border); border-radius:var(--radius); padding:14px; box-shadow:0 12px 30px rgba(0,0,0,.25)}
+    .card h2{margin:0 0 10px 0; font-size:1rem}
+    .section-head{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:8px}
+
+    .codebox{background:#0f1429; border:var(--border); border-radius:10px; padding:12px; max-height:60vh; overflow:auto; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size:.9rem; color:var(--text); white-space:pre;}
+    .filename{opacity:.8; font-size:.85rem}
+    .row{display:flex; gap:8px; align-items:center}
+
+    .tutorial ul{margin:8px 0 0 18px; padding:0}
+    .tutorial li{margin:6px 0}
+    .note{font-size:.85rem; opacity:.9}
   </style>
 </head>
 <body>
   <div class="wrap">
     <header>
-      <h1>xatspace Template Code</h1>
-      <div style="display:flex; gap:8px">
-        <a class="btn" href="./gallery.html">← Back to Gallery</a>
-        <button id="copy" class="btn primary">Copy</button>
+      <div class="left">
+        <a class="btn" href="../index.html">← Back to Home</a>
+        <h1 id="title">xatspace Template Code</h1>
+      </div>
+      <div class="right">
+        <a class="btn" id="openLive" target="_blank" href="#">Open Live</a>
       </div>
     </header>
-    <div class="card">
-      <div class="meta"><div class="filename" id="fileName">Preparing...</div><div class="muted" id="status"></div></div>
-      <div class="codebox" id="code">Loading...</div>
+
+    <div class="grid">
+      <div class="card tutorial" style="grid-column:1 / -1">
+        <h2>How to publish on GitHub Pages</h2>
+        <ol class="note">
+          <li>Create a GitHub repository. Name can be anything (e.g., <span class="muted">my-xatspace</span>).</li>
+          <li>Click Add file → Upload files. Drag the three files from your chosen template: <span class="muted">index.html</span>, <span class="muted">styles.css</span>, <span class="muted">script.js</span>.</li>
+          <li>Commit the changes.</li>
+          <li>Open Settings → Pages. Under “Build and deployment”, select “Deploy from branch”. Branch: <span class="muted">main</span>. Folder: <span class="muted">/root</span>. Save.</li>
+          <li>Wait 1–2 minutes for deployment. Your site will be available at the URL displayed in the Pages section.</li>
+          <li>If you want different pages per template, create subfolders (e.g., <span class="muted">neon/</span>) and place each template’s 3 files in its own folder. Navigate to <span class="muted">.../neon/</span> to open that page.</li>
+        </ol>
+      </div>
+
+      <div class="card" style="grid-column:1 / -1">
+        <div class="section-head">
+          <div class="row">
+            <h2>HTML</h2>
+            <span class="filename" id="nameHtml">index.html</span>
+          </div>
+          <div class="row">
+            <button class="btn primary" id="copyHtml">Copy HTML</button>
+          </div>
+        </div>
+        <pre class="codebox" id="codeHtml">Loading...</pre>
+      </div>
+
+      <div class="card">
+        <div class="section-head">
+          <div class="row">
+            <h2>CSS</h2>
+            <span class="filename" id="nameCss">styles.css</span>
+          </div>
+          <div class="row">
+            <button class="btn" id="copyCss">Copy CSS</button>
+          </div>
+        </div>
+        <pre class="codebox" id="codeCss">Loading...</pre>
+      </div>
+
+      <div class="card">
+        <div class="section-head">
+          <div class="row">
+            <h2>JS</h2>
+            <span class="filename" id="nameJs">script.js</span>
+          </div>
+          <div class="row">
+            <button class="btn" id="copyJs">Copy JS</button>
+          </div>
+        </div>
+        <pre class="codebox" id="codeJs">Loading...</pre>
+      </div>
     </div>
   </div>
+
   <script>
-    function getParam(name){ const m = new URL(location.href).searchParams.get(name); return m || ''; }
+    function getParam(name){ return new URL(location.href).searchParams.get(name) || ''; }
     const dir = getParam('dir');
-    const fileNameEl = document.getElementById('fileName');
-    const codeEl = document.getElementById('code');
-    const statusEl = document.getElementById('status');
-    const btnCopy = document.getElementById('copy');
-    let lastHtml = '';
+    const pretty = dir ? dir.replace(/^template-/, '').replace(/-/g,' ').replace(/\b\w/g, m=>m.toUpperCase()) : '';
+
+    const titleEl = document.getElementById('title');
+    const openLive = document.getElementById('openLive');
+
+    const codeHtml = document.getElementById('codeHtml');
+    const codeCss  = document.getElementById('codeCss');
+    const codeJs   = document.getElementById('codeJs');
+    const copyHtml = document.getElementById('copyHtml');
+    const copyCss  = document.getElementById('copyCss');
+    const copyJs   = document.getElementById('copyJs');
 
     if (!dir){
-      fileNameEl.textContent = 'No template specified';
-      codeEl.textContent = 'Usage: code.html?dir=template-neon';
+      titleEl.textContent = 'Missing template';
+      codeHtml.textContent = 'Add ?dir=template-neon (or any template folder) to the URL.';
+      codeCss.textContent = '—';
+      codeJs.textContent  = '—';
     } else {
-      fileNameEl.textContent = dir + ' (single-file HTML)';
-      buildSingleFile(dir).then(html => {
-        lastHtml = html; codeEl.textContent = html; statusEl.textContent = '';
-      }).catch(err => {
-        codeEl.textContent = 'Error preparing code.'; statusEl.textContent = String(err);
-      });
+      titleEl.textContent = `Template: ${pretty}`;
+      openLive.href = `./${dir}/index.html`;
+      loadAll(dir);
     }
 
-    async function buildSingleFile(dir){
+    async function loadAll(dir){
       const base = `./${dir}`;
       const [html, css, js] = await Promise.all([
-        fetch(`${base}/index.html`).then(r=>{ if(!r.ok) throw new Error('index.html not found'); return r.text(); }),
-        fetch(`${base}/styles.css`).then(r=> r.ok ? r.text() : '').catch(()=>''),
-        fetch(`${base}/script.js`).then(r=> r.ok ? r.text() : '').catch(()=>''),
+        fetchText(`${base}/index.html`, 'HTML not found.'),
+        fetchText(`${base}/styles.css`, 'No CSS file in this template.', true),
+        fetchText(`${base}/script.js`, 'No JS file in this template.', true),
       ]);
-      return html
-        .replace(/<link[^>]*styles\\.css[^>]*>/i, `<style>\n${css}\n<\/style>`) 
-        .replace(/<script[^>]*src=\"script\\.js\"[^>]*><\\/script>/i, `<script>\n${js}\n<\/script>`);
+      codeHtml.textContent = html;
+      codeCss.textContent = css;
+      codeJs.textContent = js;
     }
 
-    btnCopy.addEventListener('click', ()=>{
-      navigator.clipboard.writeText(lastHtml || codeEl.textContent || '').then(()=>{
-        const old = btnCopy.textContent; btnCopy.textContent = 'Copied'; setTimeout(()=>btnCopy.textContent=old, 1200);
+    async function fetchText(url, fallback, optional){
+      try{
+        const r = await fetch(url, { cache:'no-cache' });
+        if (!r.ok){ if (optional) return fallback; throw new Error(fallback); }
+        return await r.text();
+      }catch(e){ return fallback; }
+    }
+
+    function bindCopy(btn, el){
+      btn.addEventListener('click', ()=>{
+        navigator.clipboard.writeText(el.textContent || '').then(()=>{
+          const old = btn.textContent; btn.textContent = 'Copied'; setTimeout(()=>btn.textContent = old, 1200);
+        });
       });
-    });
+    }
+    bindCopy(copyHtml, codeHtml);
+    bindCopy(copyCss, codeCss);
+    bindCopy(copyJs, codeJs);
   </script>
 </body>
 </html>
