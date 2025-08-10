@@ -25,8 +25,10 @@
     .btn:hover{filter:brightness(1.06)}
     footer{opacity:.7; text-align:center; margin-top:24px; font-size:.9rem; color:var(--muted)}
     /* Modal */
-    .modal-backdrop{position:fixed; inset:0; background:rgba(0,0,0,.6); display:none; align-items:center; justify-content:center;}
-    .modal{background:var(--card); border:1px solid rgba(255,255,255,.1); border-radius:14px; width:min(680px, 92vw); padding:16px; box-shadow:0 20px 60px rgba(0,0,0,.5)}
+    .modal-backdrop{position:fixed; inset:0; background:rgba(0,0,0,.6); display:none; align-items:center; justify-content:center; opacity:0; transition:opacity .2s ease;}
+    .modal-backdrop.open{display:flex; opacity:1;}
+    .modal{background:var(--card); border:1px solid rgba(255,255,255,.1); border-radius:14px; width:min(680px, 92vw); padding:16px; box-shadow:0 20px 60px rgba(0,0,0,.5); transform:scale(.96); opacity:0; transition:transform .2s ease, opacity .2s ease;}
+    .modal-backdrop.open .modal{transform:scale(1); opacity:1;}
     .modal h3{margin:0 0 10px}
     .codebox{background:#0f1429; border:1px solid rgba(255,255,255,.08); border-radius:8px; padding:10px; max-height:260px; overflow:auto; font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-size:.85rem; color:#eaf0ff}
     .row{display:flex; gap:8px; justify-content:flex-end; margin-top:10px}
@@ -108,12 +110,15 @@
   const btnSave = document.getElementById('dlSave');
   let lastHtml = ''; let lastName = '';
 
+  function openModal(){ backdrop.classList.add('open'); document.documentElement.style.overflow='hidden'; document.body.style.overflow='hidden'; }
+  function closeModal(){ backdrop.classList.remove('open'); setTimeout(()=>{ if(!backdrop.classList.contains('open')) backdrop.style.display='none'; }, 200); document.documentElement.style.overflow=''; document.body.style.overflow=''; }
+
   document.addEventListener('click', async (e) => {
     const btn = e.target.closest('button[data-dl]');
     if (btn) {
       const dir = btn.dataset.dl;
       lastName = dir;
-      backdrop.style.display = 'flex';
+      backdrop.style.display = 'flex'; openModal();
       codebox.textContent = 'Preparing...';
       try {
         lastHtml = await buildSingleFile(dir);
@@ -121,7 +126,7 @@
       } catch(err){ codebox.textContent = 'Error preparing download.'; }
       return;
     }
-    if (e.target === backdrop || e.target === btnClose) { backdrop.style.display='none'; }
+    if (e.target === backdrop || e.target === btnClose) { closeModal(); }
     if (e.target === btnCopy) {
       navigator.clipboard.writeText(lastHtml || '').then(()=>{ btnCopy.textContent='Copied!'; setTimeout(()=>btnCopy.textContent='Copy', 1200); });
     }
@@ -131,6 +136,7 @@
       const a = document.createElement('a'); a.href=url; a.download = `${lastName||'template'}.html`; a.click(); setTimeout(()=>URL.revokeObjectURL(url),1500);
     }
   });
+  document.addEventListener('keydown', (e)=>{ if (e.key === 'Escape' && backdrop.classList.contains('open')) closeModal(); });
   </script>
 </body>
 </html>

@@ -1,5 +1,24 @@
+// WebGL guard + friendly overlay
+(function(){
+  const ok = (function(){ try { const c = document.createElement('canvas'); return !!(window.WebGLRenderingContext && (c.getContext('webgl') || c.getContext('experimental-webgl'))); } catch(e){ return false; } })();
+  if (!ok) {
+    const overlay = document.createElement('div');
+    overlay.style.position='fixed'; overlay.style.inset='0'; overlay.style.display='grid'; overlay.style.placeItems='center'; overlay.style.background='linear-gradient(180deg,#0f1220,#111425)'; overlay.style.color='#eaf0ff'; overlay.style.fontFamily='Inter,system-ui,sans-serif'; overlay.style.zIndex='10';
+    overlay.innerHTML = '<div style="text-align:center;max-width:540px;padding:16px;border:1px solid rgba(255,255,255,.08);border-radius:12px;background:#14182b;">WebGL not available. Please update your browser or enable hardware acceleration to view the Holo Shards experience.</div>';
+    document.body.appendChild(overlay);
+    return;
+  }
+})();
+
 const canvas = document.getElementById('scene');
-const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
+let renderer;
+try {
+  renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
+} catch(e) {
+  console.error('Failed to init WebGLRenderer', e);
+}
+if (!renderer) { throw new Error('Renderer init failed'); }
+
 renderer.setPixelRatio(Math.min(2, window.devicePixelRatio||1));
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(55, 1, 0.1, 200);
@@ -11,6 +30,7 @@ scene.add(new THREE.AmbientLight(0x8899ff, 0.5));
 const shards = [];
 const shardGeo = new THREE.IcosahedronGeometry(1, 0);
 const loader = new THREE.TextureLoader();
+loader.setCrossOrigin('anonymous');
 const texUrls = [
   'https://picsum.photos/seed/tex1/512/512',
   'https://picsum.photos/seed/tex2/512/512',
@@ -31,11 +51,13 @@ function createShard() {
   });
   // assign a random texture to hint at mysterious images
   const tx = textures[Math.floor(Math.random()*textures.length)];
-  tx.wrapS = tx.wrapT = THREE.MirroredRepeatWrapping;
-  tx.repeat.set(0.6 + Math.random()*0.8, 0.6 + Math.random()*0.8);
-  tx.offset.set(Math.random(), Math.random());
-  mat.map = tx;
-  mat.needsUpdate = true;
+  if (tx) {
+    tx.wrapS = tx.wrapT = THREE.MirroredRepeatWrapping;
+    tx.repeat.set(0.6 + Math.random()*0.8, 0.6 + Math.random()*0.8);
+    tx.offset.set(Math.random(), Math.random());
+    mat.map = tx;
+    mat.needsUpdate = true;
+  }
 
   const m = new THREE.Mesh(shardGeo, mat);
   m.position.set((Math.random()-0.5)*20, (Math.random()-0.5)*12, (Math.random()-0.5)*18);
