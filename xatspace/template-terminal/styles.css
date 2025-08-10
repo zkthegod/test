@@ -1,6 +1,9 @@
 *{box-sizing:border-box}body{margin:0;background:#0b0f14;color:#b9ffca;font-family:'Fira Code',monospace}
-.crt{position:relative;max-width:1000px;margin:0 auto;padding:20px}
+.crt{position:relative;max-width:1000px;margin:0 auto;padding:20px;}
 .crt:before{content:"";position:fixed;inset:0;background:repeating-linear-gradient(0deg,rgba(255,255,255,.03),rgba(255,255,255,.03) 1px,transparent 1px,transparent 3px);pointer-events:none}
+.crt:after{content:"";position:fixed;inset:-10%;pointer-events:none;background:radial-gradient(80% 60% at 50% 50%, rgba(121,255,165,0.08), transparent 60%), radial-gradient(120% 90% at 50% 50%, transparent 60%, rgba(0,0,0,0.55) 100%);mix-blend-mode:screen;filter:blur(0.4px)}
+.flicker .crt{animation:flick 1.2s steps(2,end) 1}
+@keyframes flick{0%{opacity:.9} 30%{opacity:.6} 60%{opacity:1} 100%{opacity:.95}}
 header{display:flex;align-items:center;gap:14px}
 .pfp img{width:80px;height:80px;border-radius:6px;border:1px solid #1f4730}
 .info h1{margin:0;font-size:1.2rem}

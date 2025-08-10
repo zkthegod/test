@@ -8,6 +8,8 @@
 .r2{width:180px;height:180px;animation:spin 22s linear infinite reverse}
 .r3{width:220px;height:220px;animation:spin 30s linear infinite}
 @keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+.node{position:absolute;width:32px;height:32px;border-radius:50%;box-shadow:0 0 0 2px rgba(255,255,255,.15), 0 0 16px rgba(108,92,231,.35);display:grid;place-items:center;backdrop-filter:blur(2px)}
+.node img{width:26px;height:26px;border-radius:50%}
 .grid{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-top:16px}
 .card{background:#12182a;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:14px}
 .pics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}

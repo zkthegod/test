@@ -4,7 +4,10 @@
 .head{display:flex;align-items:center;gap:14px}
 .avatar{width:84px;height:84px;border-radius:12px;border:2px solid rgba(255,255,255,.2)}
 .grid{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-top:16px}
-.block{background:#141a29;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:14px;box-shadow:0 20px 40px rgba(0,0,0,.35)}
+.block{background:#141a29;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:14px;box-shadow:0 20px 40px rgba(0,0,0,.35);position:relative;transition:transform .2s ease, box-shadow .2s ease}
+.block:after{content:"";position:absolute;inset:-2px;border-radius:inherit;background:conic-gradient(from 0deg, rgba(108,92,231,.0), rgba(108,92,231,.25), rgba(255,110,199,.2), rgba(108,92,231,.0));filter:blur(10px);opacity:0;transition:opacity .2s ease;pointer-events:none}
+.block:hover{transform:translateY(-4px);box-shadow:0 30px 60px rgba(0,0,0,.45)}
+.block:hover:after{opacity:.6}
 .pics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .pics img{width:100%;height:160px;object-fit:cover;border-radius:10px}
 .friends{margin:0;padding-left:18px}
