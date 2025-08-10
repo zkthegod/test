@@ -1420,6 +1420,13 @@ body::before { content: none; }
 .chat-desktop, .chat-window { z-index: 100; }
 footer { position: relative; z-index: 50; }
 
+/* Allow chat windows to overlay the footer on the Chat Embedder page */
+#chat-embedder.page.active .chat-desktop {
+  position: fixed;
+  inset: 0;
+  height: 100vh;
+}
+
 /* Effects dropdown styles */
 #effectsType {
     padding: 8px 12px;
