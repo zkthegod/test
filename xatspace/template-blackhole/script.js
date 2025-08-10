@@ -38,6 +38,22 @@ const sats = Array.from({length:14}, (_,i)=>({
   size: 6 + (i%3)*4
 }));
 
+// Replace square "bubbles" with polygonal debris and tiny sprite dots
+const debris = Array.from({length:22}, (_,i)=>({
+  R: (110 + i*22)*dpr,
+  a: Math.random()*Math.PI*2,
+  s: 0.0015 + Math.random()*0.0025,
+  sides: 3 + (i%5),
+  size: 5 + Math.random()*8,
+  hue: 210 + Math.random()*120
+}));
+
+const comets = Array.from({length:6}, ()=>({
+  x: Math.random()*w, y: Math.random()*h,
+  vx: -0.5*dpr + Math.random()*dpr, vy: -0.2*dpr + Math.random()*0.4*dpr,
+  life: 400 + Math.random()*400
+}));
+
 function blackholeGradient(){
   const grd = ctx.createRadialGradient(hole.x, hole.y, hole.r*0.2, hole.x, hole.y, hole.r*2.2);
   grd.addColorStop(0, 'rgba(0,0,0,1)');
@@ -119,6 +135,40 @@ function drawSats(){
   });
 }
 
+function drawDebris(){
+  debris.forEach((d,i)=>{
+    d.a += d.s;
+    const x = hole.x + Math.cos(d.a)*d.R;
+    const y = hole.y + Math.sin(d.a)*(i%2? d.R*0.7 : d.R);
+    ctx.save(); ctx.translate(x,y); ctx.rotate(d.a*1.1);
+    ctx.strokeStyle = `hsla(${d.hue},80%,70%,.8)`; ctx.lineWidth = 1.2*dpr;
+    ctx.beginPath();
+    for(let k=0;k<d.sides;k++){
+      const t = (k/d.sides)*Math.PI*2; const px = Math.cos(t)*d.size; const py = Math.sin(t)*d.size* (i%2?0.8:1);
+      if(k===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
+    }
+    ctx.closePath(); ctx.stroke();
+    ctx.restore();
+  });
+
+  // tiny sprite dots
+  for (let i=0;i<18;i++){
+    const a = Date.now()*0.0002 + i; const R = (140 + i*10)*dpr;
+    const x = hole.x + Math.cos(a)*R; const y = hole.y + Math.sin(a)*R* (i%2? 0.6:1);
+    ctx.fillStyle = 'rgba(234,240,255,.8)'; ctx.fillRect(x, y, 1*dpr, 1*dpr);
+  }
+}
+
+function drawComets(){
+  comets.forEach(c=>{
+    c.x += c.vx; c.y += c.vy; c.life -= 1;
+    if (c.x < -20 || c.y < -20 || c.x > w+20 || c.y > h+20 || c.life <= 0){
+      c.x = Math.random()*w; c.y = Math.random()*h; c.vx = -0.5*dpr + Math.random()*dpr; c.vy = -0.2*dpr + Math.random()*0.4*dpr; c.life = 400 + Math.random()*400;
+    }
+    ctx.strokeStyle = 'rgba(255,255,255,.5)'; ctx.lineWidth = 1*dpr; ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x - c.vx*12, c.y - c.vy*12); ctx.stroke();
+  });
+}
+
 // Reactive floating name
 const nameEl = document.querySelector('.float-name');
 let nameTiltX = 0, nameTiltY = 0;
@@ -142,6 +192,8 @@ function step(){
   drawBlackhole();
   vignette();
   updateName();
+  drawDebris();
+  drawComets();
   requestAnimationFrame(step);
 }
 step();
