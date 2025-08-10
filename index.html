@@ -8,6 +8,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <script>
+      // Set this to your deployed Cloudflare Worker base URL, e.g. 'https://xat-uptime.yourname.workers.dev'
+      window.XAT_UPTIME_WORKER = window.XAT_UPTIME_WORKER || '';
+    </script>
     <style>
       /* Layout polish: keep footer at bottom */
       html, body { overflow-x: hidden; }
@@ -613,12 +617,26 @@
       }
 
       async function ping(url, assetPath){
+        // Try Cloudflare Worker first
+        const workerBase = (window.XAT_UPTIME_WORKER || '').replace(/\/$/, '');
+        const host = (url || '').replace(/^https?:\/\//,'').replace(/\/$/,'');
+        if (workerBase){
+          try{
+            const q = new URLSearchParams({ host, url, asset: assetPath || '/favicon.ico' });
+            const res = await fetch(`${workerBase}/check?${q.toString()}`, { cache: 'no-store' });
+            if (res.ok){
+              const data = await res.json();
+              // Use server ms/up, but still record client result; stats will be merged via UI
+              return { up: !!data.up, ms: Math.max(0, Math.round(data.ms||0)), serverStats: data.stats || null };
+            }
+          }catch(e){ /* fall back to client */ }
+        }
+        // Fallback: client-side ping
         const target = (url || '').replace(/\/$/, '') + (assetPath || '/favicon.ico');
         const start = now();
         const controller = new AbortController();
         const timer = setTimeout(() => controller.abort('timeout'), TIMEOUT_MS);
         try {
-          // no-cors yields opaque response but still useful for timing
           await fetch(target, { mode: 'no-cors', cache: 'no-store', signal: controller.signal });
           const ms = now()-start; clearTimeout(timer); return { up: true, ms };
         } catch (e) {
@@ -699,7 +717,19 @@
 
           const res = await ping(url, asset);
           const entry = recordResult(host, res.up, res.ms);
-          const stats = getStats(host);
+          // If serverStats provided, synthesize a view using server metrics where present
+          let stats = getStats(host);
+          if (res.serverStats){
+            stats = {
+              monthUptime: res.serverStats.monthUptime ?? stats.monthUptime,
+              lifeUptime: res.serverStats.lifeUptime ?? stats.lifeUptime,
+              avgLatency: res.serverStats.avgLatency ?? stats.avgLatency,
+              checks: res.serverStats.checks ?? stats.checks,
+              lastTs: res.serverStats.lastTs ?? stats.lastTs,
+              lastMs: res.serverStats.lastMs ?? stats.lastMs,
+              lastUp: res.serverStats.lastUp ?? stats.lastUp,
+            };
+          }
           updateCard(card, stats);
         }
 
