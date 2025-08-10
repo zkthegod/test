@@ -27,6 +27,13 @@
     .btn{appearance:none; border:1px solid rgba(255,255,255,.12); background:#1a1f37; color:var(--text); padding:8px 10px; border-radius:10px; font-size:.9rem; cursor:pointer; text-decoration:none}
     .btn.view{background:var(--primary); border-color:transparent}
     .btn:hover{filter:brightness(1.06)}
+    /* Modal styling */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;opacity:0;transition:opacity .2s ease;z-index:9999}
+    .modal-backdrop.open{display:flex;opacity:1}
+    .modal{background:var(--card);border:1px solid rgba(255,255,255,.1);border-radius:var(--radius);width:min(680px,90vw);max-height:80vh;padding:20px;box-shadow:0 20px 60px rgba(0,0,0,.5);overflow:auto;transform:scale(.96);opacity:0;transition:transform .2s ease,opacity .2s ease;position:relative}
+    .modal-backdrop.open .modal{transform:scale(1);opacity:1}
+    .modal-x{position:absolute;top:12px;right:14px;background:none;border:0;color:var(--text);font-size:1.4rem;cursor:pointer;line-height:1}
+    .codebox{background:#0b0e1a;border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:12px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem;color:var(--text);max-height:60vh;overflow:auto;white-space:pre}
     footer{opacity:.7; text-align:center; margin-top:24px; font-size:.9rem; color:var(--muted)}
   </style>
 </head>
@@ -40,6 +47,16 @@
     <div class="grid" id="tplGrid"></div>
 
     <footer>All templates are standalone demos. Use View Live to open them.</footer>
+  </div>
+
+  <!-- Modal for code download -->
+  <div class="modal-backdrop" id="codeModal">
+    <div class="modal">
+      <button class="modal-x" id="closeModal" aria-label="Close">×</button>
+      <h3 style="margin-top:0">Template Code</h3>
+      <div class="codebox" id="codeContent">Loading...</div>
+      <button class="btn view" id="copyBtn" style="margin-top:12px">Copy</button>
+    </div>
   </div>
 
   <script>
@@ -65,12 +82,76 @@
         <div class="title"><h3>${t.name}</h3></div>
         <div class="actions">
           <a class="btn view" target="_blank" href="./${t.dir}/index.html">View Live</a>
+          <button class="btn download" data-dir="${t.dir}">Download</button>
           <a class="btn" target="_blank" href="./${t.dir}/styles.css">CSS</a>
           <a class="btn" target="_blank" href="./${t.dir}/script.js">JS</a>
         </div>
       </div>`;
     grid.appendChild(card);
   });
+
+  // Modal logic for Download buttons
+  const modalBackdrop = document.getElementById('codeModal');
+  const codeBox = document.getElementById('codeContent');
+  const copyBtn = document.getElementById('copyBtn');
+  const closeBtn = document.getElementById('closeModal');
+  let lastHtml = '';
+
+  function openModal(){
+    modalBackdrop.style.display='flex';
+    // force reflow then add class for transition
+    void modalBackdrop.offsetWidth;
+    modalBackdrop.classList.add('open');
+    document.documentElement.style.overflow='hidden';
+  }
+
+  function closeModal(){
+    modalBackdrop.classList.remove('open');
+    document.documentElement.style.overflow='';
+    setTimeout(()=>{ if(!modalBackdrop.classList.contains('open')) modalBackdrop.style.display='none'; },200);
+  }
+
+  async function buildSingleFile(dir){
+    const base = `./${dir}`;
+    const [html, css, js] = await Promise.all([
+      fetch(`${base}/index.html`).then(r=>r.text()),
+      fetch(`${base}/styles.css`).then(r=>r.text()),
+      fetch(`${base}/script.js`).then(r=>r.text()).catch(()=> '')
+    ]);
+    let merged = html.replace(/<link[^>]*styles\.css[^>]*>/i, `<style>\n${css}\n</style>`);
+    if(js){
+      merged = merged.replace(/<script[^>]*src=["']script\.js["'][^>]*><\/script>/i, `<script>\n${js}\n</script>`);
+    }
+    return merged;
+  }
+
+  document.addEventListener('click', async (e)=>{
+    const btn = e.target.closest('button.download[data-dir]');
+    if(!btn) return;
+    e.preventDefault();
+    const dir = btn.dataset.dir;
+    openModal();
+    codeBox.textContent = 'Preparing...';
+    try{
+      lastHtml = await buildSingleFile(dir);
+      codeBox.textContent = lastHtml;
+    }catch(err){
+      codeBox.textContent = 'Error building code.';
+      lastHtml='';
+    }
+  });
+
+  modalBackdrop.addEventListener('click', (e)=>{ if(e.target === modalBackdrop || e.target === closeBtn) closeModal(); });
+  document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && modalBackdrop.classList.contains('open')) closeModal(); });
+
+  copyBtn.addEventListener('click', ()=>{
+    if(!lastHtml) return;
+    navigator.clipboard.writeText(lastHtml).then(()=>{
+      copyBtn.textContent='Copied!';
+      setTimeout(()=> copyBtn.textContent='Copy',1200);
+    });
+  });
+
   </script>
 </body>
 </html>
