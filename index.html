@@ -358,6 +358,11 @@
                   #xatspace-templates .modal-backdrop.open .modal{transform:scale(1); opacity:1}
                   #xatspace-templates .codebox{background: #0f1429; border:1px solid rgba(255,255,255,.08); border-radius:8px; padding:10px; max-height:260px; overflow:auto; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size:.85rem; color: var(--text)}
                   #xatspace-templates .row{display:flex; gap:8px; justify-content:flex-end; margin-top:10px}
+                  /* Match site scrollbar style inside previews */
+                  #xatspace-templates .template-preview iframe::-webkit-scrollbar{width:8px;height:8px}
+                  #xatspace-templates .template-preview iframe::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#6c5ce7,#8b7cf6);border-radius:999px}
+                  #xatspace-templates .template-preview iframe::-webkit-scrollbar-track{background:rgba(255,255,255,.06)}
+                  #xatspace-templates .template-preview iframe{scrollbar-width:thin; scrollbar-color:#6c5ce7 rgba(255,255,255,.06)}
                 </style>
                 <div class="templates-grid" id="xatspaceTemplatesGrid">
                     <div class="template-card">
@@ -512,17 +517,17 @@
                       .replace(/<script[^>]*src=\"script\\.js\"[^>]*><\\/script>/i, `<script>\n${js}\n<\\/script>`);
                     return merged;
                   }
-                  document.addEventListener('click', async (e) => {
-                    const btn = e.target.closest('button[data-xat-dl]');
-                    if (btn) {
-                      lastName = btn.dataset.xatDl;
+                  // Direct binding to avoid event delegation issues
+                  Array.from(document.querySelectorAll('#xatspaceTemplatesGrid button[data-xat-dl]')).forEach(b => {
+                    b.addEventListener('click', async (e)=>{
+                      e.preventDefault(); e.stopPropagation();
+                      lastName = b.dataset.xatDl;
                       backdrop.style.display = 'flex'; openModal(); codebox.textContent = 'Preparing...';
                       try { lastHtml = await buildSingleFile(lastName); codebox.textContent = lastHtml; } catch(err){ codebox.textContent = 'Error preparing download.'; }
-                      return;
-                    }
-                    if (e.target === backdrop || e.target === btnClose) { closeModal(); }
-                    if (e.target === btnCopy) { navigator.clipboard.writeText(lastHtml || '').then(()=>{ btnCopy.textContent='COPIED'; setTimeout(()=>btnCopy.textContent='COPY',1200); }); }
+                    }, { passive:false });
                   });
+                  document.addEventListener('click', (e)=>{ if (e.target === backdrop || e.target === btnClose) { closeModal(); } });
+                  btnCopy.addEventListener('click', ()=>{ navigator.clipboard.writeText(lastHtml || '').then(()=>{ btnCopy.textContent='COPIED'; setTimeout(()=>btnCopy.textContent='COPY',1200); }); });
                   document.addEventListener('keydown', (e)=>{ if (e.key==='Escape' && backdrop.classList.contains('open')) closeModal(); });
                 })();
                 </script>

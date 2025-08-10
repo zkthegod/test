@@ -103,22 +103,27 @@ function drawStars(){
     const dx = hole.x - s.x;
     const dy = hole.y - s.y;
     const dist = Math.hypot(dx, dy) + 0.001;
-    const pull = Math.min(0.8, (hole.r*2.0) / (dist*85));
-    const tang = 1.0 / (dist/200 + 1);
-
-    s.x += dx * pull + (-dy) * tang * 0.012;
-    s.y += dy * pull + (dx) * tang * 0.012;
+    const dirx = dx / dist, diry = dy / dist;
+    // Inverse-square-like soft pull
+    const pull = Math.min(1.2, (hole.r*hole.r*0.6) / (dist*dist + 2000));
+    // Tangential swirl diminishing with distance
+    const tang = Math.min(0.8, (hole.r*0.4) / (dist + 200));
+    // Update velocity components for smooth motion
+    s.vx = (s.vx||0) * 0.96 + (dirx * pull + -diry * tang) * 1.4;
+    s.vy = (s.vy||0) * 0.96 + (diry * pull +  dirx * tang) * 1.4;
+    s.x += s.vx; s.y += s.vy;
 
     if (dist < hole.r*0.65){
       const edge = Math.random() < 0.5 ? 0 : 1;
       if (Math.random() < 0.5){ s.x = edge? w + 10: -10; s.y = Math.random()*h; }
       else { s.y = edge? h + 10: -10; s.x = Math.random()*w; }
+      s.vx = s.vy = 0;
       continue;
     }
 
     const tw = (Math.sin((s.x+s.y)*0.01)+1)/2 * 0.6 + 0.4;
-    ctx.fillStyle = `hsla(${s.hue}, 80%, 85%, ${(0.55*s.z*tw).toFixed(3)})`;
-    ctx.beginPath(); ctx.arc(s.x, s.y, s.r*s.z, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = `hsla(${s.hue}, 80%, 85%, ${(0.5*(s.z||1)*tw).toFixed(3)})`;
+    ctx.beginPath(); ctx.arc(s.x, s.y, s.r*(s.z||1), 0, Math.PI*2); ctx.fill();
   }
 }
 
@@ -172,12 +177,15 @@ function drawComets(){
 // Reactive floating name
 const nameEl = document.querySelector('.float-name');
 let nameTiltX = 0, nameTiltY = 0;
+let nameBaseY = 0, nameTime = 0;
 function updateName(){
+  nameTime += 0.016;
   const nx = (mouse.x/dpr / innerWidth) * 2 - 1;
   const ny = (mouse.y/dpr / innerHeight) * 2 - 1;
   nameTiltX += ((-ny*10) - nameTiltX)*0.08;
   nameTiltY += ((nx*14) - nameTiltY)*0.08;
-  const dz = Math.sin(Date.now()*0.001)*8;
+  nameBaseY = Math.sin(nameTime*0.6)*8 + Math.cos(nameTime*0.3)*4;
+  const dz = nameBaseY;
   nameEl.style.transform = `translateX(-50%) translateZ(0) rotateX(${nameTiltX.toFixed(2)}deg) rotateY(${nameTiltY.toFixed(2)}deg) translateY(${dz.toFixed(1)}px)`;
   nameEl.style.textShadow = `0 0 20px rgba(139,124,246,.7), 0 0 40px rgba(0,245,212,.25), 0 0 ${12 + Math.abs(dz)/2}px rgba(139,124,246,.55)`;
 }
