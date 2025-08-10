@@ -73,7 +73,7 @@
     const card = document.createElement('div');
     card.className = 'card';
     card.innerHTML = `
-      <div class="thumb"><iframe src="./${t.dir}/index.html"></iframe></div>
+      <div class="thumb"><iframe loading="lazy" data-src="./${t.dir}/index.html"></iframe></div>
       <div class="body">
         <div class="title"><h3>${t.name}</h3></div>
         <div class="actions">
@@ -83,6 +83,18 @@
       </div>`;
     grid.appendChild(card);
   });
+
+  // Lazy load/unload previews to reduce memory
+  const iframes = Array.from(document.querySelectorAll('.thumb iframe[data-src]'));
+  const load = (f)=>{ if (!f.src) f.src = f.dataset.src; };
+  const unload = (f)=>{ if (f.src) { try { f.src = 'about:blank'; } catch{} } };
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(ent => {
+      const f = ent.target;
+      if (ent.isIntersecting) load(f); else unload(f);
+    });
+  }, { root: null, rootMargin: '200px', threshold: 0.01 });
+  iframes.forEach(f => io.observe(f));
   </script>
 </body>
 </html>

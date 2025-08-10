@@ -387,7 +387,7 @@
                 <div class="templates-grid" id="xatspaceTemplatesGrid">
                     <div class="template-card">
                         <div class="template-preview">
-                            <iframe src="xatspace/template-neon/index.html" title="Neon Cards"></iframe>
+                            <iframe loading="lazy" data-src="xatspace/template-neon/index.html" title="Neon Cards"></iframe>
                         </div>
                         <div class="template-info">
                             <h3>Neon Cards</h3>
@@ -400,7 +400,7 @@
                     </div>
                     <div class="template-card">
                         <div class="template-preview">
-                            <iframe src="xatspace/template-blackhole/index.html" title="Blackhole Drift"></iframe>
+                            <iframe loading="lazy" data-src="xatspace/template-blackhole/index.html" title="Blackhole Drift"></iframe>
                         </div>
                         <div class="template-info">
                             <h3>Blackhole Drift</h3>
@@ -413,7 +413,7 @@
                     </div>
                     <div class="template-card">
                         <div class="template-preview">
-                            <iframe src="xatspace/template-terminal/index.html" title="Terminal/Cyber"></iframe>
+                            <iframe loading="lazy" data-src="xatspace/template-terminal/index.html" title="Terminal/Cyber"></iframe>
                         </div>
                         <div class="template-info">
                             <h3>Terminal/Cyber</h3>
@@ -426,7 +426,7 @@
                     </div>
                     <div class="template-card">
                         <div class="template-preview">
-                            <iframe src="xatspace/template-minimal/index.html" title="Minimal Magazine"></iframe>
+                            <iframe loading="lazy" data-src="xatspace/template-minimal/index.html" title="Minimal Magazine"></iframe>
                         </div>
                         <div class="template-info">
                             <h3>Minimal Magazine</h3>
@@ -439,7 +439,7 @@
                     </div>
                     <div class="template-card">
                         <div class="template-preview">
-                            <iframe src="xatspace/template-parallax/index.html" title="Parallax Hero"></iframe>
+                            <iframe loading="lazy" data-src="xatspace/template-parallax/index.html" title="Parallax Hero"></iframe>
                         </div>
                         <div class="template-info">
                             <h3>Parallax Hero</h3>
@@ -452,7 +452,7 @@
                     </div>
                     <div class="template-card">
                         <div class="template-preview">
-                            <iframe src="xatspace/template-retro/index.html" title="Retro Pixel"></iframe>
+                            <iframe loading="lazy" data-src="xatspace/template-retro/index.html" title="Retro Pixel"></iframe>
                         </div>
                         <div class="template-info">
                             <h3>Retro Pixel</h3>
@@ -465,7 +465,7 @@
                     </div>
                     <div class="template-card" style="display:none">
                         <div class="template-preview">
-                            <iframe src="xatspace/template-holo/index.html" title="Holographic Panels"></iframe>
+                            <iframe loading="lazy" data-src="xatspace/template-holo/index.html" title="Holographic Panels"></iframe>
                         </div>
                         <div class="template-info">
                             <h3>Holographic Panels</h3>
@@ -478,7 +478,7 @@
                     </div>
                     <div class="template-card">
                         <div class="template-preview">
-                            <iframe src="xatspace/template-gridwave/index.html" title="Gridwave"></iframe>
+                            <iframe loading="lazy" data-src="xatspace/template-gridwave/index.html" title="Gridwave"></iframe>
                         </div>
                         <div class="template-info">
                             <h3>Gridwave</h3>
@@ -491,7 +491,7 @@
                     </div>
                     <div class="template-card">
                         <div class="template-preview">
-                            <iframe src="xatspace/template-orbit/index.html" title="Orbital Nodes"></iframe>
+                            <iframe loading="lazy" data-src="xatspace/template-orbit/index.html" title="Orbital Nodes"></iframe>
                         </div>
                         <div class="template-info">
                             <h3>Orbital Nodes</h3>
@@ -504,6 +504,21 @@
                     </div>
                 </div>
                 <script>
+                // xatspace: lazy load/unload previews to reduce memory
+                (function(){
+                  const grid = document.getElementById('xatspaceTemplatesGrid');
+                  if (!grid) return;
+                  const iframes = Array.from(grid.querySelectorAll('iframe[data-src]'));
+                  const load = (f)=>{ if (!f.src) f.src = f.dataset.src; };
+                  const unload = (f)=>{ if (f.src) { try { f.src = 'about:blank'; } catch{} } };
+                  const io = new IntersectionObserver((entries)=>{
+                    entries.forEach(ent => {
+                      const f = ent.target;
+                      if (ent.isIntersecting) load(f); else unload(f);
+                    });
+                  }, { root: null, rootMargin: '200px', threshold: 0.01 });
+                  iframes.forEach(f => { io.observe(f); });
+                })();
                 // xatspace: Download opens dedicated code page; no modal needed
                 </script>
             </section>
