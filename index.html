@@ -494,8 +494,8 @@
                   </div>
                 </div>
                 <script>
-                // xatspace: build single-file download (scoped to #xatspace-templates)
-                (function(){
+                // xatspace: build single-file code viewer (scoped to #xatspace-templates)
+                document.addEventListener('DOMContentLoaded', function(){
                   const grid = document.getElementById('xatspaceTemplatesGrid');
                   if (!grid) return;
                   const backdrop = document.getElementById('xatDlBackdrop');
@@ -503,7 +503,7 @@
                   const btnClose = document.getElementById('xatDlClose');
                   const btnCopy = document.getElementById('xatDlCopy');
                   let lastHtml = '', lastName = '';
-                  function openModal(){ backdrop.classList.add('open'); document.documentElement.style.overflow='hidden'; document.body.style.overflow='hidden'; }
+                  function openModal(){ backdrop.style.display = 'flex'; backdrop.classList.add('open'); document.documentElement.style.overflow='hidden'; document.body.style.overflow='hidden'; }
                   function closeModal(){ backdrop.classList.remove('open'); setTimeout(()=>{ if(!backdrop.classList.contains('open')) backdrop.style.display='none'; }, 200); document.documentElement.style.overflow=''; document.body.style.overflow=''; }
                   async function buildSingleFile(dir){
                     const base = `xatspace/${dir}`;
@@ -512,24 +512,24 @@
                       fetch(`${base}/styles.css`).then(r=>r.text()),
                       fetch(`${base}/script.js`).then(r=>r.text()),
                     ]);
-                    const merged = html
+                    return html
                       .replace(/<link[^>]*styles\\.css[^>]*>/i, `<style>\n${css}\n<\/style>`) 
                       .replace(/<script[^>]*src=\"script\\.js\"[^>]*><\\/script>/i, `<script>\n${js}\n<\\/script>`);
-                    return merged;
                   }
-                  // Direct binding to new data-code triggers
+                  async function openCodeFor(dir){
+                    lastName = dir; codebox.textContent = 'Preparing...'; openModal();
+                    try { lastHtml = await buildSingleFile(lastName); codebox.textContent = lastHtml; } catch(err){ codebox.textContent = 'Error preparing code.'; }
+                  }
+                  // Direct binding
                   Array.from(document.querySelectorAll('#xatspaceTemplatesGrid button[data-code]')).forEach(b => {
-                    b.addEventListener('click', async (e)=>{
-                      e.preventDefault(); e.stopPropagation();
-                      lastName = b.dataset.code;
-                      backdrop.style.display = 'flex'; openModal(); codebox.textContent = 'Preparing...';
-                      try { lastHtml = await buildSingleFile(lastName); codebox.textContent = lastHtml; } catch(err){ codebox.textContent = 'Error preparing download.'; }
-                    }, { passive:false });
+                    b.addEventListener('click', (e)=>{ e.preventDefault(); e.stopPropagation(); openCodeFor(b.dataset.code); }, { passive:false });
                   });
-                  document.addEventListener('click', (e)=>{ if (e.target === backdrop || e.target === btnClose) { closeModal(); } });
+                  // Delegation fallback
+                  grid.addEventListener('click', (e)=>{ const t = e.target.closest('button[data-code]'); if (t){ e.preventDefault(); e.stopPropagation(); openCodeFor(t.dataset.code);} });
+                  backdrop.addEventListener('click', (e)=>{ if (e.target === backdrop || e.target === btnClose) { closeModal(); } });
                   btnCopy.addEventListener('click', ()=>{ navigator.clipboard.writeText(lastHtml || '').then(()=>{ btnCopy.textContent='COPIED'; setTimeout(()=>btnCopy.textContent='COPY',1200); }); });
                   document.addEventListener('keydown', (e)=>{ if (e.key==='Escape' && backdrop.classList.contains('open')) closeModal(); });
-                })();
+                });
                 </script>
             </section>
 
