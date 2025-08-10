@@ -1,31 +1,107 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Holo Shards Journey</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Holographic Shards Journey</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <div id="particles"></div>
   <canvas id="scene"></canvas>
+  
   <div class="ui">
     <div class="start" id="startUI">
-      <h1>Rexor</h1>
-      <p>Float among holographic shards. Move your mouse.</p>
+      <div class="title-container">
+        <h1 class="glitch" data-text="HOLOGRAPHIC">HOLOGRAPHIC</h1>
+        <h2>SHARDS</h2>
+        <p class="subtitle">Navigate through crystalline dimensions</p>
+      </div>
       <div class="actions">
-        <button id="btnFall" class="btn primary">Dive</button>
-        <button id="btnPortal" class="btn">Enter Portal</button>
+        <button id="btnFall" class="btn primary">
+          <span class="btn-text">DIVE INTO VOID</span>
+          <span class="btn-glow"></span>
+        </button>
+        <button id="btnPortal" class="btn secondary">
+          <span class="btn-text">ENTER PORTAL</span>
+          <span class="btn-glow"></span>
+        </button>
+        <button id="btnWarp" class="btn secondary">
+          <span class="btn-text">SPACE WARP</span>
+          <span class="btn-glow"></span>
+        </button>
+      </div>
+      <div class="instructions">
+        <p>Move your mouse to explore • Click to journey deeper</p>
       </div>
     </div>
+
     <div class="section" id="sectionA">
-      <h2>Chapter I — The Descent</h2>
-      <p>You fell through a crystal storm. Echoes of images linger in the glass.</p>
-      <button class="btn" data-return>Return</button>
+      <div class="section-content">
+        <h2>CHAPTER I — THE DESCENT</h2>
+        <p>You've plunged through a crystalline storm, where echoes of forgotten memories dance across fractured glass. Each shard holds fragments of a story yet untold.</p>
+        <div class="section-features">
+          <div class="feature">
+            <span class="feature-icon">⚡</span>
+            <span>Lightning-fast transitions</span>
+          </div>
+          <div class="feature">
+            <span class="feature-icon">💎</span>
+            <span>Holographic reflections</span>
+          </div>
+        </div>
+        <button class="btn return-btn" data-return>
+          <span>RETURN TO VOID</span>
+        </button>
+      </div>
     </div>
+
     <div class="section" id="sectionB">
-      <h2>Chapter II — The Rift</h2>
-      <p>Space warped as shards exploded into portals, revealing hidden paths.</p>
-      <button class="btn" data-return>Return</button>
+      <div class="section-content">
+        <h2>CHAPTER II — THE RIFT</h2>
+        <p>Space itself warps as shards explode into portals, revealing hidden pathways between dimensions. Reality bends and folds like origami.</p>
+        <div class="section-features">
+          <div class="feature">
+            <span class="feature-icon">🌀</span>
+            <span>Dimensional portals</span>
+          </div>
+          <div class="feature">
+            <span class="feature-icon">🌌</span>
+            <span>Space distortion</span>
+          </div>
+        </div>
+        <button class="btn return-btn" data-return>
+          <span>RETURN TO VOID</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="section" id="sectionC">
+      <div class="section-content">
+        <h2>CHAPTER III — THE WARP</h2>
+        <p>Time and space collapse into a singularity of possibilities. The shards become one with the fabric of reality itself.</p>
+        <div class="section-features">
+          <div class="feature">
+            <span class="feature-icon">⏰</span>
+            <span>Temporal distortion</span>
+          </div>
+          <div class="feature">
+            <span class="feature-icon">🎭</span>
+            <span>Reality merge</span>
+          </div>
+        </div>
+        <button class="btn return-btn" data-return>
+          <span>RETURN TO VOID</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="loading" id="loading">
+    <div class="loading-content">
+      <div class="loading-shard"></div>
+      <p>Initializing holographic systems...</p>
     </div>
   </div>
 
