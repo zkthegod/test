@@ -1,0 +1,20 @@
+/* Shape utilities for previews and embeds */
+.shape-rect img { border-radius: 0 }
+.shape-rounded img { border-radius: 16px }
+.shape-circle img { border-radius: 999px }
+
+/* Hexagon via clip-path */
+.shape-hex img {
+  -webkit-clip-path: polygon(25% 6.7%, 75% 6.7%, 100% 50%, 75% 93.3%, 25% 93.3%, 0% 50%);
+  clip-path: polygon(25% 6.7%, 75% 6.7%, 100% 50%, 75% 93.3%, 25% 93.3%, 0% 50%);
+}
+
+/* Helper for embed HTML: apply to the wrapper */
+.embed-shape.shape-rect { border-radius: 0 }
+.embed-shape.shape-rounded { border-radius: 16px; overflow: hidden }
+.embed-shape.shape-circle { border-radius: 999px; overflow: hidden }
+.embed-shape.shape-hex {
+  -webkit-clip-path: polygon(25% 6.7%, 75% 6.7%, 100% 50%, 75% 93.3%, 25% 93.3%, 0% 50%);
+  clip-path: polygon(25% 6.7%, 75% 6.7%, 100% 50%, 75% 93.3%, 25% 93.3%, 0% 50%);
+  overflow: hidden;
+}

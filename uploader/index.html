@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Image Uploader</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./shapes.css"/>
+  <style>
+    :root{ --bg:#0f1220; --card:#14182b; --text:#e8ecf1; --muted:#a9b0bd; --primary:#6c5ce7; --radius:14px; --border:1px solid rgba(255,255,255,.08) }
+    *{ box-sizing:border-box }
+    body{ margin:0; font-family:Inter,system-ui,sans-serif; background:linear-gradient(180deg,#0f1220,#111425); color:var(--text) }
+    .wrap{ max-width:940px; margin:0 auto; padding:22px }
+    header{ display:flex; align-items:center; justify-content:space-between }
+    h1{ font-size:1.15rem; margin:0 }
+
+    .card{ background:var(--card); border:var(--border); border-radius:var(--radius); padding:16px; box-shadow:0 10px 30px rgba(0,0,0,.25); margin-top:14px }
+
+    .uploader{ display:grid; grid-template-columns: 1fr; gap:14px }
+    .controls{ display:flex; gap:10px; flex-wrap:wrap }
+    .file-btn{ position:relative; overflow:hidden }
+    .file-btn input[type=file]{ position:absolute; inset:0; opacity:0; cursor:pointer }
+    .btn{ appearance:none; border:1px solid rgba(255,255,255,.12); background:#1a1f37; color:var(--text); padding:10px 12px; border-radius:10px; cursor:pointer; display:inline-flex; align-items:center; gap:8px }
+    .btn.primary{ background:var(--primary); border-color:transparent }
+    .shape-select{ position:relative }
+    .shape-trigger{ display:inline-flex; align-items:center; gap:8px }
+    .shape-trigger .caret{ font-size:10px; opacity:.8 }
+    .shape-menu{ position:absolute; top:100%; left:0; margin-top:6px; background:#0f1429; border:1px solid rgba(255,255,255,.1); border-radius:10px; min-width:220px; box-shadow:0 16px 40px rgba(0,0,0,.45); display:none; z-index:10 }
+    .shape-menu.open{ display:block }
+    .shape-item{ padding:10px 12px; cursor:pointer; display:flex; align-items:center; gap:10px }
+    .shape-item:hover{ background:rgba(255,255,255,.06) }
+
+    .preview{ display:flex; align-items:center; gap:14px; flex-wrap:wrap }
+    .thumb{ width:160px; height:160px; background:#0b0e1a; border:1px solid rgba(255,255,255,.08); border-radius:12px; display:grid; place-items:center; overflow:hidden }
+    .thumb .ph{ color:#667; font-size:.9rem }
+    .thumb img{ width:100%; height:100%; object-fit:cover }
+
+    .progress{ height:8px; background:rgba(255,255,255,.08); border-radius:999px; overflow:hidden }
+    .bar{ height:100%; width:0%; background:linear-gradient(90deg,#6c5ce7,#8b7cf6) }
+
+    .results{ display:grid; grid-template-columns:1fr; gap:8px }
+    .row{ display:grid; grid-template-columns: 140px 1fr auto; gap:8px; align-items:center }
+    .code{ background:#0f1429; border:1px solid rgba(255,255,255,.08); border-radius:8px; padding:8px; font-family:ui-monospace,Menlo,monospace; font-size:.9rem; color:var(--text); overflow:auto }
+    .copy{ appearance:none; border:1px solid rgba(255,255,255,.12); background:#182040; color:var(--text); padding:8px 10px; border-radius:8px; cursor:pointer }
+    .muted{ color:var(--muted) }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Image Uploader</h1>
+      <a class="btn" href="../index.html">← Back</a>
+    </header>
+
+    <div class="card">
+      <div class="uploader">
+        <div class="controls">
+          <label class="file-btn btn primary">
+            <span>Choose image (GIF, PNG, WebP, JPG • ≤ 100MB)</span>
+            <input id="fileInput" type="file" accept="image/gif,image/png,image/webp,image/jpeg"/>
+          </label>
+          <div class="shape-select">
+            <button id="shapeTrigger" class="btn shape-trigger" type="button"><span id="shapeLabel">Shape: Rectangle</span><span class="caret">▾</span></button>
+            <div id="shapeMenu" class="shape-menu">
+              <div class="shape-item" data-shape="rect">Rectangle</div>
+              <div class="shape-item" data-shape="circle">Circle</div>
+              <div class="shape-item" data-shape="rounded">Rounded Square</div>
+              <div class="shape-item" data-shape="hex">Hexagon</div>
+            </div>
+          </div>
+          <button id="uploadBtn" class="btn" type="button">Upload</button>
+        </div>
+
+        <div class="preview">
+          <div class="thumb"><div class="ph">Preview</div></div>
+          <div class="muted">The shape is applied via CSS masks/clipping so animated GIFs remain animated.</div>
+        </div>
+
+        <div class="progress"><div class="bar" id="progressBar"></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 style="margin:0 0 10px 0; font-size:1rem">Embed Codes</h2>
+      <div class="results">
+        <div class="row"><div class="muted">Direct URL</div><div class="code" id="directUrl">—</div><button class="copy" data-copy="directUrl">Copy</button></div>
+        <div class="row"><div class="muted">BBCode</div><div class="code" id="bbcode">—</div><button class="copy" data-copy="bbcode">Copy</button></div>
+        <div class="row"><div class="muted">HTML</div><div class="code" id="htmlcode">—</div><button class="copy" data-copy="htmlcode">Copy</button></div>
+        <div class="row"><div class="muted">Plain URL</div><div class="code" id="plain">—</div><button class="copy" data-copy="plain">Copy</button></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="./script.js"></script>
+</body>
+</html>
