@@ -364,12 +364,14 @@ function setupCarousel(totalItems) {
     const items = carouselContainer.querySelectorAll('.result-item');
     
     items.forEach((item, index) => {
-      item.classList.remove('center', 'side', 'hidden');
+      item.classList.remove('center', 'left', 'right', 'hidden');
       
       if (index === currentIndex) {
         item.classList.add('center');
-      } else if (index === currentIndex - 1 || index === currentIndex + 1) {
-        item.classList.add('side');
+      } else if (index === currentIndex - 1) {
+        item.classList.add('left');
+      } else if (index === currentIndex + 1) {
+        item.classList.add('right');
       } else {
         item.classList.add('hidden');
       }
@@ -408,7 +410,7 @@ function setupCarousel(totalItems) {
   // Add click handlers for side images
   carouselContainer.addEventListener('click', (e) => {
     const resultItem = e.target.closest('.result-item');
-    if (resultItem && resultItem.classList.contains('side')) {
+    if (resultItem && (resultItem.classList.contains('left') || resultItem.classList.contains('right'))) {
       const index = parseInt(resultItem.dataset.index);
       goToSlide(index);
     }
