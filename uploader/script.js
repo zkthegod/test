@@ -1,12 +1,12 @@
 const fileInput = document.getElementById('fileInput');
 const shapeTrigger = document.getElementById('shapeTrigger');
 const shapeMenu = document.getElementById('shapeMenu');
-const uploadCta = document.getElementById('uploadCta');
+const uploadBtn = document.getElementById('uploadBtn');
 const dropFull = document.getElementById('dropFull');
 
 let currentShape = 'rect';
 
-// Prevent shape trigger from opening file dialog
+// Shape dropdown functionality
 shapeTrigger.addEventListener('click', (e)=>{
   console.log('Shape trigger clicked');
   e.stopPropagation();
@@ -19,7 +19,7 @@ shapeTrigger.addEventListener('click', (e)=>{
   shapeTrigger.setAttribute('aria-expanded', String(newState));
 });
 
-// Prevent mousedown from triggering file input
+// Prevent mousedown from interfering
 shapeTrigger.addEventListener('mousedown', (e)=> {
   e.stopPropagation();
   e.preventDefault();
@@ -30,15 +30,20 @@ shapeMenu.addEventListener('click', (e)=>{
   if (!item) return;
   
   // Remove active class from all items
-  document.querySelectorAll('.shape-item').forEach(i => i.classList.remove('active'));
+  document.querySelectorAll('.shape-item').forEach(i => {
+    i.classList.remove('active');
+    i.setAttribute('aria-selected', 'false');
+  });
   
   currentShape = item.dataset.shape;
   item.classList.add('active');
+  item.setAttribute('aria-selected', 'true');
   shapeMenu.classList.remove('open');
   shapeTrigger.setAttribute('aria-expanded', 'false');
   
-  // Update the title to show selected shape
-  const shapeText = item.textContent;
+  // Update the trigger text to show selected shape
+  const shapeText = item.querySelector('span:last-child').textContent;
+  shapeTrigger.querySelector('.shape-text').textContent = shapeText;
   shapeTrigger.title = `Selected: ${shapeText}`;
 });
 
@@ -49,12 +54,8 @@ document.addEventListener('click', (e)=>{
   }
 });
 
-// Clicking CTA opens file dialog (but not when clicking shape trigger)
-uploadCta.addEventListener('click', (e)=>{
-  // Don't open file dialog if clicking on shape trigger or its children
-  if (e.target === shapeTrigger || shapeTrigger.contains(e.target) || e.target.closest('.shape-select')) {
-    return;
-  }
+// Upload button functionality
+uploadBtn.addEventListener('click', (e)=>{
   fileInput.click();
 });
 
@@ -102,10 +103,10 @@ async function uploadMultiple(files) {
   if (files.length === 0) return;
   
   // Show loading state
-  const uploadLabel = uploadCta.querySelector('.label');
+  const uploadLabel = uploadBtn.querySelector('.label');
   const originalText = uploadLabel.innerHTML;
-  uploadCta.style.pointerEvents = 'none';
-  uploadCta.style.opacity = '0.7';
+  uploadBtn.style.pointerEvents = 'none';
+  uploadBtn.style.opacity = '0.7';
   uploadLabel.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
   
   showToast(`Uploading ${files.length} file${files.length > 1 ? 's' : ''}...`, false);
@@ -137,8 +138,8 @@ async function uploadMultiple(files) {
     }
   } finally {
     // Restore button state
-    uploadCta.style.pointerEvents = 'auto';
-    uploadCta.style.opacity = '1';
+    uploadBtn.style.pointerEvents = 'auto';
+    uploadBtn.style.opacity = '1';
     uploadLabel.innerHTML = originalText;
   }
 }
