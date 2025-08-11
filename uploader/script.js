@@ -218,20 +218,24 @@ function showResults(results) {
   const resultsContainer = document.getElementById('resultsContainer');
   const uploadCount = document.getElementById('uploadCount');
   const uploadCountPlural = document.getElementById('uploadCountPlural');
+  const carouselContainer = document.getElementById('carouselContainer');
+  const carouselNav = document.getElementById('carouselNav');
+  const carouselDots = document.getElementById('carouselDots');
   
-  if (!resultsModal || !resultsContainer || !uploadCount) return;
+  if (!resultsModal || !resultsContainer || !uploadCount || !carouselContainer) return;
   
   // Update count
   uploadCount.textContent = results.length;
   uploadCountPlural.textContent = results.length === 1 ? '' : 's';
   
   // Clear previous results
-  resultsContainer.innerHTML = '';
+  carouselContainer.innerHTML = '';
   
-  // Add each result with beautiful design
+  // Create carousel items
   results.forEach((result, index) => {
     const resultItem = document.createElement('div');
     resultItem.className = `result-item ${results.length === 1 ? 'single' : ''}`;
+    resultItem.dataset.index = index;
     resultItem.innerHTML = `
       <div class="result-header">
         <div class="result-meta">
@@ -284,8 +288,18 @@ function showResults(results) {
       </div>
     `;
     
-    resultsContainer.appendChild(resultItem);
+    carouselContainer.appendChild(resultItem);
   });
+  
+  // Setup carousel if multiple images
+  if (results.length > 1) {
+    setupCarousel(results.length);
+    carouselNav.style.display = 'flex';
+    carouselDots.style.display = 'flex';
+    carouselContainer.classList.add('multiple');
+  } else {
+    carouselContainer.classList.add('single');
+  }
   
   // Show modal with beautiful animation
   resultsModal.style.display = 'flex';
@@ -326,6 +340,102 @@ function showResults(results) {
       closeModal();
     }
   });
+}
+
+function setupCarousel(totalItems) {
+  let currentIndex = 0;
+  const carouselContainer = document.getElementById('carouselContainer');
+  const carouselPrev = document.getElementById('carouselPrev');
+  const carouselNext = document.getElementById('carouselNext');
+  const carouselDots = document.getElementById('carouselDots');
+  
+  // Create dots
+  carouselDots.innerHTML = '';
+  for (let i = 0; i < totalItems; i++) {
+    const dot = document.createElement('button');
+    dot.className = `carousel-dot ${i === 0 ? 'active' : ''}`;
+    dot.dataset.index = i;
+    dot.addEventListener('click', () => goToSlide(i));
+    carouselDots.appendChild(dot);
+  }
+  
+  // Update carousel display
+  function updateCarousel() {
+    const items = carouselContainer.querySelectorAll('.result-item');
+    
+    items.forEach((item, index) => {
+      item.classList.remove('center', 'side', 'hidden');
+      
+      if (index === currentIndex) {
+        item.classList.add('center');
+      } else if (index === currentIndex - 1 || index === currentIndex + 1) {
+        item.classList.add('side');
+      } else {
+        item.classList.add('hidden');
+      }
+    });
+    
+    // Update navigation buttons
+    carouselPrev.disabled = currentIndex === 0;
+    carouselNext.disabled = currentIndex === totalItems - 1;
+    
+    // Update dots
+    carouselDots.querySelectorAll('.carousel-dot').forEach((dot, index) => {
+      dot.classList.toggle('active', index === currentIndex);
+    });
+  }
+  
+  // Navigation functions
+  function goToSlide(index) {
+    currentIndex = Math.max(0, Math.min(index, totalItems - 1));
+    updateCarousel();
+  }
+  
+  function nextSlide() {
+    if (currentIndex < totalItems - 1) {
+      currentIndex++;
+      updateCarousel();
+    }
+  }
+  
+  function prevSlide() {
+    if (currentIndex > 0) {
+      currentIndex--;
+      updateCarousel();
+    }
+  }
+  
+  // Add click handlers for side images
+  carouselContainer.addEventListener('click', (e) => {
+    const resultItem = e.target.closest('.result-item');
+    if (resultItem && resultItem.classList.contains('side')) {
+      const index = parseInt(resultItem.dataset.index);
+      goToSlide(index);
+    }
+  });
+  
+  // Add navigation event listeners
+  if (carouselPrev) {
+    carouselPrev.addEventListener('click', prevSlide);
+  }
+  
+  if (carouselNext) {
+    carouselNext.addEventListener('click', nextSlide);
+  }
+  
+  // Keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    if (resultsModal.classList.contains('show')) {
+      if (e.key === 'ArrowLeft') {
+        prevSlide();
+      } else if (e.key === 'ArrowRight') {
+        nextSlide();
+      }
+    }
+  });
+  
+  // Initialize carousel
+  updateCarousel();
 }
 
 function closeModal() {
