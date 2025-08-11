@@ -277,15 +277,16 @@
                 #name-effects .effect-preview { letter-spacing: -0.5px; }
                 #name-effects .code-section h3 { font-size: 0.95rem; color: var(--text); }
                 /* Tutorial toggle */
-                #name-effects .info-btn { display:inline-flex; align-items:center; justify-content:center; width:36px; height:36px; border-radius:999px; border:1px solid rgba(0,0,0,.08); background: radial-gradient(120% 120% at 50% -20%, rgba(108,92,231,.55), rgba(255,255,255,.08) 60%); color: var(--text); cursor:pointer; position:relative; box-shadow:0 0 0 0 rgba(108,92,231,.28); transition: box-shadow .2s ease, transform .12s ease; animation: infoBreathe 3.2s ease-in-out infinite; }
+                #name-effects .info-btn { display:inline-flex; align-items:center; justify-content:center; width:36px; height:36px; border-radius:999px; border:1px solid rgba(0,0,0,.28); background: linear-gradient(180deg, #191324, #2a1d50); color:#ffffff; cursor:pointer; position:relative; box-shadow:0 0 0 0 rgba(108,92,231,.28); transition: box-shadow .2s ease, transform .12s ease; animation: infoBreathe 3.2s ease-in-out infinite; }
                 [data-theme="dark"] #name-effects .info-btn { border-color: rgba(255,255,255,.18); background: radial-gradient(120% 120% at 50% -20%, rgba(108,92,231,.45), rgba(0,0,0,.18) 60%); }
                 #name-effects .info-btn:hover { box-shadow:0 0 0 6px rgba(108,92,231,.18); transform: translateY(-1px); }
-                #name-effects .info-btn i { color:#e5dcff; text-shadow:0 0 8px rgba(108,92,231,.6); }
+                #name-effects .info-btn i { color:#ffffff; text-shadow:0 0 8px rgba(108,92,231,.6); }
                 #name-effects .tutorial-panel { display:none; background: var(--card-bg); border: var(--border); border-radius: var(--radius); padding:16px; margin:12px 0 18px 0; box-shadow: var(--shadow); position:relative; overflow:hidden; }
                 #name-effects .tutorial-panel.open { display:block; animation: fadeIn .2s ease; }
                 #name-effects .tutorial-panel .close { position:absolute; top:10px; right:12px; background:transparent; border:0; color:var(--text); cursor:pointer; font-size:18px; }
                 #name-effects .tutorial-panel .row { display:flex; gap:14px; align-items:flex-start; flex-wrap:wrap; }
                 #name-effects .tutorial-panel img { width:64px; height:64px; border-radius:12px; border:1px solid rgba(255,255,255,.08); object-fit:cover; background:#0f1429 }
+                #name-effects .tutorial-panel img.example-shot { width:100%; max-width:480px; height:auto; object-fit:contain; background:#0f1429; border-radius:12px; border:1px solid rgba(255,255,255,.08) }
                 #name-effects .tutorial-panel h3 { margin:0 0 6px 0; font-size:1rem }
                 #name-effects .tutorial-panel p, #name-effects .tutorial-panel li { color: var(--text-light); line-height:1.55; }
                 #name-effects .tutorial-panel code { background:#0f1429; border:1px solid rgba(255,255,255,.08); padding:2px 6px; border-radius:6px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size:.9em }
@@ -317,7 +318,7 @@
                         </ul>
                         <p>To produce a rainbow gradient, simply put <code>(glow#0#grad)</code> in your name.</p>
                         <div style="margin-top:10px">
-                            <img alt="Example with namegrad enabled" src="./namegraddd.png" loading="lazy" style="width:100%;max-width:480px;border-radius:12px;border:1px solid rgba(255,255,255,.08)"/>
+                            <img class="example-shot" alt="Example with namegrad enabled" src="./namegraddd.png" loading="lazy"/>
                         </div>
                     </div>
                 </div>
