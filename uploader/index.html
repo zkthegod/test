@@ -23,7 +23,8 @@
     .cta { position:relative; display:flex; align-items:center; gap:8px; background: linear-gradient(180deg,#20173a,#2c1e58); color:#fff; border:1px solid rgba(255,255,255,.2); border-radius:14px; padding:14px 20px; cursor:pointer; box-shadow: 0 0 0 0 rgba(108,92,231,.2); animation: breathe 3.5s ease-in-out infinite; overflow:hidden }
     .cta .shine{ content:""; position:absolute; inset:-200% -200% auto auto; width:60%; height:60%; transform: rotate(25deg); background: linear-gradient(120deg, transparent, rgba(255,255,255,.35), transparent); animation: sweep 6s ease-in-out infinite }
     .cta .label{ font-weight:600 }
-    .cta .chev{ width:28px; height:28px; border-radius:8px; background:#6c5ce7; display:grid; place-items:center }
+    .cta .chev{ width:26px; height:26px; border-radius:8px; background:rgba(0,0,0,.35); color:#d8d8ff; display:grid; place-items:center; font-weight:600 }
+    .cta .chev:hover{ background:rgba(0,0,0,.5) }
     .cta input[type=file]{ position:absolute; inset:0; opacity:0; cursor:pointer }
     @keyframes breathe { 0%,100% { box-shadow: 0 0 0 0 rgba(108,92,231,.15) } 50% { box-shadow: 0 0 0 14px rgba(108,92,231,.06) } }
     @keyframes sweep { 0%, 20% { transform: translate(-120%, -120%) rotate(25deg) } 50% { transform: translate(60%, 60%) rotate(25deg) } 100% { transform: translate(60%, 60%) rotate(25deg) } }
@@ -72,6 +73,7 @@
 
     <main>
       <section class="upload-hero">
+        <canvas id="fx" style="position:absolute; inset:0; width:100%; height:100%; pointer-events:none; opacity:.35"></canvas>
         <div class="upload-inner">
           <div class="cta" id="uploadCta">
             <span class="shine" aria-hidden="true"></span>
@@ -146,6 +148,17 @@
         root.setAttribute('data-theme', mode);
         localStorage.setItem('theme', mode);
       });
+    })();
+
+    // Subtle particles
+    (function(){
+      const c = document.getElementById('fx'); if (!c) return; const ctx = c.getContext('2d');
+      let w=0,h=0; const parts=[]; const N=60;
+      function resize(){ w = c.width = c.offsetWidth * devicePixelRatio; h = c.height = c.offsetHeight * devicePixelRatio; }
+      window.addEventListener('resize', resize); resize();
+      for(let i=0;i<N;i++){ parts.push({ x: Math.random()*w, y: Math.random()*h, r: 1+Math.random()*2, vx:(Math.random()-.5)*.2*devicePixelRatio, vy:(Math.random()-.5)*.2*devicePixelRatio, a:.2+Math.random()*.6 }); }
+      function step(){ ctx.clearRect(0,0,w,h); ctx.fillStyle = '#8b7cf6'; parts.forEach(p=>{ p.x+=p.vx; p.y+=p.vy; if(p.x<0||p.x>w) p.vx*=-1; if(p.y<0||p.y>h) p.vy*=-1; ctx.globalAlpha=p.a; ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill(); }); requestAnimationFrame(step); }
+      step();
     })();
 
     // no local results; redirect handled in script.js after upload
