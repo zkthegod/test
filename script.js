@@ -24,17 +24,28 @@ document.addEventListener('DOMContentLoaded', function() {
     
     navLinks.forEach(link => {
         link.addEventListener('click', function(e) {
+            const href = this.getAttribute('href') || '';
+            if (!href.startsWith('#')) {
+                // Allow normal navigation to external pages (e.g., uploader/index.html)
+                return;
+            }
             e.preventDefault();
-            const targetId = this.getAttribute('href');
+            const targetId = href;
             
             navLinks.forEach(navLink => navLink.classList.remove('active'));
             this.classList.add('active');
             
+            // Hide all pages
             pages.forEach(page => page.classList.remove('active'));
-            document.querySelector(targetId).classList.add('active');
             
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            updatePageBackgroundForActiveTab();
+            // Show target page
+            if (targetId && targetId.startsWith('#')) {
+                const targetEl = document.querySelector(targetId);
+                if (targetEl) targetEl.classList.add('active');
+                
+                // Update URL hash without scrolling
+                history.replaceState(null, '', targetId);
+            }
         });
     });
     
