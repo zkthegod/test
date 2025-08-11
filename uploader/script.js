@@ -59,16 +59,50 @@ uploadBtn.addEventListener('click', (e)=>{
   fileInput.click();
 });
 
+// File input change handler
+fileInput.addEventListener('change', (e)=> { 
+  if (fileInput.files && fileInput.files.length > 0) {
+    console.log('Files selected:', fileInput.files.length);
+    uploadMultiple(Array.from(fileInput.files));
+  }
+});
+
 // Also prevent the file input from being triggered by the CTA's children
 fileInput.addEventListener('click', (e) => {
   e.stopPropagation();
 });
 
 // Drag & drop (full page) with debounce to avoid flicker
-let dragCounter = 0; let overlayTimer = 0;
-['dragenter','dragover'].forEach(ev => { window.addEventListener(ev, (e)=>{ e.preventDefault(); dragCounter++; clearTimeout(overlayTimer); dropFull.classList.add('show'); }); });
-['dragleave'].forEach(ev => { window.addEventListener(ev, (e)=>{ e.preventDefault(); dragCounter = Math.max(0, dragCounter-1); if (dragCounter===0){ overlayTimer = setTimeout(()=> dropFull.classList.remove('show'), 60); } }); });
-['drop'].forEach(ev => { window.addEventListener(ev, (e)=>{ e.preventDefault(); dragCounter=0; dropFull.classList.remove('show'); handleDrop(e); }); });
+let dragCounter = 0; 
+let overlayTimer = 0;
+
+['dragenter','dragover'].forEach(ev => { 
+  window.addEventListener(ev, (e)=>{ 
+    e.preventDefault(); 
+    dragCounter++; 
+    clearTimeout(overlayTimer); 
+    dropFull.classList.add('show'); 
+  }); 
+});
+
+['dragleave'].forEach(ev => { 
+  window.addEventListener(ev, (e)=>{ 
+    e.preventDefault(); 
+    dragCounter = Math.max(0, dragCounter-1); 
+    if (dragCounter===0){
+      overlayTimer = setTimeout(()=> dropFull.classList.remove('show'), 60); 
+    } 
+  }); 
+});
+
+['drop'].forEach(ev => { 
+  window.addEventListener(ev, (e)=>{ 
+    e.preventDefault(); 
+    dragCounter=0; 
+    dropFull.classList.remove('show'); 
+    handleDrop(e); 
+  }); 
+});
 
 // Toast helper
 function showToast(msg, isError=true){
@@ -82,20 +116,17 @@ function showToast(msg, isError=true){
   const int = setInterval(()=>{ w -= 2; el.querySelector('.bar').style.width = w + '%'; if (w<=0){ clearInterval(int); el.remove(); } }, 80);
 }
 
-fileInput.addEventListener('change', ()=> { 
-  if (fileInput.files && fileInput.files.length > 0) {
-    uploadMultiple(Array.from(fileInput.files));
-  }
-});
-
 function handleDrop(e){
   const dt = e.dataTransfer;
   if (!dt) return;
+  
   const files = Array.from(dt.files || []).filter(f => /image\/(gif|png|webp|jpeg)/.test(f.type));
   if (files.length === 0) { 
     showToast('No supported image files found'); 
     return; 
   }
+  
+  console.log('Files dropped:', files.length);
   uploadMultiple(files);
 }
 
@@ -103,11 +134,11 @@ async function uploadMultiple(files) {
   if (files.length === 0) return;
   
   // Show loading state
-  const uploadLabel = uploadBtn.querySelector('.label');
-  const originalText = uploadLabel.innerHTML;
+  const uploadLabel = uploadBtn.querySelector('span');
+  const originalText = uploadLabel.textContent;
   uploadBtn.style.pointerEvents = 'none';
   uploadBtn.style.opacity = '0.7';
-  uploadLabel.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+  uploadLabel.textContent = 'Uploading...';
   
   showToast(`Uploading ${files.length} file${files.length > 1 ? 's' : ''}...`, false);
   
@@ -128,6 +159,7 @@ async function uploadMultiple(files) {
           successCount++;
         }
       } catch (error) {
+        console.error('Upload error:', error);
         showToast(`Failed to upload ${file.name}`);
       }
     }
@@ -140,7 +172,7 @@ async function uploadMultiple(files) {
     // Restore button state
     uploadBtn.style.pointerEvents = 'auto';
     uploadBtn.style.opacity = '1';
-    uploadLabel.innerHTML = originalText;
+    uploadLabel.textContent = originalText;
   }
 }
 

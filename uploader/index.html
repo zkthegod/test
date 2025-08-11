@@ -85,6 +85,10 @@
       opacity: 0;
       cursor: pointer;
       z-index: 1;
+      /* Completely hide the file input */
+      font-size: 0;
+      line-height: 0;
+      overflow: hidden;
     }
     
     /* Shape Selector */
@@ -92,24 +96,24 @@
       display: flex;
       align-items: center;
       gap: 16px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: var(--shape-bg, rgba(255, 255, 255, 0.05));
+      border: 1px solid var(--shape-border, rgba(255, 255, 255, 0.1));
       border-radius: 12px;
       padding: 16px 20px;
       backdrop-filter: blur(20px);
       min-width: 300px;
       transition: all 0.3s ease;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      box-shadow: var(--shape-shadow, 0 4px 20px rgba(0, 0, 0, 0.1));
     }
     
     .shape-selector:hover {
-      border-color: rgba(255, 255, 255, 0.2);
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+      border-color: var(--shape-border-hover, rgba(255, 255, 255, 0.2));
+      box-shadow: var(--shape-shadow-hover, 0 8px 30px rgba(0, 0, 0, 0.15));
       transform: translateY(-1px);
     }
     
     .shape-label {
-      color: #fff;
+      color: var(--text, #fff);
       font-weight: 500;
       font-size: 14px;
       white-space: nowrap;
@@ -121,11 +125,11 @@
     }
     
     .shape-trigger {
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 8px;
-      color: #fff;
-      padding: 10px 16px;
+      background: var(--trigger-bg, rgba(255, 255, 255, 0.1));
+      border: 1px solid var(--trigger-border, rgba(255, 255, 255, 0.2));
+      border-radius: 10px;
+      color: var(--text, #fff);
+      padding: 12px 18px;
       cursor: pointer;
       transition: all 0.2s ease;
       display: flex;
@@ -135,12 +139,30 @@
       width: 100%;
       font-size: 14px;
       font-weight: 500;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .shape-trigger::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, var(--trigger-shine, rgba(255, 255, 255, 0.1)), transparent);
+      transition: left 0.5s ease;
+    }
+    
+    .shape-trigger:hover::before {
+      left: 100%;
     }
     
     .shape-trigger:hover {
-      background: rgba(255, 255, 255, 0.15);
-      border-color: rgba(255, 255, 255, 0.3);
+      background: var(--trigger-bg-hover, rgba(255, 255, 255, 0.15));
+      border-color: var(--trigger-border-hover, rgba(255, 255, 255, 0.3));
       transform: translateY(-1px);
+      box-shadow: var(--trigger-shadow-hover, 0 4px 15px rgba(0, 0, 0, 0.1));
     }
     
     .shape-trigger:active {
@@ -150,6 +172,7 @@
     .shape-trigger i {
       transition: transform 0.2s ease;
       font-size: 12px;
+      color: var(--chevron-color, #fff);
     }
     
     .shape-trigger[aria-expanded="true"] i {
@@ -168,10 +191,10 @@
       top: 120%;
       left: 0;
       right: 0;
-      background: rgba(15, 20, 41, 0.95);
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: var(--menu-bg, rgba(15, 20, 41, 0.95));
+      border: 1px solid var(--menu-border, rgba(255, 255, 255, 0.15));
       border-radius: 12px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+      box-shadow: var(--menu-shadow, 0 20px 60px rgba(0, 0, 0, 0.6));
       display: none;
       z-index: 1000;
       backdrop-filter: blur(20px);
@@ -184,15 +207,16 @@
     }
     
     .shape-item {
-      padding: 14px 18px;
+      padding: 16px 20px;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
       transition: all 0.2s ease;
-      color: #fff;
+      color: var(--text, #fff);
       font-weight: 500;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      border-bottom: 1px solid var(--item-border, rgba(255, 255, 255, 0.05));
+      position: relative;
     }
     
     .shape-item:last-child {
@@ -200,29 +224,86 @@
     }
     
     .shape-item:hover {
-      background: rgba(255, 255, 255, 0.08);
-      padding-left: 22px;
+      background: var(--item-hover-bg, rgba(255, 255, 255, 0.08));
+      padding-left: 24px;
     }
     
     .shape-item.active {
-      background: rgba(102, 126, 234, 0.15);
-      border-left: 3px solid #667eea;
+      background: var(--item-active-bg, rgba(102, 126, 234, 0.15));
+      border-left: 3px solid var(--item-active-border, #667eea);
     }
     
     .shape-icon {
-      width: 20px;
-      height: 20px;
+      width: 24px;
+      height: 24px;
       border-radius: 4px;
-      background: currentColor;
-      opacity: 0.7;
+      background: var(--icon-color, currentColor);
+      opacity: 0.8;
       flex-shrink: 0;
+      transition: all 0.2s ease;
     }
     
-    .rect-icon { border-radius: 2px; }
+    .shape-item:hover .shape-icon {
+      opacity: 1;
+      transform: scale(1.1);
+    }
+    
+    .rect-icon { border-radius: 3px; }
     .circle-icon { border-radius: 50%; }
-    .rounded-icon { border-radius: 6px; }
+    .rounded-icon { border-radius: 8px; }
     .hex-icon { 
       clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    }
+    
+    /* Theme-specific variables */
+    [data-theme="light"] {
+      --shape-bg: rgba(0, 0, 0, 0.03);
+      --shape-border: rgba(0, 0, 0, 0.1);
+      --shape-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      --shape-border-hover: rgba(0, 0, 0, 0.15);
+      --shape-shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.12);
+      --text: #1a1a1a;
+      --text-muted: rgba(0, 0, 0, 0.5);
+      --trigger-bg: rgba(0, 0, 0, 0.05);
+      --trigger-border: rgba(0, 0, 0, 0.1);
+      --trigger-shine: rgba(0, 0, 0, 0.05);
+      --trigger-bg-hover: rgba(0, 0, 0, 0.08);
+      --trigger-border-hover: rgba(0, 0, 0, 0.15);
+      --trigger-shadow-hover: 0 4px 15px rgba(0, 0, 0, 0.08);
+      --chevron-color: #666;
+      --menu-bg: rgba(255, 255, 255, 0.95);
+      --menu-border: rgba(0, 0, 0, 0.1);
+      --menu-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+      --item-border: rgba(0, 0, 0, 0.05);
+      --item-hover-bg: rgba(0, 0, 0, 0.03);
+      --item-active-bg: rgba(102, 126, 234, 0.1);
+      --item-active-border: #667eea;
+      --icon-color: #667eea;
+    }
+    
+    [data-theme="dark"] {
+      --shape-bg: rgba(255, 255, 255, 0.05);
+      --shape-border: rgba(255, 255, 255, 0.1);
+      --shape-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      --shape-border-hover: rgba(255, 255, 255, 0.2);
+      --shape-shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.15);
+      --text: #fff;
+      --text-muted: rgba(255, 255, 255, 0.6);
+      --trigger-bg: rgba(255, 255, 255, 0.1);
+      --trigger-border: rgba(255, 255, 255, 0.2);
+      --trigger-shine: rgba(255, 255, 255, 0.1);
+      --trigger-bg-hover: rgba(255, 255, 255, 0.15);
+      --trigger-border-hover: rgba(255, 255, 255, 0.3);
+      --trigger-shadow-hover: 0 4px 15px rgba(0, 0, 0, 0.1);
+      --chevron-color: #fff;
+      --menu-bg: rgba(15, 20, 41, 0.95);
+      --menu-border: rgba(255, 255, 255, 0.15);
+      --menu-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+      --item-border: rgba(255, 255, 255, 0.05);
+      --item-hover-bg: rgba(255, 255, 255, 0.08);
+      --item-active-bg: rgba(102, 126, 234, 0.15);
+      --item-active-border: #667eea;
+      --icon-color: #667eea;
     }
     
     @keyframes slideDown {
@@ -407,7 +488,7 @@
     }
 
     .muted { 
-      color: rgba(255, 255, 255, 0.6); 
+      color: var(--text-muted, rgba(255, 255, 255, 0.6)); 
       font-size: 14px; 
       text-align: center;
     }
@@ -474,8 +555,8 @@
               <button class="upload-btn" id="uploadBtn">
                 <i class="fas fa-upload"></i>
                 <span>Upload Image</span>
+                <input id="fileInput" type="file" accept="image/gif,image/png,image/webp,image/jpeg" multiple/>
               </button>
-              <input id="fileInput" type="file" accept="image/gif,image/png,image/webp,image/jpeg" multiple/>
             </div>
             
             <div class="shape-selector">
