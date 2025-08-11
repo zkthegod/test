@@ -5,6 +5,12 @@ const shapeLabel = document.getElementById('shapeLabel');
 const uploadBtn = document.getElementById('uploadBtn');
 const thumb = document.querySelector('.thumb');
 const stage = document.querySelector('.stage .imgwrap');
+const dropOverlay = document.getElementById('dropOverlay');
+const deck = document.getElementById('deck');
+const resultsCard = document.getElementById('resultsCard');
+const uploadCount = document.getElementById('uploadCount');
+const deckPrev = document.getElementById('deckPrev');
+const deckNext = document.getElementById('deckNext');
 const progressBar = document.getElementById('progressBar');
 
 let currentShape = 'rect';
@@ -29,11 +35,29 @@ document.addEventListener('click', (e)=>{
 });
 
 fileInput.addEventListener('change', ()=>{
-  const f = fileInput.files && fileInput.files[0];
-  if (!f) return;
-  currentFile = f;
+  const files = fileInput.files;
+  if (!files || !files.length) return;
+  currentFile = files[0];
   updatePreview();
 });
+
+// Drag & drop
+['dragenter','dragover'].forEach(ev => {
+  stage.addEventListener(ev, (e)=>{ e.preventDefault(); dropOverlay.classList.add('show'); });
+});
+['dragleave','drop'].forEach(ev => {
+  stage.addEventListener(ev, (e)=>{ e.preventDefault(); if (ev === 'drop'){ handleDrop(e); } dropOverlay.classList.remove('show'); });
+});
+
+function handleDrop(e){
+  const dt = e.dataTransfer;
+  if (!dt) return;
+  const files = Array.from(dt.files || []).filter(f => /image\/(gif|png|webp|jpeg)/.test(f.type));
+  if (!files.length) return;
+  fileInput.files = dt.files; // reflect
+  currentFile = files[0];
+  updatePreview();
+}
 
 function updatePreview(){
   thumb.className = 'thumb';
@@ -53,52 +77,68 @@ function updatePreview(){
 }
 
 uploadBtn.addEventListener('click', async ()=>{
-  if (!currentFile){ alert('Please choose an image first.'); return; }
-  if (currentFile.size > 100 * 1024 * 1024){ alert('File too large (max 100MB).'); return; }
-
-  const fd = new FormData();
-  fd.append('image', currentFile);
-  fd.append('shape', currentShape);
-
-  // Use XHR for progress
-  const xhr = new XMLHttpRequest();
-  xhr.open('POST', '/api/upload');
-  xhr.upload.onprogress = (e)=>{
-    if (e.lengthComputable){
-      const pct = Math.round((e.loaded / e.total) * 100);
-      progressBar.style.width = pct + '%';
-    }
-  };
-  xhr.onreadystatechange = ()=>{
-    if (xhr.readyState === 4){
-      try{
-        const res = JSON.parse(xhr.responseText || '{}');
-        if (xhr.status >= 200 && xhr.status < 300){
-          renderResults(res);
-        } else {
-          alert(res.error || 'Upload failed');
-        }
-      }catch{
-        alert('Upload failed');
-      }
-    }
-  };
-  xhr.send(fd);
+  const files = fileInput.files;
+  if (!files || !files.length){ alert('Please choose image(s) first.'); return; }
+  resultsCard.style.display = '';
+  let done = 0;
+  for (const f of files){
+    if (f.size > 100 * 1024 * 1024){ alert(`${f.name} too large (max 100MB). Skipping.`); continue; }
+    await uploadOne(f, (pct)=>{ progressBar.style.width = pct + '%'; });
+    done++;
+    uploadCount.textContent = `${done} item${done>1?'s':''}`;
+  }
 });
 
-function renderResults(res){
-  const d = document.getElementById('directUrl');
-  const b = document.getElementById('bbcode');
-  const h = document.getElementById('htmlcode');
-  const p = document.getElementById('plain');
+async function uploadOne(file, onProgress){
+  const fd = new FormData();
+  fd.append('image', file);
+  fd.append('shape', currentShape);
 
+  const xhr = new XMLHttpRequest();
+  const p = new Promise((resolve) => {
+    xhr.open('POST', '/api/upload');
+    xhr.upload.onprogress = (e)=>{
+      if (e.lengthComputable){
+        const pct = Math.round((e.loaded / e.total) * 100);
+        onProgress?.(pct);
+      }
+    };
+    xhr.onreadystatechange = ()=>{
+      if (xhr.readyState === 4){
+        try{
+          const res = JSON.parse(xhr.responseText || '{}');
+          if (xhr.status >= 200 && xhr.status < 300){
+            renderCard(res);
+            resolve(true);
+          } else {
+            alert(res.error || 'Upload failed');
+            resolve(false);
+          }
+        }catch{
+          alert('Upload failed');
+          resolve(false);
+        }
+      }
+    };
+  });
+  xhr.send(fd);
+  return p;
+}
+
+function renderCard(res){
   const url = res.url || res.directUrl || '';
   const cls = shapeToClass(res.shape || currentShape);
-  d.textContent = url;
-  p.textContent = url;
-  b.textContent = `[img]${url}[/img]`;
-  h.textContent = `<span class="embed-shape ${cls}" style="display:inline-block;overflow:hidden"><img src="${url}" alt="" style="display:block;width:100%;height:auto"/></span>`;
-  document.getElementById('resultsCard').style.display = '';
+  const card = document.createElement('div');
+  card.className = 'card-u';
+  card.innerHTML = `
+    <div class="shot embed-shape ${cls}"><img src="${url}" alt=""/></div>
+    <div class="row"><div class="muted">Direct URL</div><div class="code">${url}</div><button class="copy">Copy</button></div>
+    <div class="row"><div class="muted">BBCode</div><div class="code">[img]${url}[/img]</div><button class="copy">Copy</button></div>
+    <div class="row"><div class="muted">HTML</div><div class="code">&lt;span class=\"embed-shape ${cls}\" style=\"display:inline-block;overflow:hidden\"&gt;&lt;img src=\"${url}\" alt=\"\" style=\"display:block;width:100%;height:auto\"/&gt;&lt;/span&gt;</div><button class="copy">Copy</button></div>
+    <div class="row"><div class="muted">Plain URL</div><div class="code">${url}</div><button class="copy">Copy</button></div>
+  `;
+  deck.appendChild(card);
+  wireCopyButtons(card);
 }
 
 function shapeToClass(s){
@@ -108,13 +148,18 @@ function shapeToClass(s){
   return 'shape-rect';
 }
 
-// Copy buttons
-Array.from(document.querySelectorAll('.copy')).forEach(btn => {
-  btn.addEventListener('click', ()=>{
-    const id = btn.dataset.copy;
-    const el = document.getElementById(id);
-    navigator.clipboard.writeText(el.textContent || '').then(()=>{
-      const old = btn.textContent; btn.textContent = 'Copied'; setTimeout(()=>btn.textContent=old, 1000);
+function wireCopyButtons(scope){
+  Array.from(scope.querySelectorAll('.copy')).forEach(btn => {
+    btn.addEventListener('click', ()=>{
+      const codeEl = btn.parentElement?.querySelector('.code');
+      if (!codeEl) return;
+      navigator.clipboard.writeText(codeEl.textContent || '').then(()=>{
+        const old = btn.textContent; btn.textContent = 'Copied'; setTimeout(()=>btn.textContent=old, 1000);
+      });
     });
   });
-});
+}
+
+// Deck arrows
+deckPrev?.addEventListener('click', ()=>{ deck.scrollBy({ left: -400, behavior: 'smooth' }); });
+deckNext?.addEventListener('click', ()=>{ deck.scrollBy({ left:  400, behavior: 'smooth' }); });

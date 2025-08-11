@@ -31,10 +31,25 @@
     .progress { width:min(720px, 92vw); height:8px; background:rgba(255,255,255,.08); border-radius:999px; overflow:hidden }
     .bar{ height:100%; width:0%; background:linear-gradient(90deg,#6c5ce7,#8b7cf6) }
 
-    .results{ width:min(900px, 92vw); margin: 14px auto 30px; background: var(--card-bg); border: var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px }
-    .results .row{ display:grid; grid-template-columns: 140px 1fr auto; gap:8px; align-items:center }
-    .code{ background:#0f1429; border:1px solid rgba(255,255,255,.08); border-radius:8px; padding:8px; font-family:ui-monospace,Menlo,monospace; font-size:.9rem; color:var(--text); overflow:auto }
-    .copy{ appearance:none; border:1px solid rgba(255,255,255,.12); background:#182040; color:var(--text); padding:8px 10px; border-radius:8px; cursor:pointer }
+    .results{ width:min(1000px, 96vw); margin: 14px auto 30px; background: var(--card-bg); border: var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px; position:relative }
+    .deck-wrap{ position:relative }
+    .deck{ display:flex; gap:12px; overflow:auto; scroll-snap-type: x mandatory; padding: 4px; scroll-behavior:smooth }
+    .deck::-webkit-scrollbar{ height:8px }
+    .deck::-webkit-scrollbar-thumb{ background:linear-gradient(90deg,#6c5ce7,#8b7cf6); border-radius:999px }
+    .card-u{ min-width: 320px; max-width: 420px; flex:0 0 auto; background:#0f1429; border:1px solid rgba(255,255,255,.08); border-radius:12px; padding:10px; scroll-snap-align:start }
+    .card-u .shot{ width:100%; aspect-ratio: 1 / 1; background:#0b0e1a; border:1px solid rgba(255,255,255,.08); border-radius:10px; display:grid; place-items:center; overflow:hidden; margin-bottom:8px }
+    .card-u .shot img{ max-width:100%; max-height:100%; width:auto; height:auto; display:block }
+    .row{ display:grid; grid-template-columns: 110px 1fr auto; gap:8px; align-items:center }
+    .code{ background:#0b1124; border:1px solid rgba(255,255,255,.08); border-radius:8px; padding:8px; font-family:ui-monospace,Menlo,monospace; font-size:.85rem; color:var(--text); overflow:auto }
+    .copy{ appearance:none; border:1px solid rgba(255,255,255,.12); background:#182040; color:var(--text); padding:6px 8px; border-radius:8px; cursor:pointer; font-size:.85rem }
+    .deck-nav{ position:absolute; top:50%; transform:translateY(-50%); background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.12); color:var(--text); width:34px; height:34px; border-radius:999px; display:grid; place-items:center; cursor:pointer; backdrop-filter: blur(6px) }
+    .deck-nav.left{ left:-8px }
+    .deck-nav.right{ right:-8px }
+
+    .drop-overlay{ position:absolute; inset:0; display:none; align-items:center; justify-content:center; background:rgba(108,92,231,.08); border:2px dashed rgba(108,92,231,.45); border-radius:14px }
+    .drop-overlay.show{ display:flex }
+    .drop-box{ text-align:center; color:#e5dcff; text-shadow: 0 0 10px rgba(108,92,231,.6) }
+    .drop-box i{ font-size:42px; margin-bottom:8px; display:block }
   </style>
 </head>
 <body>
@@ -71,7 +86,7 @@
           <div class="center">
             <label class="btn primary glow-btn file-btn">
               <span><i class="fas fa-upload"></i> Upload image (≤ 100MB)</span>
-              <input id="fileInput" type="file" accept="image/gif,image/png,image/webp,image/jpeg"/>
+              <input id="fileInput" type="file" multiple accept="image/gif,image/png,image/webp,image/jpeg"/>
             </label>
             <div class="shape-row">
               <div class="shape-select">
@@ -91,6 +106,12 @@
             <div class="imgwrap">
               <div class="thumb shape-rect"><div class="ph">Preview appears here</div></div>
             </div>
+            <div id="dropOverlay" class="drop-overlay" aria-hidden="true">
+              <div class="drop-box">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <div>Drop images to upload</div>
+              </div>
+            </div>
           </div>
 
           <div class="progress"><div class="bar" id="progressBar"></div></div>
@@ -98,11 +119,15 @@
       </section>
 
       <section class="results" id="resultsCard" style="display:none">
-        <h2 style="margin:0 0 10px 0; font-size:1rem">Embed Codes</h2>
-        <div class="row"><div class="muted">Direct URL</div><div class="code" id="directUrl">—</div><button class="copy" data-copy="directUrl">Copy</button></div>
-        <div class="row"><div class="muted">BBCode</div><div class="code" id="bbcode">—</div><button class="copy" data-copy="bbcode">Copy</button></div>
-        <div class="row"><div class="muted">HTML</div><div class="code" id="htmlcode">—</div><button class="copy" data-copy="htmlcode">Copy</button></div>
-        <div class="row"><div class="muted">Plain URL</div><div class="code" id="plain">—</div><button class="copy" data-copy="plain">Copy</button></div>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px">
+          <h2 style="margin:0; font-size:1rem">Uploads</h2>
+          <div class="muted" id="uploadCount">0 items</div>
+        </div>
+        <div class="deck-wrap">
+          <button class="deck-nav left" id="deckPrev" aria-label="Previous">‹</button>
+          <div class="deck" id="deck"></div>
+          <button class="deck-nav right" id="deckNext" aria-label="Next">›</button>
+        </div>
       </section>
     </main>
 
