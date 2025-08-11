@@ -1,96 +1,156 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Image Uploader</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <title>rexor.lol | Upload</title>
+  <link rel="icon" href="../oh.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css">
   <link rel="stylesheet" href="./shapes.css"/>
   <style>
-    :root{ --bg:#0f1220; --card:#14182b; --text:#e8ecf1; --muted:#a9b0bd; --primary:#6c5ce7; --radius:14px; --border:1px solid rgba(255,255,255,.08) }
-    *{ box-sizing:border-box }
-    body{ margin:0; font-family:Inter,system-ui,sans-serif; background:linear-gradient(180deg,#0f1220,#111425); color:var(--text) }
-    .wrap{ max-width:940px; margin:0 auto; padding:22px }
-    header{ display:flex; align-items:center; justify-content:space-between }
-    h1{ font-size:1.15rem; margin:0 }
+    html, body { overflow-x: hidden; }
+    .container { min-height: 100vh; display: flex; flex-direction: column; }
+    main { flex: 1; }
 
-    .card{ background:var(--card); border:var(--border); border-radius:var(--radius); padding:16px; box-shadow:0 10px 30px rgba(0,0,0,.25); margin-top:14px }
+    .upload-hero { display:grid; place-items:center; padding: 40px 16px }
+    .upload-inner { width:min(900px, 92vw); background: var(--card-bg); border: var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px }
 
-    .uploader{ display:grid; grid-template-columns: 1fr; gap:14px }
-    .controls{ display:flex; gap:10px; flex-wrap:wrap }
-    .file-btn{ position:relative; overflow:hidden }
-    .file-btn input[type=file]{ position:absolute; inset:0; opacity:0; cursor:pointer }
-    .btn{ appearance:none; border:1px solid rgba(255,255,255,.12); background:#1a1f37; color:var(--text); padding:10px 12px; border-radius:10px; cursor:pointer; display:inline-flex; align-items:center; gap:8px }
-    .btn.primary{ background:var(--primary); border-color:transparent }
-    .shape-select{ position:relative }
-    .shape-trigger{ display:inline-flex; align-items:center; gap:8px }
-    .shape-trigger .caret{ font-size:10px; opacity:.8 }
-    .shape-menu{ position:absolute; top:100%; left:0; margin-top:6px; background:#0f1429; border:1px solid rgba(255,255,255,.1); border-radius:10px; min-width:220px; box-shadow:0 16px 40px rgba(0,0,0,.45); display:none; z-index:10 }
-    .shape-menu.open{ display:block }
-    .shape-item{ padding:10px 12px; cursor:pointer; display:flex; align-items:center; gap:10px }
-    .shape-item:hover{ background:rgba(255,255,255,.06) }
+    .center { display:flex; flex-direction:column; align-items:center; gap:14px }
 
-    .preview{ display:flex; align-items:center; gap:14px; flex-wrap:wrap }
-    .thumb{ width:160px; height:160px; background:#0b0e1a; border:1px solid rgba(255,255,255,.08); border-radius:12px; display:grid; place-items:center; overflow:hidden }
-    .thumb .ph{ color:#667; font-size:.9rem }
-    .thumb img{ width:100%; height:100%; object-fit:cover }
+    .glow-btn { position:relative; animation: breathe 3.5s ease-in-out infinite; box-shadow: 0 0 0 0 rgba(108,92,231,.18) }
+    @keyframes breathe { 0%,100% { box-shadow: 0 0 0 0 rgba(108,92,231,.18) } 50% { box-shadow: 0 0 0 10px rgba(108,92,231,.08) } }
 
-    .progress{ height:8px; background:rgba(255,255,255,.08); border-radius:999px; overflow:hidden }
+    .shape-row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:center }
+
+    .stage { width:min(720px, 92vw); height:min(70vh, 720px); background: #0b0e1a; border:1px solid rgba(255,255,255,.08); border-radius: 14px; display:grid; place-items:center; overflow:hidden }
+    .stage .imgwrap { max-width:100%; max-height:100%; display:grid; place-items:center }
+    .stage .imgwrap img { max-width:100%; max-height:100%; width:auto; height:auto; display:block }
+
+    .progress { width:min(720px, 92vw); height:8px; background:rgba(255,255,255,.08); border-radius:999px; overflow:hidden }
     .bar{ height:100%; width:0%; background:linear-gradient(90deg,#6c5ce7,#8b7cf6) }
 
-    .results{ display:grid; grid-template-columns:1fr; gap:8px }
-    .row{ display:grid; grid-template-columns: 140px 1fr auto; gap:8px; align-items:center }
+    .results{ width:min(900px, 92vw); margin: 14px auto 30px; background: var(--card-bg); border: var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px }
+    .results .row{ display:grid; grid-template-columns: 140px 1fr auto; gap:8px; align-items:center }
     .code{ background:#0f1429; border:1px solid rgba(255,255,255,.08); border-radius:8px; padding:8px; font-family:ui-monospace,Menlo,monospace; font-size:.9rem; color:var(--text); overflow:auto }
     .copy{ appearance:none; border:1px solid rgba(255,255,255,.12); background:#182040; color:var(--text); padding:8px 10px; border-radius:8px; cursor:pointer }
-    .muted{ color:var(--muted) }
   </style>
 </head>
 <body>
-  <div class="wrap">
+  <div class="container">
     <header>
-      <h1>Image Uploader</h1>
-      <a class="btn" href="../index.html">← Back</a>
+      <div class="header-content">
+        <div class="logo">
+          <h1>rexor.lol</h1>
+          <span class="subtitle"></span>
+        </div>
+        <div class="header-right">
+          <nav>
+            <ul>
+              <li><a href="../index.html#home"><i class="fas fa-home"></i> Home</a></li>
+              <li><a href="../index.html#chat-embedder"><i class="fas fa-comment-dots"></i> Chat Embedder</a></li>
+              <li><a href="../index.html#name-effects"><i class="fas fa-magic"></i> Namegrad</a></li>
+              <li><a href="../index.html#xatspace-templates"><i class="fas fa-paint-brush"></i> xatspace</a></li>
+              <li><a href="../index.html#simpsons-avatars"><i class="fas fa-user-astronaut"></i> Avatars</a></li>
+              <li><a class="active" href="./index.html"><i class="fas fa-upload"></i> Upload</a></li>
+            </ul>
+          </nav>
+          <div class="theme-toggle-container">
+            <span class="theme-label"><i class="fas fa-sun"></i></span>
+            <label class="switch"><input type="checkbox" id="themeToggle"><span class="slider"></span></label>
+            <span class="theme-label"><i class="fas fa-moon"></i></span>
+          </div>
+        </div>
+      </div>
     </header>
 
-    <div class="card">
-      <div class="uploader">
-        <div class="controls">
-          <label class="file-btn btn primary">
-            <span>Choose image (GIF, PNG, WebP, JPG • ≤ 100MB)</span>
-            <input id="fileInput" type="file" accept="image/gif,image/png,image/webp,image/jpeg"/>
-          </label>
-          <div class="shape-select">
-            <button id="shapeTrigger" class="btn shape-trigger" type="button"><span id="shapeLabel">Shape: Rectangle</span><span class="caret">▾</span></button>
-            <div id="shapeMenu" class="shape-menu">
-              <div class="shape-item" data-shape="rect">Rectangle</div>
-              <div class="shape-item" data-shape="circle">Circle</div>
-              <div class="shape-item" data-shape="rounded">Rounded Square</div>
-              <div class="shape-item" data-shape="hex">Hexagon</div>
+    <main>
+      <section class="upload-hero">
+        <div class="upload-inner center">
+          <div class="center">
+            <label class="btn primary glow-btn file-btn">
+              <span><i class="fas fa-upload"></i> Upload image (≤ 100MB)</span>
+              <input id="fileInput" type="file" accept="image/gif,image/png,image/webp,image/jpeg"/>
+            </label>
+            <div class="shape-row">
+              <div class="shape-select">
+                <button id="shapeTrigger" class="btn shape-trigger" type="button"><span id="shapeLabel">Shape: Rectangle</span><span class="caret">▾</span></button>
+                <div id="shapeMenu" class="shape-menu">
+                  <div class="shape-item" data-shape="rect">Rectangle</div>
+                  <div class="shape-item" data-shape="circle">Circle</div>
+                  <div class="shape-item" data-shape="rounded">Rounded Square</div>
+                  <div class="shape-item" data-shape="hex">Hexagon</div>
+                </div>
+              </div>
+              <button id="uploadBtn" class="btn" type="button">Start Upload</button>
             </div>
           </div>
-          <button id="uploadBtn" class="btn" type="button">Upload</button>
+
+          <div class="stage">
+            <div class="imgwrap">
+              <div class="thumb shape-rect"><div class="ph">Preview appears here</div></div>
+            </div>
+          </div>
+
+          <div class="progress"><div class="bar" id="progressBar"></div></div>
         </div>
+      </section>
 
-        <div class="preview">
-          <div class="thumb"><div class="ph">Preview</div></div>
-          <div class="muted">The shape is applied via CSS masks/clipping so animated GIFs remain animated.</div>
-        </div>
-
-        <div class="progress"><div class="bar" id="progressBar"></div></div>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2 style="margin:0 0 10px 0; font-size:1rem">Embed Codes</h2>
-      <div class="results">
+      <section class="results" id="resultsCard" style="display:none">
+        <h2 style="margin:0 0 10px 0; font-size:1rem">Embed Codes</h2>
         <div class="row"><div class="muted">Direct URL</div><div class="code" id="directUrl">—</div><button class="copy" data-copy="directUrl">Copy</button></div>
         <div class="row"><div class="muted">BBCode</div><div class="code" id="bbcode">—</div><button class="copy" data-copy="bbcode">Copy</button></div>
         <div class="row"><div class="muted">HTML</div><div class="code" id="htmlcode">—</div><button class="copy" data-copy="htmlcode">Copy</button></div>
         <div class="row"><div class="muted">Plain URL</div><div class="code" id="plain">—</div><button class="copy" data-copy="plain">Copy</button></div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div class="footer-grid">
+          <div>
+            <h4>rexor.lol</h4>
+            <p class="muted">Tools for xat.</p>
+          </div>
+          <div></div>
+          <nav class="quick-links" aria-label="Footer links">
+            <a href="../index.html#home"><i class="fas fa-home"></i> Home</a>
+            <a href="../index.html#name-effects"><i class="fas fa-magic"></i> Name Effects</a>
+            <a href="../index.html#simpsons-avatars"><i class="fas fa-user-astronaut"></i> Avatars</a>
+            <a href="../index.html#chat-embedder"><i class="fas fa-comment-dots"></i> Chat Embedder</a>
+            <a href="../index.html#xatspace-templates"><i class="fas fa-paint-brush"></i> xatspace</a>
+          </nav>
+        </div>
       </div>
-    </div>
+    </footer>
   </div>
 
   <script src="./script.js"></script>
+  <script>
+    // Theme toggle sync
+    (function(){
+      const t = document.getElementById('themeToggle');
+      const root = document.documentElement;
+      const saved = localStorage.getItem('theme');
+      if (saved) root.setAttribute('data-theme', saved);
+      t.checked = root.getAttribute('data-theme') === 'dark';
+      t.addEventListener('change', ()=>{
+        const mode = t.checked ? 'dark' : 'light';
+        root.setAttribute('data-theme', mode);
+        localStorage.setItem('theme', mode);
+      });
+    })();
+
+    // Show results card once we have a URL
+    (function(){
+      const direct = document.getElementById('directUrl');
+      const resultsCard = document.getElementById('resultsCard');
+      const mo = new MutationObserver(()=>{
+        if (direct.textContent && direct.textContent !== '—') resultsCard.style.display = '';
+      });
+      mo.observe(direct, { childList: true, characterData: true, subtree: true });
+    })();
+  </script>
 </body>
 </html>

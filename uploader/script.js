@@ -4,6 +4,7 @@ const shapeMenu = document.getElementById('shapeMenu');
 const shapeLabel = document.getElementById('shapeLabel');
 const uploadBtn = document.getElementById('uploadBtn');
 const thumb = document.querySelector('.thumb');
+const stage = document.querySelector('.stage .imgwrap');
 const progressBar = document.getElementById('progressBar');
 
 let currentShape = 'rect';
@@ -97,6 +98,7 @@ function renderResults(res){
   p.textContent = url;
   b.textContent = `[img]${url}[/img]`;
   h.textContent = `<span class="embed-shape ${cls}" style="display:inline-block;overflow:hidden"><img src="${url}" alt="" style="display:block;width:100%;height:auto"/></span>`;
+  document.getElementById('resultsCard').style.display = '';
 }
 
 function shapeToClass(s){
