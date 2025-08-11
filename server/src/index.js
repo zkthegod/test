@@ -67,6 +67,20 @@ app.post('/api/upload', upload.single('image'), async (req, res) => {
   }
 });
 
+app.get('/api/image', async (req, res) => {
+  try{
+    const id = String(req.query.id || '');
+    if (!id) return res.status(400).json({ error: 'Missing id' });
+    await pool.execute('CREATE TABLE IF NOT EXISTS uploads (id VARCHAR(24) PRIMARY KEY, url TEXT, shape VARCHAR(32), mime VARCHAR(64), created_at DATETIME)');
+    const [rows] = await pool.execute('SELECT id, url, shape, mime, created_at FROM uploads WHERE id = ? LIMIT 1', [id]);
+    if (!Array.isArray(rows) || !rows.length) return res.status(404).json({ error: 'Not found' });
+    const row = rows[0];
+    res.json({ id: row.id, url: row.url, shape: row.shape, mime: row.mime, created_at: row.created_at });
+  } catch (e){
+    res.status(400).json({ error: e.message || 'Error' });
+  }
+});
+
 app.listen(port, () => {
   console.log('Uploader server listening on', port);
 });

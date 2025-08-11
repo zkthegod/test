@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>rexor.lol | View Upload</title>
+  <link rel="icon" href="../oh.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="./shapes.css"/>
+  <style>
+    html, body { overflow-x: hidden; }
+    .container { min-height: 100vh; display: flex; flex-direction: column; }
+    main { flex: 1; }
+    .wrap { max-width: 1000px; margin: 0 auto; padding: 22px }
+    .card { background: var(--card-bg); border: var(--border); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); }
+    .shot{ display:grid; place-items:center; background:#0b0e1a; border:1px solid rgba(255,255,255,.08); border-radius:12px; overflow:hidden; min-height:240px }
+    .shot img{ max-width:100%; max-height:70vh; width:auto; height:auto; display:block }
+    .results .row{ display:grid; grid-template-columns: 110px 1fr auto; gap:8px; align-items:center }
+    .code{ background:#0b1124; border:1px solid rgba(255,255,255,.08); border-radius:8px; padding:8px; font-family:ui-monospace,Menlo,monospace; font-size:.85rem; color:var(--text); overflow:auto }
+    .copy{ appearance:none; border:1px solid rgba(255,255,255,.12); background:#182040; color:var(--text); padding:6px 8px; border-radius:8px; cursor:pointer; font-size:.85rem }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="header-content">
+        <div class="logo"><h1>rexor.lol</h1><span class="subtitle"></span></div>
+        <div class="header-right">
+          <nav>
+            <ul>
+              <li><a href="../index.html#home"><i class="fas fa-home"></i> Home</a></li>
+              <li><a href="../index.html#chat-embedder"><i class="fas fa-comment-dots"></i> Chat Embedder</a></li>
+              <li><a href="../index.html#name-effects"><i class="fas fa-magic"></i> Namegrad</a></li>
+              <li><a href="../index.html#xatspace-templates"><i class="fas fa-paint-brush"></i> xatspace</a></li>
+              <li><a href="../index.html#simpsons-avatars"><i class="fas fa-user-astronaut"></i> Avatars</a></li>
+              <li><a href="./index.html" class="active"><i class="fas fa-upload"></i> Upload</a></li>
+            </ul>
+          </nav>
+          <div class="theme-toggle-container">
+            <span class="theme-label"><i class="fas fa-sun"></i></span>
+            <label class="switch"><input type="checkbox" id="themeToggle"><span class="slider"></span></label>
+            <span class="theme-label"><i class="fas fa-moon"></i></span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <div class="wrap">
+        <div class="card">
+          <div class="shot embed-shape" id="shot"><img id="img" alt=""/></div>
+        </div>
+        <div class="card results" style="margin-top:12px">
+          <div class="row"><div class="muted">Direct URL</div><div class="code" id="directUrl">—</div><button class="copy" data-copy="directUrl">Copy</button></div>
+          <div class="row"><div class="muted">BBCode</div><div class="code" id="bbcode">—</div><button class="copy" data-copy="bbcode">Copy</button></div>
+          <div class="row"><div class="muted">HTML</div><div class="code" id="htmlcode">—</div><button class="copy" data-copy="htmlcode">Copy</button></div>
+          <div class="row"><div class="muted">Plain URL</div><div class="code" id="plain">—</div><button class="copy" data-copy="plain">Copy</button></div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div class="footer-grid">
+          <div>
+            <h4>rexor.lol</h4>
+            <p class="muted">Tools for xat.</p>
+          </div>
+          <div></div>
+          <nav class="quick-links" aria-label="Footer links">
+            <a href="../index.html#home"><i class="fas fa-home"></i> Home</a>
+            <a href="../index.html#name-effects"><i class="fas fa-magic"></i> Name Effects</a>
+            <a href="../index.html#simpsons-avatars"><i class="fas fa-user-astronaut"></i> Avatars</a>
+            <a href="../index.html#chat-embedder"><i class="fas fa-comment-dots"></i> Chat Embedder</a>
+            <a href="../index.html#xatspace-templates"><i class="fas fa-paint-brush"></i> xatspace</a>
+          </nav>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    (function(){
+      const t = document.getElementById('themeToggle');
+      const root = document.documentElement;
+      const saved = localStorage.getItem('theme');
+      if (saved) root.setAttribute('data-theme', saved);
+      t.checked = root.getAttribute('data-theme') === 'dark';
+      t.addEventListener('change', ()=>{
+        const mode = t.checked ? 'dark' : 'light';
+        root.setAttribute('data-theme', mode);
+        localStorage.setItem('theme', mode);
+      });
+    })();
+
+    async function load(){
+      const id = new URL(location.href).searchParams.get('id');
+      if (!id){ return; }
+      const res = await fetch(`/api/image?id=${encodeURIComponent(id)}`);
+      if (!res.ok) return;
+      const data = await res.json();
+      const url = data.url; const shape = data.shape || 'rect';
+      const img = document.getElementById('img'); img.src = url;
+      const shot = document.getElementById('shot'); shot.classList.add(shapeToClass(shape));
+      document.getElementById('directUrl').textContent = url;
+      document.getElementById('bbcode').textContent = `[img]${url}[/img]`;
+      document.getElementById('htmlcode').textContent = `<span class="embed-shape ${shapeToClass(shape)}" style="display:inline-block;overflow:hidden"><img src="${url}" alt="" style="display:block;width:100%;height:auto"/></span>`;
+      document.getElementById('plain').textContent = url;
+    }
+    function shapeToClass(s){ if (s==='rounded') return 'shape-rounded'; if (s==='circle') return 'shape-circle'; if (s==='hex') return 'shape-hex'; return 'shape-rect'; }
+    load();
+
+    Array.from(document.querySelectorAll('.copy')).forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const id = btn.dataset.copy; const el = document.getElementById(id);
+        navigator.clipboard.writeText(el.textContent || '').then(()=>{
+          const old = btn.textContent; btn.textContent = 'Copied'; setTimeout(()=>btn.textContent=old, 1000);
+        });
+      });
+    });
+  </script>
+</body>
+</html>
