@@ -214,23 +214,25 @@ async function uploadOne(file) {
 }
 
 function showResults(results) {
-  const resultsCard = document.getElementById('resultsCard');
-  const deck = document.getElementById('deck');
+  const resultsModal = document.getElementById('resultsModal');
+  const resultsContainer = document.getElementById('resultsContainer');
   const uploadCount = document.getElementById('uploadCount');
+  const uploadCountPlural = document.getElementById('uploadCountPlural');
   
-  if (!resultsCard || !deck || !uploadCount) return;
+  if (!resultsModal || !resultsContainer || !uploadCount) return;
   
   // Update count
-  uploadCount.textContent = `${results.length} item${results.length > 1 ? 's' : ''}`;
+  uploadCount.textContent = results.length;
+  uploadCountPlural.textContent = results.length === 1 ? '' : 's';
   
   // Clear previous results
-  deck.innerHTML = '';
+  resultsContainer.innerHTML = '';
   
   // Add each result with beautiful design
   results.forEach((result, index) => {
-    const card = document.createElement('div');
-    card.className = 'result-card';
-    card.innerHTML = `
+    const resultItem = document.createElement('div');
+    resultItem.className = `result-item ${results.length === 1 ? 'single' : ''}`;
+    resultItem.innerHTML = `
       <div class="result-header">
         <div class="result-meta">
           <h3 class="result-title">${result.filename}</h3>
@@ -282,19 +284,16 @@ function showResults(results) {
       </div>
     `;
     
-    deck.appendChild(card);
+    resultsContainer.appendChild(resultItem);
   });
   
-  // Show results section with smooth animation
-  resultsCard.style.display = 'block';
-  resultsCard.style.opacity = '0';
-  resultsCard.style.transform = 'translateY(20px)';
+  // Show modal with beautiful animation
+  resultsModal.style.display = 'flex';
   
-  setTimeout(() => {
-    resultsCard.style.transition = 'all 0.4s ease-out';
-    resultsCard.style.opacity = '1';
-    resultsCard.style.transform = 'translateY(0)';
-  }, 100);
+  // Trigger animation after a tiny delay
+  requestAnimationFrame(() => {
+    resultsModal.classList.add('show');
+  });
   
   // Add copy functionality for all copy buttons
   document.querySelectorAll('.copy-link-btn, .copy-btn, .share-btn').forEach(btn => {
@@ -309,48 +308,36 @@ function showResults(results) {
     });
   });
   
-  // Handle deck navigation
-  const deckPrev = document.getElementById('deckPrev');
-  const deckNext = document.getElementById('deckNext');
+  // Add modal close functionality
+  const modalClose = document.getElementById('modalClose');
+  const modalOverlay = document.getElementById('modalOverlay');
   
-  if (deckPrev && deckNext) {
-    let currentIndex = 0;
-    const totalCards = results.length;
-    
-    function updateNavigation() {
-      deckPrev.style.opacity = currentIndex === 0 ? '0.3' : '1';
-      deckNext.style.opacity = currentIndex === totalCards - 1 ? '0.3' : '1';
-      
-      deckPrev.disabled = currentIndex === 0;
-      deckNext.disabled = currentIndex === totalCards - 1;
-      
-      // Smooth scroll to current card
-      const cards = deck.querySelectorAll('.result-card');
-      if (cards[currentIndex]) {
-        cards[currentIndex].scrollIntoView({ 
-          behavior: 'smooth', 
-          block: 'nearest',
-          inline: 'center'
-        });
-      }
-    }
-    
-    deckPrev.addEventListener('click', () => {
-      if (currentIndex > 0) {
-        currentIndex--;
-        updateNavigation();
-      }
-    });
-    
-    deckNext.addEventListener('click', () => {
-      if (currentIndex < totalCards - 1) {
-        currentIndex++;
-        updateNavigation();
-      }
-    });
-    
-    updateNavigation();
+  if (modalClose) {
+    modalClose.addEventListener('click', closeModal);
   }
+  
+  if (modalOverlay) {
+    modalOverlay.addEventListener('click', closeModal);
+  }
+  
+  // Close modal with Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && resultsModal.classList.contains('show')) {
+      closeModal();
+    }
+  });
+}
+
+function closeModal() {
+  const resultsModal = document.getElementById('resultsModal');
+  if (!resultsModal) return;
+  
+  resultsModal.classList.remove('show');
+  
+  // Hide modal after animation completes
+  setTimeout(() => {
+    resultsModal.style.display = 'none';
+  }, 400);
 }
 
 function showCopySuccess(button) {
