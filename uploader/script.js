@@ -8,10 +8,15 @@ let currentShape = 'rect';
 
 // Prevent shape trigger from opening file dialog
 shapeTrigger.addEventListener('click', (e)=>{
+  console.log('Shape trigger clicked');
   e.stopPropagation();
   e.preventDefault();
+  const isOpen = shapeMenu.classList.contains('open');
+  console.log('Menu currently open:', isOpen);
   shapeMenu.classList.toggle('open');
-  shapeTrigger.setAttribute('aria-expanded', String(shapeMenu.classList.contains('open')));
+  const newState = shapeMenu.classList.contains('open');
+  console.log('Menu now open:', newState);
+  shapeTrigger.setAttribute('aria-expanded', String(newState));
 });
 
 // Prevent mousedown from triggering file input
@@ -32,9 +37,8 @@ shapeMenu.addEventListener('click', (e)=>{
   shapeMenu.classList.remove('open');
   shapeTrigger.setAttribute('aria-expanded', 'false');
   
-  // Update the trigger text to show selected shape
+  // Update the title to show selected shape
   const shapeText = item.textContent;
-  shapeTrigger.textContent = shapeText.charAt(0).toLowerCase();
   shapeTrigger.title = `Selected: ${shapeText}`;
 });
 
@@ -47,8 +51,16 @@ document.addEventListener('click', (e)=>{
 
 // Clicking CTA opens file dialog (but not when clicking shape trigger)
 uploadCta.addEventListener('click', (e)=>{
-  if (e.target === shapeTrigger || shapeTrigger.contains(e.target)) return;
+  // Don't open file dialog if clicking on shape trigger or its children
+  if (e.target === shapeTrigger || shapeTrigger.contains(e.target) || e.target.closest('.shape-select')) {
+    return;
+  }
   fileInput.click();
+});
+
+// Also prevent the file input from being triggered by the CTA's children
+fileInput.addEventListener('click', (e) => {
+  e.stopPropagation();
 });
 
 // Drag & drop (full page) with debounce to avoid flicker
