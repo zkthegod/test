@@ -299,6 +299,9 @@ function showResults(results) {
     carouselContainer.classList.add('multiple');
   } else {
     carouselContainer.classList.add('single');
+    // Hide navigation for single images
+    carouselNav.style.display = 'none';
+    carouselDots.style.display = 'none';
   }
   
   // Show modal with beautiful animation
