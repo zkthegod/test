@@ -257,6 +257,9 @@
                     <div class="header-actions">
                         <button id="randomPreset" class="primary-btn"><i class="fas fa-random"></i> Random</button>
                         <button id="boldToggle" class="primary-btn"><i class="fas fa-bold"></i> Bold</button>
+                        <button id="namegradInfoBtn" class="info-btn" aria-expanded="false" aria-controls="namegradTutorial" title="Namegrad tutorial">
+                            <i class="fas fa-info"></i>
+                        </button>
                     </div>
                 </div>
                 
@@ -273,7 +276,49 @@
                 #name-effects .preview-container { padding: 50px; background: linear-gradient(180deg, var(--preview-bg), transparent); box-shadow: inset 0 1px 0 rgba(0,0,0,0.04); }
                 #name-effects .effect-preview { letter-spacing: -0.5px; }
                 #name-effects .code-section h3 { font-size: 0.95rem; color: var(--text); }
+                /* Tutorial toggle */
+                #name-effects .info-btn { display:inline-flex; align-items:center; justify-content:center; width:36px; height:36px; border-radius:999px; border:1px solid rgba(255,255,255,.12); background: radial-gradient(120% 120% at 50% -20%, rgba(108,92,231,.4), rgba(255,255,255,.04) 60%); color: var(--text); cursor:pointer; position:relative; box-shadow:0 0 0 0 rgba(108,92,231,.3); transition: box-shadow .2s ease, transform .12s ease; }
+                #name-effects .info-btn:hover { box-shadow:0 0 0 6px rgba(108,92,231,.16); transform: translateY(-1px); }
+                #name-effects .info-btn i { color:#c6b5ff; text-shadow:0 0 8px rgba(108,92,231,.6); }
+                #name-effects .tutorial-panel { display:none; background: var(--card-bg); border: var(--border); border-radius: var(--radius); padding:16px; margin:12px 0 18px 0; box-shadow: var(--shadow); position:relative; overflow:hidden; }
+                #name-effects .tutorial-panel.open { display:block; animation: fadeIn .2s ease; }
+                #name-effects .tutorial-panel .close { position:absolute; top:10px; right:12px; background:transparent; border:0; color:var(--text); cursor:pointer; font-size:18px; }
+                #name-effects .tutorial-panel .row { display:flex; gap:14px; align-items:flex-start; flex-wrap:wrap; }
+                #name-effects .tutorial-panel img { width:64px; height:64px; border-radius:12px; border:1px solid rgba(255,255,255,.08); object-fit:cover; background:#0f1429 }
+                #name-effects .tutorial-panel h3 { margin:0 0 6px 0; font-size:1rem }
+                #name-effects .tutorial-panel p, #name-effects .tutorial-panel li { color: var(--text-light); line-height:1.55; }
+                #name-effects .tutorial-panel code { background:#0f1429; border:1px solid rgba(255,255,255,.08); padding:2px 6px; border-radius:6px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size:.9em }
+                #name-effects .tutorial-panel ul { margin:8px 0 0 18px }
+                @keyframes fadeIn { from{ opacity:0; transform:translateY(-2px);} to{ opacity:1; transform:translateY(0);} }
                 </style>
+
+                <div id="namegradTutorial" class="tutorial-panel" aria-hidden="true">
+                    <button class="close" aria-label="Close tutorial" title="Close">×</button>
+                    <div class="row">
+                        <img alt="namegrad icon" src="https://gs.xat.com/a_(namegrad)_20" loading="lazy"/>
+                        <div>
+                            <h3>Rainbow and custom gradient effects with your Namecolor</h3>
+                            <p>You must use at least two colors in your namegrad code, otherwise it will use default colors.</p>
+                            <p><strong>Note:</strong> Namecolor and Nameglow are required for Namegrad to function.</p>
+                        </div>
+                    </div>
+                    <div style="margin-top:10px">
+                        <h4 style="margin:0 0 6px 0; font-size:.95rem">Usage</h4>
+                        <p>An example of a code for a custom gradient (the code is entered into your display name) is <code>(glow#0#grad#r#g#r90)</code>, where:</p>
+                        <ul>
+                            <li><code>glow#0</code> – Glow effect for your gradient. Replace 0 with a hex code to set a Nameglow, or leave it at 0 for no glow.</li>
+                            <li><code>grad#r#g</code> – Two color gradients, beginning with red and ending with green.</li>
+                            <li>You can use up to 15 colors at once to produce gradient effects.</li>
+                            <li><code>grad#r#g#b#000001#ffffff</code> – In this example, 5 colors are used in the following order: red, green, blue, black then white.</li>
+                            <li><code>r90</code> – Rotates the gradient 90 degrees clockwise (vertical gradient).</li>
+                            <li><code>s1</code> – Shifts the gradient to the right. The higher the number, the more it shifts.</li>
+                        </ul>
+                        <p>To produce a rainbow gradient, simply put <code>(glow#0#grad)</code> in your name.</p>
+                        <div style="margin-top:10px">
+                            <img alt="Example with namegrad enabled" src="https://gs.xat.com/a_(namegrad)_20" loading="lazy" style="width:100%;max-width:480px;border-radius:12px;border:1px solid rgba(255,255,255,.08)"/>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="effect-controls">
                     <div class="input-group">
@@ -342,6 +387,24 @@
                         </div>
                     </div>
                 </div>
+                <script>
+                // Namegrad tutorial toggle (scoped to #name-effects)
+                (function(){
+                  const page = document.getElementById('name-effects');
+                  if (!page) return;
+                  const btn = document.getElementById('namegradInfoBtn');
+                  const panel = document.getElementById('namegradTutorial');
+                  const close = panel ? panel.querySelector('.close') : null;
+                  function toggle(open){
+                    const willOpen = open != null ? open : !panel.classList.contains('open');
+                    panel.classList.toggle('open', willOpen);
+                    panel.setAttribute('aria-hidden', String(!willOpen));
+                    if (btn) btn.setAttribute('aria-expanded', String(willOpen));
+                  }
+                  if (btn){ btn.addEventListener('click', ()=> toggle()); }
+                  if (close){ close.addEventListener('click', ()=> toggle(false)); }
+                })();
+                </script>
             </section>
 
             <section id="xatspace-templates" class="page">
