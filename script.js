@@ -25,10 +25,12 @@ document.addEventListener('DOMContentLoaded', function() {
     navLinks.forEach(link => {
         link.addEventListener('click', function(e) {
             const href = this.getAttribute('href') || '';
+            
+            // Allow normal navigation to external pages (e.g., uploader/index.html)
             if (!href.startsWith('#')) {
-                // Allow normal navigation to external pages (e.g., uploader/index.html)
-                return;
+                return; // Let the browser handle external navigation
             }
+            
             e.preventDefault();
             const targetId = href;
             

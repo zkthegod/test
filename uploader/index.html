@@ -23,17 +23,20 @@
     .cta { position:relative; display:flex; align-items:center; gap:8px; background: linear-gradient(180deg,#20173a,#2c1e58); color:#fff; border:1px solid rgba(255,255,255,.2); border-radius:14px; padding:14px 20px; cursor:pointer; box-shadow: 0 0 0 0 rgba(108,92,231,.2); animation: breathe 3.5s ease-in-out infinite; overflow:hidden }
     .cta .shine{ content:""; position:absolute; inset:-200% -200% auto auto; width:60%; height:60%; transform: rotate(25deg); background: linear-gradient(120deg, transparent, rgba(255,255,255,.35), transparent); animation: sweep 6s ease-in-out infinite }
     .cta .label{ font-weight:600 }
-    .cta .chev{ width:26px; height:26px; border-radius:8px; background:rgba(0,0,0,.35); color:#d8d8ff; display:grid; place-items:center; font-weight:600 }
-    .cta .chev:hover{ background:rgba(0,0,0,.5) }
+    .cta .chev{ width:26px; height:26px; border-radius:8px; background:rgba(0,0,0,.35); color:#d8d8ff; display:grid; place-items:center; font-weight:600; transition: all 0.2s ease; cursor: pointer; }
+    .cta .chev:hover{ background:rgba(0,0,0,.5); transform: scale(1.05); }
     .cta input[type=file]{ position:absolute; inset:0; opacity:0; cursor:pointer }
     @keyframes breathe { 0%,100% { box-shadow: 0 0 0 0 rgba(108,92,231,.15) } 50% { box-shadow: 0 0 0 14px rgba(108,92,231,.06) } }
     @keyframes sweep { 0%, 20% { transform: translate(-120%, -120%) rotate(25deg) } 50% { transform: translate(60%, 60%) rotate(25deg) } 100% { transform: translate(60%, 60%) rotate(25deg) } }
 
     .shape-select{ position:relative }
-    .shape-menu{ position:absolute; top:110%; left:0; margin-top:6px; background:#0f1429; border:1px solid rgba(255,255,255,.1); border-radius:10px; min-width:220px; box-shadow:0 16px 40px rgba(0,0,0,.45); display:none; z-index:10 }
+    .shape-menu{ position:absolute; top:110%; left:0; margin-top:6px; background:#0f1429; border:1px solid rgba(255,255,255,.1); border-radius:10px; min-width:220px; box-shadow:0 16px 40px rgba(0,0,0,.45); display:none; z-index:10; animation: slideDown 0.2s ease-out; }
     .shape-menu.open{ display:block }
-    .shape-item{ padding:10px 12px; cursor:pointer; display:flex; align-items:center; gap:10px }
-    .shape-item:hover{ background:rgba(255,255,255,.06) }
+    .shape-item{ padding:12px 16px; cursor:pointer; display:flex; align-items:center; gap:10px; transition: all 0.2s ease; border-radius: 6px; margin: 4px; }
+    .shape-item:hover{ background:rgba(255,255,255,.08); transform: translateX(4px); }
+    .shape-item:first-child { margin-top: 8px; }
+    .shape-item:last-child { margin-bottom: 8px; }
+    @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
     .drop-full{ position:fixed; inset:0; pointer-events:none }
     .drop-full.show{ pointer-events:auto }
@@ -41,6 +44,172 @@
     .drop-full.show .overlay{ display:flex }
     .drop-full .msg{ text-align:center; color:#e5dcff; text-shadow:0 0 10px rgba(108,92,231,.6) }
     .drop-full .msg i{ font-size:42px; margin-bottom:8px; display:block }
+
+    /* Results Section Styles */
+    .results { 
+      background: rgba(15, 20, 41, 0.95); 
+      border: 1px solid rgba(255, 255, 255, 0.1); 
+      border-radius: 16px; 
+      padding: 24px; 
+      margin: 32px auto; 
+      max-width: 800px; 
+      backdrop-filter: blur(20px);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .deck-wrap { 
+      position: relative; 
+      display: flex; 
+      align-items: center; 
+      gap: 16px; 
+      margin-top: 20px;
+    }
+
+    .deck { 
+      display: flex; 
+      gap: 20px; 
+      overflow-x: auto; 
+      scroll-behavior: smooth; 
+      padding: 8px 0;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .deck::-webkit-scrollbar { display: none; }
+
+    .deck-nav { 
+      background: rgba(255, 255, 255, 0.1); 
+      border: 1px solid rgba(255, 255, 255, 0.2); 
+      color: #fff; 
+      width: 40px; 
+      height: 40px; 
+      border-radius: 50%; 
+      display: grid; 
+      place-items: center; 
+      cursor: pointer; 
+      transition: all 0.2s ease; 
+      font-size: 18px; 
+      font-weight: bold;
+    }
+    .deck-nav:hover { 
+      background: rgba(255, 255, 255, 0.2); 
+      transform: scale(1.1); 
+    }
+    .deck-nav:disabled { 
+      opacity: 0.5; 
+      cursor: not-allowed; 
+    }
+
+    .result-card { 
+      background: rgba(255, 255, 255, 0.05); 
+      border: 1px solid rgba(255, 255, 255, 0.1); 
+      border-radius: 12px; 
+      padding: 16px; 
+      min-width: 280px; 
+      max-width: 320px; 
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+    .result-card:hover { 
+      transform: translateY(-4px); 
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3); 
+      border-color: rgba(108, 92, 231, 0.3);
+    }
+
+    .result-image { 
+      position: relative; 
+      margin-bottom: 16px; 
+      border-radius: 8px; 
+      overflow: hidden;
+      background: rgba(0, 0, 0, 0.2);
+    }
+    .result-image img { 
+      width: 100%; 
+      height: 180px; 
+      object-fit: cover; 
+      display: block;
+    }
+
+    .shape-badge { 
+      position: absolute; 
+      top: 8px; 
+      right: 8px; 
+      background: rgba(108, 92, 231, 0.9); 
+      color: #fff; 
+      padding: 4px 8px; 
+      border-radius: 12px; 
+      font-size: 11px; 
+      font-weight: 600; 
+      text-transform: uppercase; 
+      letter-spacing: 0.5px;
+      backdrop-filter: blur(10px);
+    }
+
+    .result-info h3 { 
+      margin: 0 0 12px 0; 
+      font-size: 14px; 
+      font-weight: 600; 
+      color: #fff; 
+      white-space: nowrap; 
+      overflow: hidden; 
+      text-overflow: ellipsis;
+    }
+
+    .result-links { 
+      display: flex; 
+      gap: 8px; 
+      flex-wrap: wrap;
+    }
+
+    .btn { 
+      padding: 8px 12px; 
+      border: none; 
+      border-radius: 6px; 
+      font-size: 12px; 
+      font-weight: 500; 
+      cursor: pointer; 
+      transition: all 0.2s ease; 
+      display: flex; 
+      align-items: center; 
+      gap: 6px; 
+      text-decoration: none;
+      flex: 1;
+      justify-content: center;
+      min-width: 0;
+    }
+
+    .btn-primary { 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+      color: #fff; 
+    }
+    .btn-primary:hover { 
+      transform: translateY(-1px); 
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4); 
+    }
+
+    .btn-secondary { 
+      background: rgba(255, 255, 255, 0.1); 
+      color: #fff; 
+      border: 1px solid rgba(255, 255, 255, 0.2); 
+    }
+    .btn-secondary:hover { 
+      background: rgba(255, 255, 255, 0.15); 
+      transform: translateY(-1px); 
+    }
+
+    .muted { 
+      color: rgba(255, 255, 255, 0.6); 
+      font-size: 14px; 
+      text-align: center;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .results { margin: 20px 16px; padding: 20px; }
+      .deck-wrap { gap: 12px; }
+      .deck-nav { width: 36px; height: 36px; font-size: 16px; }
+      .result-card { min-width: 240px; }
+      .result-image img { height: 140px; }
+    }
   </style>
 </head>
 <body>
@@ -79,15 +248,15 @@
             <span class="shine" aria-hidden="true"></span>
             <span class="label"><i class="fas fa-upload"></i> Upload</span>
             <div class="shape-select">
-              <span id="shapeTrigger" class="chev" role="button" aria-haspopup="menu" aria-expanded="false">v</span>
+              <span id="shapeTrigger" class="chev" role="button" aria-haspopup="menu" aria-expanded="false" title="Selected: Rectangle">r</span>
               <div id="shapeMenu" class="shape-menu" role="menu">
-                <div class="shape-item" data-shape="rect">Rectangle</div>
+                <div class="shape-item active" data-shape="rect">Rectangle</div>
                 <div class="shape-item" data-shape="circle">Circle</div>
                 <div class="shape-item" data-shape="rounded">Rounded Square</div>
                 <div class="shape-item" data-shape="hex">Hexagon</div>
               </div>
             </div>
-            <input id="fileInput" type="file" accept="image/gif,image/png,image/webp,image/jpeg"/>
+            <input id="fileInput" type="file" accept="image/gif,image/png,image/webp,image/jpeg" multiple/>
           </div>
           <div class="muted">Drag & drop anywhere or use Upload</div>
         </div>

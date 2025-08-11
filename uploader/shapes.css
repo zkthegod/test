@@ -18,3 +18,51 @@
   clip-path: polygon(25% 6.7%, 75% 6.7%, 100% 50%, 75% 93.3%, 25% 93.3%, 0% 50%);
   overflow: hidden;
 }
+
+/* Shape-specific styles */
+.shape-rect { border-radius: 4px; }
+.shape-circle { border-radius: 50%; }
+.shape-rounded { border-radius: 12px; }
+.shape-hex { 
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+
+/* Enhanced shape badge styles */
+.shape-badge.shape-rect { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+.shape-badge.shape-circle { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+.shape-badge.shape-rounded { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+.shape-badge.shape-hex { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+
+/* Hover effects for shape items */
+.shape-item[data-shape="rect"]:hover { border-left: 3px solid #667eea; }
+.shape-item[data-shape="circle"]:hover { border-left: 3px solid #f093fb; }
+.shape-item[data-shape="rounded"]:hover { border-left: 3px solid #4facfe; }
+.shape-item[data-shape="hex"]:hover { border-left: 3px solid #43e97b; }
+
+/* Active state for selected shape */
+.shape-item.active {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-left: 3px solid;
+}
+
+.shape-item.active[data-shape="rect"] { border-left-color: #667eea; }
+.shape-item.active[data-shape="circle"] { border-left-color: #f093fb; }
+.shape-item.active[data-shape="rounded"] { border-left-color: #4facfe; }
+.shape-item.active[data-shape="hex"] { border-left-color: #43e97b; }
+
+/* Shape indicator in dropdown */
+.shape-item::before {
+  content: '';
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  background: currentColor;
+  opacity: 0.3;
+}
+
+.shape-item[data-shape="rect"]::before { border-radius: 2px; }
+.shape-item[data-shape="circle"]::before { border-radius: 50%; }
+.shape-item[data-shape="rounded"]::before { border-radius: 4px; }
+.shape-item[data-shape="hex"]::before { 
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
