@@ -130,6 +130,35 @@ function handleDrop(e){
   uploadMultiple(files);
 }
 
+// Mock upload system for testing (remove this when you have real backend)
+const MOCK_IMAGES = [
+  'https://picsum.photos/400/300?random=1',
+  'https://picsum.photos/400/300?random=2', 
+  'https://picsum.photos/400/300?random=3',
+  'https://picsum.photos/400/300?random=4',
+  'https://picsum.photos/400/300?random=5',
+  'https://picsum.photos/400/300?random=6',
+  'https://picsum.photos/400/300?random=7',
+  'https://picsum.photos/400/300?random=8'
+];
+
+const MOCK_SHAPES = ['rect', 'circle', 'rounded', 'hex'];
+
+function generateMockUploadResult(file, shape) {
+  const randomImage = MOCK_IMAGES[Math.floor(Math.random() * MOCK_IMAGES.length)];
+  const randomId = Math.random().toString(36).substr(2, 9);
+  
+  return {
+    id: randomId,
+    filename: file.name,
+    shape: shape,
+    url: `./view.html?id=${randomId}`,
+    directUrl: randomImage,
+    size: file.size,
+    uploadedAt: new Date().toISOString()
+  };
+}
+
 async function uploadMultiple(files) {
   if (files.length === 0) return;
   
@@ -146,6 +175,9 @@ async function uploadMultiple(files) {
   let successCount = 0;
   
   try {
+    // Simulate upload delay for better UX
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
     for (const file of files) {
       if (file.size > 100 * 1024 * 1024) {
         showToast(`${file.name} is too large (max 100MB)`);
@@ -153,11 +185,10 @@ async function uploadMultiple(files) {
       }
       
       try {
-        const result = await uploadOne(file);
-        if (result) {
-          results.push(result);
-          successCount++;
-        }
+        // Use mock upload for testing
+        const result = generateMockUploadResult(file, currentShape);
+        results.push(result);
+        successCount++;
       } catch (error) {
         console.error('Upload error:', error);
         showToast(`Failed to upload ${file.name}`);
@@ -176,43 +207,10 @@ async function uploadMultiple(files) {
   }
 }
 
-async function uploadOne(file){
-  const fd = new FormData();
-  fd.append('image', file);
-  fd.append('shape', currentShape);
-
-  return new Promise((resolve) => {
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', '/api/upload');
-    xhr.onreadystatechange = ()=>{
-      if (xhr.readyState === 4){
-        try{
-          const res = JSON.parse(xhr.responseText || '{}');
-          if (xhr.status >= 200 && xhr.status < 300){
-            const id = res.id;
-            if (id) {
-              resolve({
-                id: id,
-                filename: file.name,
-                shape: currentShape,
-                url: `./view.html?id=${encodeURIComponent(id)}`,
-                directUrl: res.url || `./view.html?id=${encodeURIComponent(id)}`
-              });
-            } else {
-              resolve(null);
-            }
-          } else {
-            showToast(res.error || 'Upload failed');
-            resolve(null);
-          }
-        }catch{
-          showToast('Upload failed');
-          resolve(null);
-        }
-      }
-    };
-    xhr.send(fd);
-  });
+// Remove this when you have real backend
+async function uploadOne(file) {
+  // Mock upload - remove this function when you have real backend
+  return generateMockUploadResult(file, currentShape);
 }
 
 function showResults(results) {
@@ -228,24 +226,58 @@ function showResults(results) {
   // Clear previous results
   deck.innerHTML = '';
   
-  // Add each result
+  // Add each result with beautiful design
   results.forEach((result, index) => {
     const card = document.createElement('div');
     card.className = 'result-card';
     card.innerHTML = `
-      <div class="result-image">
-        <img src="${result.directUrl}" alt="${result.filename}" loading="lazy">
-        <div class="shape-badge ${shapeToClass(result.shape)}">${result.shape}</div>
-      </div>
-      <div class="result-info">
-        <h3>${result.filename}</h3>
-        <div class="result-links">
-          <a href="${result.url}" class="btn btn-primary" target="_blank">
-            <i class="fas fa-external-link-alt"></i> View
-          </a>
-          <button class="btn btn-secondary copy-link" data-url="${result.directUrl}">
-            <i class="fas fa-copy"></i> Copy Link
+      <div class="result-header">
+        <div class="result-meta">
+          <h3 class="result-title">${result.filename}</h3>
+          <div class="result-details">
+            <span class="result-shape ${shapeToClass(result.shape)}">${result.shape}</span>
+            <span class="result-size">${formatFileSize(result.size)}</span>
+          </div>
+        </div>
+        <div class="result-actions">
+          <button class="action-btn copy-btn" data-url="${result.directUrl}" title="Copy direct link">
+            <i class="fas fa-copy"></i>
           </button>
+          <button class="action-btn share-btn" data-url="${result.url}" title="Copy share link">
+            <i class="fas fa-share-alt"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div class="result-image-container">
+        <img src="${result.directUrl}" alt="${result.filename}" loading="lazy" class="result-image">
+        <div class="image-overlay">
+          <a href="${result.url}" class="view-btn" target="_blank">
+            <i class="fas fa-external-link-alt"></i>
+            <span>View</span>
+          </a>
+        </div>
+      </div>
+      
+      <div class="result-links">
+        <div class="link-group">
+          <label class="link-label">Direct Link:</label>
+          <div class="link-input-group">
+            <input type="text" value="${result.directUrl}" readonly class="link-input direct-link">
+            <button class="copy-link-btn" data-url="${result.directUrl}">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div class="link-group">
+          <label class="link-label">Share Link:</label>
+          <div class="link-input-group">
+            <input type="text" value="${result.url}" readonly class="link-input share-link">
+            <button class="copy-link-btn" data-url="${result.url}">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
         </div>
       </div>
     `;
@@ -253,21 +285,27 @@ function showResults(results) {
     deck.appendChild(card);
   });
   
-  // Show results section
+  // Show results section with smooth animation
   resultsCard.style.display = 'block';
+  resultsCard.style.opacity = '0';
+  resultsCard.style.transform = 'translateY(20px)';
   
-  // Add copy link functionality
-  document.querySelectorAll('.copy-link').forEach(btn => {
-    btn.addEventListener('click', () => {
+  setTimeout(() => {
+    resultsCard.style.transition = 'all 0.4s ease-out';
+    resultsCard.style.opacity = '1';
+    resultsCard.style.transform = 'translateY(0)';
+  }, 100);
+  
+  // Add copy functionality for all copy buttons
+  document.querySelectorAll('.copy-link-btn, .copy-btn, .share-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
       const url = btn.dataset.url;
-      navigator.clipboard.writeText(url).then(() => {
-        btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
-        setTimeout(() => {
-          btn.innerHTML = '<i class="fas fa-copy"></i> Copy Link';
-        }, 2000);
-      }).catch(() => {
+      try {
+        await navigator.clipboard.writeText(url);
+        showCopySuccess(btn);
+      } catch (err) {
         showToast('Failed to copy link');
-      });
+      }
     });
   });
   
@@ -280,13 +318,20 @@ function showResults(results) {
     const totalCards = results.length;
     
     function updateNavigation() {
-      deckPrev.style.opacity = currentIndex === 0 ? '0.5' : '1';
-      deckNext.style.opacity = currentIndex === totalCards - 1 ? '0.5' : '1';
+      deckPrev.style.opacity = currentIndex === 0 ? '0.3' : '1';
+      deckNext.style.opacity = currentIndex === totalCards - 1 ? '0.3' : '1';
       
-      // Scroll to current card
+      deckPrev.disabled = currentIndex === 0;
+      deckNext.disabled = currentIndex === totalCards - 1;
+      
+      // Smooth scroll to current card
       const cards = deck.querySelectorAll('.result-card');
       if (cards[currentIndex]) {
-        cards[currentIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        cards[currentIndex].scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'nearest',
+          inline: 'center'
+        });
       }
     }
     
@@ -306,6 +351,25 @@ function showResults(results) {
     
     updateNavigation();
   }
+}
+
+function showCopySuccess(button) {
+  const originalHTML = button.innerHTML;
+  button.innerHTML = '<i class="fas fa-check"></i>';
+  button.classList.add('copied');
+  
+  setTimeout(() => {
+    button.innerHTML = originalHTML;
+    button.classList.remove('copied');
+  }, 2000);
+}
+
+function formatFileSize(bytes) {
+  if (bytes === 0) return '0 Bytes';
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
 function shapeToClass(s){
