@@ -61,9 +61,13 @@ uploadBtn.addEventListener('click', (e)=>{
 
 // File input change handler
 fileInput.addEventListener('change', (e)=> { 
+  console.log('File input change event triggered');
   if (fileInput.files && fileInput.files.length > 0) {
     console.log('Files selected:', fileInput.files.length);
+    console.log('Files:', Array.from(fileInput.files).map(f => f.name));
     uploadMultiple(Array.from(fileInput.files));
+  } else {
+    console.log('No files selected');
   }
 });
 
@@ -160,6 +164,7 @@ function generateMockUploadResult(file, shape) {
 }
 
 async function uploadMultiple(files) {
+  console.log('uploadMultiple called with files:', files.length);
   if (files.length === 0) return;
   
   // Show loading state
@@ -175,10 +180,12 @@ async function uploadMultiple(files) {
   let successCount = 0;
   
   try {
+    console.log('Starting mock upload simulation...');
     // Simulate upload delay for better UX
     await new Promise(resolve => setTimeout(resolve, 1500));
     
     for (const file of files) {
+      console.log('Processing file:', file.name, 'with shape:', currentShape);
       if (file.size > 100 * 1024 * 1024) {
         showToast(`${file.name} is too large (max 100MB)`);
         continue;
@@ -187,6 +194,7 @@ async function uploadMultiple(files) {
       try {
         // Use mock upload for testing
         const result = generateMockUploadResult(file, currentShape);
+        console.log('Generated mock result:', result);
         results.push(result);
         successCount++;
       } catch (error) {
@@ -195,6 +203,7 @@ async function uploadMultiple(files) {
       }
     }
     
+    console.log('Upload complete. Results:', results);
     if (successCount > 0) {
       showResults(results);
       showToast(`Successfully uploaded ${successCount} file${successCount > 1 ? 's' : ''}!`, false);
