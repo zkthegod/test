@@ -213,23 +213,49 @@ async function uploadOne(file) {
   return generateMockUploadResult(file, currentShape);
 }
 
+// Theme detection and switching
+function detectAndApplyTheme() {
+  const body = document.body;
+  const modal = document.getElementById('resultsModal');
+  
+  // Check if body has dark theme class
+  if (body.classList.contains('dark-theme')) {
+    modal.classList.add('dark-theme');
+    modal.classList.remove('light-theme');
+  } else {
+    modal.classList.add('light-theme');
+    modal.classList.remove('dark-theme');
+  }
+}
+
+// Apply theme when modal is shown
 function showResults(results) {
   const resultsModal = document.getElementById('resultsModal');
   const resultsContainer = document.getElementById('resultsContainer');
-  const uploadCount = document.getElementById('uploadCount');
-  const uploadCountPlural = document.getElementById('uploadCountPlural');
   const carouselContainer = document.getElementById('carouselContainer');
   const carouselNav = document.getElementById('carouselNav');
   const carouselDots = document.getElementById('carouselDots');
   
-  if (!resultsModal || !resultsContainer || !uploadCount || !carouselContainer) return;
-  
-  // Update count
-  uploadCount.textContent = results.length;
-  uploadCountPlural.textContent = results.length === 1 ? '' : 's';
+  // Detect and apply theme
+  detectAndApplyTheme();
   
   // Clear previous results
+  resultsContainer.innerHTML = '';
   carouselContainer.innerHTML = '';
+  
+  // Create upload summary
+  const uploadSummary = document.createElement('div');
+  uploadSummary.className = 'upload-summary';
+  uploadSummary.innerHTML = `
+    <div class="summary-icon">
+      <i class="fas fa-check"></i>
+    </div>
+    <div class="summary-text">
+      Successfully uploaded <span class="summary-count">${results.length}</span> image${results.length === 1 ? '' : 's'}
+    </div>
+  `;
+  
+  resultsContainer.appendChild(uploadSummary);
   
   // Create carousel items
   results.forEach((result, index) => {
