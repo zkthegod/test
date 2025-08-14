@@ -332,7 +332,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 20px;
+      padding: 12px;
       opacity: 0;
       visibility: hidden;
       transition: all 0.3s ease;
@@ -356,7 +356,7 @@
       border-radius: 20px;
       box-shadow: var(--modal-shadow, 0 25px 60px rgba(0, 0, 0, 0.2));
       width: 100%;
-      max-width: 900px;
+      max-width: 680px;
       max-height: 85vh;
       overflow: hidden;
       position: relative;
@@ -407,8 +407,8 @@
     }
     
     .modal-body {
-      padding: 28px;
-      max-height: calc(85vh - 80px);
+      padding: 20px;
+      max-height: calc(85vh - 72px);
       overflow-y: auto;
     }
     
@@ -416,9 +416,9 @@
     .upload-summary {
       display: flex;
       align-items: center;
-      gap: 16px;
-      margin-bottom: 28px;
-      padding: 20px;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding: 12px 14px;
       background: var(--summary-bg, #e8f5e8);
       border: 1px solid var(--summary-border, #c3e6c3);
       border-radius: 12px;
@@ -453,7 +453,7 @@
     .results-container {
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      gap: 16px;
       align-items: center;
     }
     
@@ -469,14 +469,14 @@
       background: var(--arrow-bg, #667eea);
       border: none;
       color: var(--arrow-color, #fff);
-      width: 44px;
-      height: 44px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       display: grid;
       place-items: center;
       cursor: pointer;
       transition: all 0.2s ease;
-      font-size: 16px;
+      font-size: 14px;
       font-weight: 600;
       box-shadow: var(--arrow-shadow, 0 4px 12px rgba(102, 126, 234, 0.3));
     }
@@ -521,7 +521,7 @@
       width: 100%;
       max-width: 800px;
       position: relative;
-      min-height: 500px;
+      min-height: 360px;
     }
     
     /* Single Image Layout */
@@ -614,7 +614,7 @@
       background: var(--result-bg, #ffffff);
       border: 1px solid var(--result-border, #e5e7eb);
       border-radius: 16px;
-      padding: 20px;
+      padding: 14px;
       transition: all 0.3s ease;
       position: relative;
       overflow: hidden;
@@ -717,7 +717,7 @@
       border-radius: 12px;
       overflow: hidden;
       background: var(--image-bg, #f9fafb);
-      aspect-ratio: 16/10;
+      aspect-ratio: 4/3;
       box-shadow: var(--image-shadow, 0 2px 8px rgba(0, 0, 0, 0.06));
     }
     
@@ -805,7 +805,7 @@
       border-radius: 8px;
       padding: 8px 10px;
       color: var(--input-text, #1f2937);
-      font-size: 11px;
+      font-size: 10px;
       font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
       cursor: text;
       transition: all 0.2s ease;
