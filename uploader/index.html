@@ -1040,6 +1040,22 @@
       .carousel-dots { gap: 8px; margin-top: 20px; }
       .carousel-dot { width: 8px; height: 8px; }
     }
+    
+    /* Footer styles (same as homepage) */
+    .site-footer { position: relative; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw; width: 100vw; background: linear-gradient(to bottom, var(--card-bg), rgba(0,0,0,0.02)); border-top: var(--border); }
+    .site-footer .footer-inner { max-width: 1200px; width: 100%; margin: 0 auto; padding: 12px 20px; }
+    .site-footer .footer-grid { display: grid; grid-template-columns: 1fr auto auto; gap: 12px; align-items: center; }
+    .site-footer h4 { font-size: 0.95rem; margin-bottom: 8px; color: var(--text); }
+    .site-footer p, .site-footer a { color: var(--text-light); font-size: 0.92rem; text-decoration: none; }
+    .site-footer a:hover { color: var(--primary); }
+    .site-footer .quick-links { display: flex; flex-wrap: wrap; gap: 12px; justify-content: flex-end; }
+    .site-footer .quick-links a { padding: 6px 10px; border-radius: 999px; background: var(--nav-active); color: var(--text); }
+    .site-footer .quick-links a:hover { background: rgba(108, 92, 231, 0.18); }
+    .site-footer .contact-btn { display: inline-flex; align-items: center; gap: 8px; padding: 6px 10px; font-size: 0.9rem; border-radius: 999px; background: rgba(255,255,255,0.6); color: var(--text); text-decoration: none; transition: var(--transition); }
+    .site-footer .contact-btn:hover { background: rgba(255,255,255,0.8); transform: translateY(-1px); }
+    [data-theme="dark"] .site-footer .contact-btn { background: rgba(255,255,255,0.12); color: var(--text); }
+    [data-theme="dark"] .site-footer .contact-btn:hover { background: rgba(255,255,255,0.18); }
+    @media (max-width: 720px) { .site-footer .footer-grid { grid-template-columns: 1fr; gap: 8px; } .site-footer .quick-links { justify-content: flex-start; } .site-footer .contact-btn { margin-top: 4px; } }
   </style>
 </head>
 <body class="light-theme">
@@ -1156,6 +1172,25 @@
             </div>
           </section>
         </main>
+        
+        <footer class="site-footer">
+          <div class="footer-inner">
+            <div class="footer-grid">
+              <div>
+                <h4>rexor.lol</h4>
+                <p>Premium tools for xat.com users.</p>
+              </div>
+              <nav class="quick-links" aria-label="Footer links">
+                <a href="../index.html#home"><i class="fas fa-home"></i> Home</a>
+                <a href="../index.html#name-effects"><i class="fas fa-magic"></i> Namegrad</a>
+                <a href="../index.html#simpsons-avatars"><i class="fas fa-user-astronaut"></i> Avatars</a>
+                <a href="../index.html#chat-embedder"><i class="fas fa-comment-dots"></i> Chat Embedder</a>
+                <a href="../index.html#xatspace-templates"><i class="fas fa-paint-brush"></i> xatspace</a>
+              </nav>
+              <a class="contact-btn" href="mailto:hi@rexor.lol"><i class="fas fa-envelope"></i> hi@rexor.lol</a>
+            </div>
+          </div>
+        </footer>
       </div>
 
       <!-- Toast Container -->
@@ -1163,4 +1198,37 @@
 
       <script src="../script.js"></script>
       <script src="./script.js"></script>
+      <script>
+        // Floating particles matching site theme
+        (function(){
+          const hero = document.querySelector('.upload-hero');
+          if (!hero) return;
+          const layer = document.createElement('div');
+          layer.style.position = 'absolute';
+          layer.style.inset = '0';
+          layer.style.pointerEvents = 'none';
+          layer.style.zIndex = '0';
+          hero.appendChild(layer);
+          const themePrimary = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#6c5ce7';
+          const dots = 28;
+          for (let i=0;i<dots;i++){
+            const d = document.createElement('div');
+            const size = 3 + Math.random()*3;
+            d.style.position = 'absolute';
+            d.style.width = d.style.height = size + 'px';
+            d.style.borderRadius = '50%';
+            d.style.left = Math.random()*100 + '%';
+            d.style.top = Math.random()*100 + '%';
+            d.style.background = themePrimary;
+            d.style.opacity = String(0.10 + Math.random()*0.25);
+            const dur = 8 + Math.random()*10;
+            const delay = Math.random()*-dur;
+            d.style.animation = `uploadFloat ${dur}s ease-in-out ${delay}s infinite alternate`;
+            layer.appendChild(d);
+          }
+          const styleEl = document.createElement('style');
+          styleEl.textContent = `@keyframes uploadFloat { from { transform: translateY(0) translateX(0); } to { transform: translateY(-12px) translateX(6px); } }`;
+          document.head.appendChild(styleEl);
+        })();
+      </script>
     </body>

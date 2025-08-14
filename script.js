@@ -47,6 +47,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Update URL hash without scrolling
                 history.replaceState(null, '', targetId);
+                // Ensure we start at the top of the page after switching sections
+                window.scrollTo({ top: 0, left: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
             }
         });
     });
@@ -63,6 +65,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const home = document.querySelector('#home');
             if (home) home.classList.add('active');
         }
+        // Make sure we are at the top on load
+        window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
     })();
     
     // Chat embedder functionality (revamped)
