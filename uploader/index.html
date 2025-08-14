@@ -494,6 +494,24 @@
       box-shadow: none;
     }
     
+    /* Overlay navigation on sides of the current image */
+    .carousel-container { position: relative; }
+    .carousel-container .carousel-nav {
+      position: absolute;
+      inset: 0;
+      display: none;
+      z-index: 5;
+      pointer-events: none;
+    }
+    .carousel-container .carousel-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: auto;
+    }
+    .carousel-container .carousel-arrow.prev { left: 8px; }
+    .carousel-container .carousel-arrow.next { right: 8px; }
+
     /* Carousel Container */
     .carousel-container {
       display: flex;
@@ -1148,18 +1166,18 @@
               
               <div class="modal-body">
                 <div class="results-container" id="resultsContainer">
-                  <!-- Carousel Navigation -->
-                  <div class="carousel-nav" id="carouselNav" style="display: none;">
-                    <button class="carousel-arrow prev" id="carouselPrev" aria-label="Previous image">
-                      <i class="fas fa-chevron-left"></i>
-                    </button>
-                    <button class="carousel-arrow next" id="carouselNext" aria-label="Next image">
-                      <i class="fas fa-chevron-right"></i>
-                    </button>
-                  </div>
                   
                   <!-- Carousel Container -->
                   <div class="carousel-container" id="carouselContainer">
+                    <!-- Carousel Navigation (overlay) -->
+                    <div class="carousel-nav" id="carouselNav" style="display: none;">
+                      <button class="carousel-arrow prev" id="carouselPrev" aria-label="Previous image">
+                        <i class="fas fa-chevron-left"></i>
+                      </button>
+                      <button class="carousel-arrow next" id="carouselNext" aria-label="Next image">
+                        <i class="fas fa-chevron-right"></i>
+                      </button>
+                    </div>
                     <!-- Results will be dynamically inserted here -->
                   </div>
                   
