@@ -50,6 +50,20 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    // Activate initial hash on load
+    (function(){
+        const hash = location.hash && document.querySelector(location.hash) ? location.hash : '#home';
+        const targetLink = Array.from(navLinks).find(a => (a.getAttribute('href')||'') === hash);
+        if (targetLink) {
+            targetLink.click();
+        } else {
+            // Fallback: show home
+            pages.forEach(page => page.classList.remove('active'));
+            const home = document.querySelector('#home');
+            if (home) home.classList.add('active');
+        }
+    })();
     
     // Chat embedder functionality (revamped)
     const embedChatBtn = document.getElementById('embedChat');

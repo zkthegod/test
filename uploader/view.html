@@ -96,12 +96,18 @@
     })();
 
     async function load(){
-      const id = new URL(location.href).searchParams.get('id');
-      if (!id){ return; }
-      const res = await fetch(`/api/image?id=${encodeURIComponent(id)}`);
-      if (!res.ok) return;
-      const data = await res.json();
-      const url = data.url; const shape = data.shape || 'rect';
+      const urlObj = new URL(location.href);
+      const id = urlObj.searchParams.get('id');
+      const direct = urlObj.searchParams.get('direct');
+      const shape = urlObj.searchParams.get('shape') || 'rect';
+      let url = direct;
+      if (!url && id){
+        try{
+          const res = await fetch(`/api/image?id=${encodeURIComponent(id)}`);
+          if (res.ok){ const data = await res.json(); url = data.url; }
+        }catch(e){ /* ignore */ }
+      }
+      if (!url) { url = `https://picsum.photos/800/600?random=${Math.floor(Math.random()*10000)}`; }
       const img = document.getElementById('img'); img.src = url;
       const shot = document.getElementById('shot'); shot.classList.add(shapeToClass(shape));
       document.getElementById('directUrl').textContent = url;

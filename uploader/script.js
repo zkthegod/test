@@ -156,7 +156,7 @@ function generateMockUploadResult(file, shape) {
     id: randomId,
     filename: file.name,
     shape: shape,
-    url: `./view.html?id=${randomId}`,
+    url: `./view.html?id=${randomId}&direct=${encodeURIComponent(randomImage)}&shape=${encodeURIComponent(shape)}`,
     directUrl: randomImage,
     size: file.size,
     uploadedAt: new Date().toISOString()
@@ -224,11 +224,11 @@ async function uploadOne(file) {
 
 // Theme detection and switching
 function detectAndApplyTheme() {
-  const body = document.body;
   const modal = document.getElementById('resultsModal');
-  
-  // Check if body has dark theme class
-  if (body.classList.contains('dark-theme')) {
+  if (!modal) return;
+  const rootTheme = document.documentElement.getAttribute('data-theme');
+  const isDark = rootTheme ? rootTheme === 'dark' : document.body.classList.contains('dark-theme');
+  if (isDark) {
     modal.classList.add('dark-theme');
     modal.classList.remove('light-theme');
   } else {
@@ -248,9 +248,11 @@ function showResults(results) {
   // Detect and apply theme
   detectAndApplyTheme();
   
-  // Clear previous results
-  resultsContainer.innerHTML = '';
+  // Clear previous results without removing persistent UI elements
+  const prevSummary = resultsContainer.querySelector('.upload-summary');
+  if (prevSummary) prevSummary.remove();
   carouselContainer.innerHTML = '';
+  carouselContainer.classList.remove('single', 'multiple');
   
   // Create upload summary
   const uploadSummary = document.createElement('div');
@@ -264,7 +266,8 @@ function showResults(results) {
     </div>
   `;
   
-  resultsContainer.appendChild(uploadSummary);
+  // Place summary at the top of the results container
+  resultsContainer.prepend(uploadSummary);
   
   // Create carousel items
   results.forEach((result, index) => {
@@ -290,7 +293,7 @@ function showResults(results) {
         </div>
       </div>
       
-      <div class="result-image-container">
+      <div class="result-image-container ${shapeToClass(result.shape)}">
         <img src="${result.directUrl}" alt="${result.filename}" loading="lazy" class="result-image">
         <div class="image-overlay">
           <a href="${result.url}" class="view-btn" target="_blank">
@@ -329,14 +332,14 @@ function showResults(results) {
   // Setup carousel if multiple images
   if (results.length > 1) {
     setupCarousel(results.length);
-    carouselNav.style.display = 'flex';
-    carouselDots.style.display = 'flex';
+    if (carouselNav) carouselNav.style.display = 'flex';
+    if (carouselDots) carouselDots.style.display = 'flex';
     carouselContainer.classList.add('multiple');
   } else {
     carouselContainer.classList.add('single');
     // Hide navigation for single images
-    carouselNav.style.display = 'none';
-    carouselDots.style.display = 'none';
+    if (carouselNav) carouselNav.style.display = 'none';
+    if (carouselDots) carouselDots.style.display = 'none';
   }
   
   // Show modal with beautiful animation
@@ -386,6 +389,7 @@ function setupCarousel(totalItems) {
   const carouselPrev = document.getElementById('carouselPrev');
   const carouselNext = document.getElementById('carouselNext');
   const carouselDots = document.getElementById('carouselDots');
+  const resultsModal = document.getElementById('resultsModal');
   
   // Create dots
   carouselDots.innerHTML = '';
@@ -465,7 +469,7 @@ function setupCarousel(totalItems) {
   
   // Keyboard navigation
   document.addEventListener('keydown', (e) => {
-    if (resultsModal.classList.contains('show')) {
+    if (resultsModal && resultsModal.classList.contains('show')) {
       if (e.key === 'ArrowLeft') {
         prevSlide();
       } else if (e.key === 'ArrowRight') {
