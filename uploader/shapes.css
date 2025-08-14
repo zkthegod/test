@@ -66,3 +66,11 @@
 .shape-item[data-shape="hex"]::before { 
   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
 }
+
+.shape-rect .result-image { border-radius: 0 }
+.shape-rounded .result-image { border-radius: 16px }
+.shape-circle .result-image { border-radius: 999px }
+.shape-hex .result-image {
+	-webkit-clip-path: polygon(25% 6.7%, 75% 6.7%, 100% 50%, 75% 93.3%, 25% 93.3%, 0% 50%);
+	clip-path: polygon(25% 6.7%, 75% 6.7%, 100% 50%, 75% 93.3%, 25% 93.3%, 0% 50%);
+}
