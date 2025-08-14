@@ -255,20 +255,7 @@ function showResults(results) {
   if (carouselItems) carouselItems.innerHTML = '';
   carouselContainer.classList.remove('single', 'multiple');
   
-  // Create upload summary
-  const uploadSummary = document.createElement('div');
-  uploadSummary.className = 'upload-summary';
-  uploadSummary.innerHTML = `
-    <div class="summary-icon">
-      <i class="fas fa-check"></i>
-    </div>
-    <div class="summary-text">
-      Successfully uploaded <span class="summary-count">${results.length}</span> image${results.length === 1 ? '' : 's'}
-    </div>
-  `;
-  
-  // Place summary at the top of the results container
-  resultsContainer.prepend(uploadSummary);
+  // No summary banner; proceed to render results directly
   
   // Create carousel items
   results.forEach((result, index) => {

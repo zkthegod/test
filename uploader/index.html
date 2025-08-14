@@ -378,7 +378,9 @@
       border-bottom: 1px solid var(--header-border, #f0f0f0);
       background: var(--header-bg, #fafafa);
     }
-    
+    .modal-title-wrap{ display:flex; align-items:center; gap:10px }
+    .modal-title-check{ width:28px; height:28px; border-radius:50%; display:grid; place-items:center; background:#28a745; color:#fff }
+ 
     .modal-title {
       margin: 0;
       font-size: 22px;
@@ -453,7 +455,7 @@
     .results-container {
       display: flex;
       flex-direction: column;
-      gap: 27px;
+      gap: 16px;
       align-items: center;
     }
     
@@ -1158,7 +1160,10 @@
             <div class="modal-overlay" id="modalOverlay"></div>
             <div class="modal-content">
               <div class="modal-header">
-                <h2 class="modal-title">Upload Complete</h2>
+                <div class="modal-title-wrap">
+                  <span class="modal-title-check"><i class="fas fa-check"></i></span>
+                  <h2 class="modal-title">Upload Complete</h2>
+                </div>
                 <button class="modal-close" id="modalClose" aria-label="Close">
                   <i class="fas fa-times"></i>
                 </button>
