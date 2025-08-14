@@ -455,7 +455,7 @@
     .results-container {
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 8px;
       align-items: center;
     }
     
@@ -507,8 +507,8 @@
     }
     .carousel-container .carousel-arrow {
       position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
+      top: 40%;
+      transform: translateY(-40%);
       pointer-events: auto;
     }
     .carousel-container .carousel-arrow.prev { left: 8px; }
@@ -523,7 +523,7 @@
       width: 100%;
       max-width: 800px;
       position: relative;
-      min-height: 360px;
+      min-height: 320px;
     }
     
     /* Single Image Layout */
@@ -545,6 +545,7 @@
       transition: all 0.4s ease;
       position: absolute;
       left: 50%;
+      top: 0;
       transform: translateX(-50%) scale(0.8);
       opacity: 0.6;
       z-index: 1;
@@ -1004,7 +1005,7 @@
       /* Carousel responsive */
       .carousel-container { 
         max-width: 100%; 
-        min-height: 400px;
+        min-height: 320px;
       }
       .carousel-container.multiple .result-item.center { max-width: 100%; }
       .carousel-container.multiple .result-item.left { max-width: 300px; }
@@ -1050,7 +1051,7 @@
       
       /* Carousel mobile */
       .carousel-container { 
-        min-height: 350px;
+        min-height: 300px;
       }
       .carousel-container.multiple .result-item.left { max-width: 250px; }
       .carousel-container.multiple .result-item.right { max-width: 250px; }
