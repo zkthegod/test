@@ -28,6 +28,8 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Allow normal navigation to external pages (e.g., uploader/index.html)
             if (!href.startsWith('#')) {
+                // best-effort ensure top on next page
+                try { window.scrollTo(0,0); } catch {}
                 return; // Let the browser handle external navigation
             }
             
@@ -48,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Update URL hash without scrolling
                 history.replaceState(null, '', targetId);
                 // Ensure we start at the top of the page after switching sections
-                window.scrollTo({ top: 0, left: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
+                window.scrollTo(0, 0);
             }
         });
     });
