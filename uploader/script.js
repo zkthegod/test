@@ -242,6 +242,7 @@ function showResults(results) {
   const resultsModal = document.getElementById('resultsModal');
   const resultsContainer = document.getElementById('resultsContainer');
   const carouselContainer = document.getElementById('carouselContainer');
+  const carouselItems = document.getElementById('carouselItems');
   const carouselNav = document.getElementById('carouselNav');
   const carouselDots = document.getElementById('carouselDots');
   
@@ -251,7 +252,7 @@ function showResults(results) {
   // Clear previous results without removing persistent UI elements
   const prevSummary = resultsContainer.querySelector('.upload-summary');
   if (prevSummary) prevSummary.remove();
-  carouselContainer.innerHTML = '';
+  if (carouselItems) carouselItems.innerHTML = '';
   carouselContainer.classList.remove('single', 'multiple');
   
   // Create upload summary
@@ -326,7 +327,7 @@ function showResults(results) {
       </div>
     `;
     
-    carouselContainer.appendChild(resultItem);
+    (carouselItems || carouselContainer).appendChild(resultItem);
   });
   
   // Setup carousel if multiple images
@@ -386,6 +387,7 @@ function showResults(results) {
 function setupCarousel(totalItems) {
   let currentIndex = totalItems >= 3 ? 1 : 0;
   const carouselContainer = document.getElementById('carouselContainer');
+  const carouselItems = document.getElementById('carouselItems');
   const carouselPrev = document.getElementById('carouselPrev');
   const carouselNext = document.getElementById('carouselNext');
   const carouselDots = document.getElementById('carouselDots');
@@ -403,7 +405,7 @@ function setupCarousel(totalItems) {
   
   // Update carousel display
   function updateCarousel() {
-    const items = carouselContainer.querySelectorAll('.result-item');
+    const items = (carouselItems || carouselContainer).querySelectorAll('.result-item');
     
     items.forEach((item, index) => {
       item.classList.remove('center', 'left', 'right', 'hidden');
