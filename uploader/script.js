@@ -384,7 +384,7 @@ function showResults(results) {
 }
 
 function setupCarousel(totalItems) {
-  let currentIndex = 0;
+  let currentIndex = totalItems >= 3 ? 1 : 0;
   const carouselContainer = document.getElementById('carouselContainer');
   const carouselPrev = document.getElementById('carouselPrev');
   const carouselNext = document.getElementById('carouselNext');
