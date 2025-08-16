@@ -57,18 +57,34 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Activate initial hash on load
     (function(){
-        const hash = location.hash && document.querySelector(location.hash) ? location.hash : '#home';
-        const targetLink = Array.from(navLinks).find(a => (a.getAttribute('href')||'') === hash);
+        const params = new URLSearchParams(location.search);
+        const tab = params.get('tab');
+        const tabMap = {
+            'home': '#home',
+            'chat-embedder': '#chat-embedder',
+            'name-effects': '#name-effects',
+            'xatspace-templates': '#xatspace-templates',
+            'simpsons-avatars': '#simpsons-avatars'
+        };
+        const desiredHash = tabMap[tab] || (location.hash && document.querySelector(location.hash) ? location.hash : '#home');
+        const targetLink = Array.from(navLinks).find(a => (a.getAttribute('href')||'') === desiredHash);
         if (targetLink) {
             targetLink.click();
         } else {
-            // Fallback: show home
+            // Fallback: show default
             pages.forEach(page => page.classList.remove('active'));
-            const home = document.querySelector('#home');
-            if (home) home.classList.add('active');
+            const el = document.querySelector(desiredHash) || document.querySelector('#home');
+            if (el) el.classList.add('active');
         }
-        // Make sure we are at the top on load
-        window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+        // Normalize URL: drop ?tab and set hash
+        try {
+            const url = new URL(location.href);
+            if (url.searchParams.has('tab')) url.searchParams.delete('tab');
+            url.hash = desiredHash;
+            history.replaceState(null, '', url.toString());
+        } catch {}
+        // Ensure top
+        window.scrollTo(0, 0);
     })();
     
     // Chat embedder functionality (revamped)
