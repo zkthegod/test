@@ -1405,14 +1405,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (colors.length > 1) {
             const totalColors = colors.length;
             const gradientStops = [];
-            colors.forEach((color, i) => { 
-                const percent = Math.round((i / (totalColors - 1)) * 100); 
-                gradientStops.push(`${color} ${percent}%`); 
-            });
-            const gradient = `linear-gradient(${angle}deg, ${gradientStops.join(', ')})`;
+            colors.forEach((color, i) => { const percent = Math.round((i / totalColors) * 100); gradientStops.push(`${color} ${percent}%`); });
+            gradientStops.push(`${colors[0]} 100%`);
+            const gradient = `repeating-linear-gradient(${angle}deg, ${gradientStops.join(', ')})`;
             effectPreview.style.backgroundImage = gradient;
             
-            // For smooth gradient animation, we need a larger background size
+            // Adjust background size for diagonal gradients to ensure smooth interpolation
             let backgroundSize = '200% 100%';
             if (Math.abs(angle) === 45) {
                 // For 45-degree diagonals, increase the background size to ensure the gradient spans properly
@@ -1420,7 +1418,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             effectPreview.style.backgroundSize = backgroundSize;
-            effectPreview.style.backgroundRepeat = 'no-repeat';
+            effectPreview.style.backgroundRepeat = 'repeat-x';
             effectPreview.style.animation = 'none';
             effectPreview.classList.remove('wave-normal', 'wave-slow', 'wave-very-slow','wave-fast','wave-very-fast');
             void effectPreview.offsetWidth;
