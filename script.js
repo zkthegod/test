@@ -1413,11 +1413,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const gradient = `repeating-linear-gradient(${angle}deg, ${gradientStops.join(', ')})`;
             effectPreview.style.backgroundImage = gradient;
             
-            // Increase background size to ensure gradient covers full text area smoothly
-            let backgroundSize = '300% 100%';
+            // Ensure gradient has enough space for smooth blending
+            let backgroundSize = '400% 100%';
             if (Math.abs(angle) === 45) {
                 // For 45-degree diagonals, increase the background size to ensure the gradient spans properly
-                backgroundSize = '300% 300%';
+                backgroundSize = '400% 400%';
             }
             
             effectPreview.style.backgroundSize = backgroundSize;
