@@ -1405,20 +1405,23 @@ document.addEventListener('DOMContentLoaded', function() {
         if (colors.length > 1) {
             const totalColors = colors.length;
             const gradientStops = [];
-            colors.forEach((color, i) => { 
-                const percent = Math.round((i / totalColors) * 100); 
-                gradientStops.push(`${color} ${percent}%`); 
-            });
-            // Add the first color at 100% to create a smooth loop back to the beginning
-            gradientStops.push(`${colors[0]} 100%`);
+            // Create a gradient that spans multiple cycles for smoother transitions
+            const cycles = 3;
+            for (let cycle = 0; cycle < cycles; cycle++) {
+                colors.forEach((color, i) => { 
+                    const basePercent = (i / totalColors) * 100;
+                    const percent = basePercent + (cycle * 100);
+                    gradientStops.push(`${color} ${percent}%`); 
+                });
+            }
             const gradient = `repeating-linear-gradient(${angle}deg, ${gradientStops.join(', ')})`;
             effectPreview.style.backgroundImage = gradient;
             
-            // Adjust background size for smoother gradient looping
-            let backgroundSize = '200% 100%';
+            // Adjust background size for multiple gradient cycles
+            let backgroundSize = '300% 100%';
             if (Math.abs(angle) === 45) {
                 // For 45-degree diagonals, increase the background size to ensure the gradient spans properly
-                backgroundSize = '200% 200%';
+                backgroundSize = '300% 300%';
             }
             
             effectPreview.style.backgroundSize = backgroundSize;
