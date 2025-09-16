@@ -1425,7 +1425,6 @@ document.addEventListener('DOMContentLoaded', function() {
         effectPreview.style.setProperty('--glow-color', glow);
         let code = '(glow';
         code += `#${glow.replace('#', '')}`;
-        if (effectPreview.classList.contains('bold')) code += '#b';
         if (colors.length > 1) {
             code += `#grad#r${angle}`;
             if (speed) code += `#${speed}`;
