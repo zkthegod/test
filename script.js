@@ -1409,7 +1409,15 @@ document.addEventListener('DOMContentLoaded', function() {
             gradientStops.push(`${colors[0]} 100%`);
             const gradient = `repeating-linear-gradient(${angle}deg, ${gradientStops.join(', ')})`;
             effectPreview.style.backgroundImage = gradient;
-            effectPreview.style.backgroundSize = '200% 100%';
+            
+            // Adjust background size for diagonal gradients to ensure smooth interpolation
+            let backgroundSize = '200% 100%';
+            if (Math.abs(angle) === 45) {
+                // For 45-degree diagonals, increase the background size to ensure the gradient spans properly
+                backgroundSize = '200% 200%';
+            }
+            
+            effectPreview.style.backgroundSize = backgroundSize;
             effectPreview.style.backgroundRepeat = 'repeat-x';
             effectPreview.style.animation = 'none';
             effectPreview.classList.remove('wave-normal', 'wave-slow', 'wave-very-slow','wave-fast','wave-very-fast');
