@@ -1405,16 +1405,19 @@ document.addEventListener('DOMContentLoaded', function() {
         if (colors.length > 1) {
             const totalColors = colors.length;
             const gradientStops = [];
-            colors.forEach((color, i) => { const percent = Math.round((i / totalColors) * 100); gradientStops.push(`${color} ${percent}%`); });
+            colors.forEach((color, i) => { 
+                const percent = Math.round((i / totalColors) * 100); 
+                gradientStops.push(`${color} ${percent}%`); 
+            });
             gradientStops.push(`${colors[0]} 100%`);
             const gradient = `repeating-linear-gradient(${angle}deg, ${gradientStops.join(', ')})`;
             effectPreview.style.backgroundImage = gradient;
             
-            // Adjust background size for diagonal gradients to ensure smooth interpolation
-            let backgroundSize = '200% 100%';
+            // Increase background size to ensure gradient covers full text area smoothly
+            let backgroundSize = '300% 100%';
             if (Math.abs(angle) === 45) {
                 // For 45-degree diagonals, increase the background size to ensure the gradient spans properly
-                backgroundSize = '200% 200%';
+                backgroundSize = '300% 300%';
             }
             
             effectPreview.style.backgroundSize = backgroundSize;
